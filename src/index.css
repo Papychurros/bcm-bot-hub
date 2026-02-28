@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
+  :root, .dark {
     --background: 240 25% 5%;
     --foreground: 0 0% 95%;
     --card: 240 18% 9%;
@@ -42,6 +42,45 @@
     --sidebar-border: 240 10% 16%;
     --sidebar-ring: 262 83% 58%;
   }
+
+  .light {
+    --background: 0 0% 97%;
+    --foreground: 240 10% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 10%;
+    --primary: 262 83% 58%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 5% 92%;
+    --secondary-foreground: 240 10% 20%;
+    --muted: 240 5% 90%;
+    --muted-foreground: 240 5% 45%;
+    --accent: 262 60% 50%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 5% 82%;
+    --input: 240 5% 85%;
+    --ring: 262 83% 58%;
+
+    --bob: 262 83% 58%;
+    --bob-end: 330 81% 60%;
+    --cash: 160 84% 39%;
+    --cash-end: 160 59% 52%;
+    --mag-1: 0 84% 60%;
+    --mag-2: 45 93% 58%;
+    --mag-3: 262 83% 58%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 10% 15%;
+    --sidebar-primary: 262 83% 58%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 5% 93%;
+    --sidebar-accent-foreground: 240 10% 10%;
+    --sidebar-border: 240 5% 88%;
+    --sidebar-ring: 262 83% 58%;
+  }
 }
 
 @layer base {
@@ -59,10 +98,13 @@
 
 @layer components {
   .glass {
-    @apply bg-card/80 backdrop-blur-xl border border-white/[0.06] rounded-2xl;
+    @apply bg-card/80 backdrop-blur-xl border border-border/40 rounded-2xl;
+  }
+  .light .glass {
+    @apply bg-card border-border/60 shadow-sm;
   }
   .glass-hover {
-    @apply glass transition-all duration-300 hover:border-white/[0.12] hover:scale-[1.01];
+    @apply glass transition-all duration-300 hover:border-border/60 hover:scale-[1.01];
   }
   .glow-bob {
     box-shadow: 0 0 40px -10px hsl(262 83% 58% / 0.35);
@@ -74,7 +116,7 @@
     box-shadow: 0 0 40px -10px hsl(45 93% 58% / 0.3);
   }
   .cmd-tag {
-    @apply font-mono text-sm px-2 py-0.5 rounded bg-white/[0.06] border border-white/[0.08];
+    @apply font-mono text-sm px-2 py-0.5 rounded bg-secondary/60 border border-border/50;
   }
   .callout-info {
     @apply border-l-4 border-l-blue-500 bg-blue-500/5 rounded-r-xl p-4;
@@ -82,6 +124,45 @@
   .callout-warning {
     @apply border-l-4 border-l-orange-500 bg-orange-500/5 rounded-r-xl p-4;
   }
+
+  /* Particles */
+  @keyframes particle-float {
+    0% { transform: translateY(0) translateX(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-100vh) translateX(30px); opacity: 0; }
+  }
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: particle-float linear infinite;
+  }
+
+  /* Blink hint */
+  @keyframes blink-hint {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+  .blink-hint {
+    animation: blink-hint 2s ease-in-out infinite;
+  }
+
+  /* Unlock */
+  @keyframes unlock-out {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(1.1); opacity: 0; }
+  }
+  .unlock-out {
+    animation: unlock-out 0.5s ease-in-out forwards;
+  }
+
+  /* Stagger fade in */
+  .stagger-1 { animation-delay: 0.1s; }
+  .stagger-2 { animation-delay: 0.2s; }
+  .stagger-3 { animation-delay: 0.3s; }
+  .stagger-4 { animation-delay: 0.4s; }
+  .stagger-5 { animation-delay: 0.5s; }
 }
 
 ::-webkit-scrollbar {
@@ -93,6 +174,10 @@
 ::-webkit-scrollbar-thumb {
   background: hsl(240 10% 22%);
   border-radius: 3px;
+}
+.light ::-webkit-scrollbar-thumb,
+.light::-webkit-scrollbar-thumb {
+  background: hsl(240 5% 78%);
 }
 ::-webkit-scrollbar-thumb:hover {
   background: hsl(240 10% 32%);
