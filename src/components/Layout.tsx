@@ -1,18 +1,27 @@
 import { useState, useEffect } from 'react';
 import { Outlet, useLocation, useNavigate, Link } from 'react-router-dom';
-import { Menu, X, Home, Search, BookOpen, FlaskConical, ChevronRight } from 'lucide-react';
+import { Menu, X, Home, BookOpen, FlaskConical, ChevronRight, Sun, Moon } from 'lucide-react';
 import { bots, botList, getBotGradient, getBotColor, type BotId } from '@/data/bots';
 import { useApp } from '@/contexts/AppContext';
+import { useThemeToggle } from '@/contexts/ThemeContext';
+import SearchBar from '@/components/SearchBar';
 import { cn } from '@/lib/utils';
+
+const sidebarIcons: Record<string, string> = {
+  'Accueil': '🏠', 'Mode Normal': '💬', 'Mode Précis': '🎯',
+  'Agenda & Mails': '📅', 'Musique': '🎵', 'Mini B.O.B Info': '🌅',
+  'Architecture': '⚙️', 'Patch Notes': '📋', 'Limites connues': '⚠️', 'Glossaire': '📖',
+  'Ajouter': '➕', 'Consulter & Rechercher': '🔍', 'Modifier & Supprimer': '✏️', 'Bilan Mensuel': '📊',
+  'Catégories': '📂', 'Notifications': '🔔',
+};
 
 export default function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
   const { sidebarOpen, setSidebarOpen, getBotStats } = useApp();
-  const [searchQuery, setSearchQuery] = useState('');
+  const { theme, toggleTheme } = useThemeToggle();
 
   const isQA = location.pathname.startsWith('/qa');
-  const section = isQA ? 'qa' : 'guide';
   const pathParts = location.pathname.split('/').filter(Boolean);
   const activeBotId = (pathParts.length >= 2 && (pathParts[1] === 'bob' || pathParts[1] === 'cash' || pathParts[1] === 'mag'))
     ? pathParts[1] as BotId : null;
@@ -55,10 +64,19 @@ export default function Layout() {
           ))}
         </div>
         <div className="flex-1" />
+
+        <SearchBar />
+
         <span className="font-display font-bold text-sm tracking-widest bg-gradient-to-r from-bob via-cash to-mag-2 bg-clip-text text-transparent">
           B.C.M
         </span>
+
         <div className="flex-1" />
+
+        <button onClick={toggleTheme} className="p-1.5 rounded-lg hover:bg-secondary transition-colors">
+          {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+        </button>
+
         <div className="flex gap-1 bg-secondary/50 rounded-lg p-0.5">
           <button
             onClick={() => navigate('/')}
@@ -92,9 +110,25 @@ export default function Layout() {
             )}>
               {isQA ? (
                 <nav className="p-3 space-y-1">
+                  {/* BCM Header */}
+                  <div className="text-center py-3 mb-2">
+                    <div className="text-lg font-display font-extrabold tracking-widest">
+                      <span className="text-bob">B</span>.<span className="text-cash">C</span>.<span className="text-mag-2">M</span>
+                    </div>
+                    <div className="flex justify-center gap-2 mt-2">
+                      {botList.map(id => (
+                        <span key={id} className={cn("w-7 h-7 rounded-lg flex items-center justify-center text-sm bg-gradient-to-br", getBotGradient(id))}>
+                          {bots[id].emoji}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
                   <Link to="/qa" className={cn("flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors",
-                    location.pathname === '/qa' ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium" : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50")}>
-                    <Home className="w-4 h-4" /> Accueil
+                    location.pathname === '/qa'
+                      ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium border-l-3 border-l-bob"
+                      : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50")}>
+                    <span className="w-2 h-2 rounded-full bg-bob" />
+                    🏠 Accueil
                   </Link>
                   {botList.map(id => {
                     const bot = bots[id];
@@ -102,8 +136,11 @@ export default function Layout() {
                     const completed = stats.ok + stats.partial + stats.fail;
                     return (
                       <Link key={id} to={`/qa/${id}`} className={cn("flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors",
-                        activeBotId === id ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium" : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50")}>
+                        activeBotId === id
+                          ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium border-l-3 border-l-current"
+                          : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50")}>
                         <span className="flex items-center gap-2">
+                          <span className={cn("w-2 h-2 rounded-full", id === 'bob' ? 'bg-bob' : id === 'cash' ? 'bg-cash' : 'bg-mag-2')} />
                           <span className="text-base">{bot.emoji}</span> {bot.name}
                         </span>
                         <span className={cn("text-xs px-1.5 py-0.5 rounded-full",
@@ -121,7 +158,9 @@ export default function Layout() {
                     {botList.map(id => (
                       <button key={id} onClick={() => navigate(`/guide/${id}`)}
                         className={cn("flex-1 py-3 text-xs font-bold tracking-wider text-center transition-all border-b-2",
-                          activeBotId === id ? `border-current ${getBotColor(id)}` : "border-transparent text-sidebar-foreground/50 hover:text-sidebar-foreground/80")}>
+                          activeBotId === id
+                            ? `border-current ${getBotColor(id)} bg-sidebar-accent/50`
+                            : "border-transparent text-sidebar-foreground/50 hover:text-sidebar-foreground/80")}>
                         {bots[id].name}
                       </button>
                     ))}
@@ -134,10 +173,14 @@ export default function Layout() {
                         {group.items.map(item => {
                           const href = item.slug ? `/guide/${activeBotId}/${item.slug}` : `/guide/${activeBotId}`;
                           const active = item.slug ? activePageSlug === item.slug : (!activePageSlug && location.pathname === `/guide/${activeBotId}`);
+                          const icon = sidebarIcons[item.title] || '📄';
                           return (
                             <Link key={item.slug || 'home'} to={href}
-                              className={cn("block px-3 py-1.5 rounded-lg text-sm transition-colors",
-                                active ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium" : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50")}>
+                              className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors",
+                                active
+                                  ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium border-l-3 border-l-current"
+                                  : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50")}>
+                              <span className="text-sm">{icon}</span>
                               {item.title}
                             </Link>
                           );

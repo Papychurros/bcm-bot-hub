@@ -3,26 +3,72 @@ import { bots, getBotGradient, getBotColor, type BotId } from '@/data/bots';
 import { guideContent, type ContentSection } from '@/data/guide-content';
 import { cn } from '@/lib/utils';
 
-function SectionRenderer({ section, botId }: { section: ContentSection; botId: BotId }) {
+function FlowchartRenderer({ section, botId }: { section: Extract<ContentSection, { type: 'flowchart' }>; botId: BotId }) {
+  const nodeColors: Record<string, string> = {
+    trigger: 'border-cash bg-cash/10 text-cash',
+    process: 'border-bob bg-bob/10 text-bob',
+    condition: 'border-mag-2 bg-mag-2/10 text-mag-2',
+    output: 'border-bob-end bg-bob-end/10 text-bob-end',
+  };
+
+  return (
+    <div className="mb-6">
+      {section.title && <h3 className="text-lg font-display font-bold mb-4">{section.title}</h3>}
+      <div className="glass p-6">
+        <div className="flex flex-col items-center gap-0">
+          {section.nodes.map((node, i) => (
+            <div key={node.id} className="flex flex-col items-center">
+              <div className={cn(
+                "px-5 py-3 rounded-xl text-xs font-mono font-medium border-2 min-w-[180px] text-center relative",
+                nodeColors[node.type]
+              )}>
+                <span className="absolute -left-8 top-1/2 -translate-y-1/2 text-[10px] font-bold text-muted-foreground">{i + 1}</span>
+                {node.label}
+              </div>
+              {i < section.nodes.length - 1 && (
+                <div className="flex flex-col items-center my-1">
+                  <div className="w-px h-4 bg-border" />
+                  <div className="text-muted-foreground text-[10px]">▼</div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SectionRenderer({ section, botId, index }: { section: ContentSection; botId: BotId; index: number }) {
+  const animClass = `animate-fade-in-up opacity-0`;
+  const animStyle = { animationDelay: `${0.1 + index * 0.08}s` };
+
+  if (section.type === 'flowchart') {
+    return <div className={animClass} style={animStyle}><FlowchartRenderer section={section} botId={botId} /></div>;
+  }
+
   switch (section.type) {
     case 'text':
       return (
-        <div className="mb-6">
+        <div className={cn("mb-6", animClass)} style={animStyle}>
           {section.title && <h3 className="text-lg font-display font-bold mb-3">{section.title}</h3>}
           <div className="text-sm text-foreground/80 leading-relaxed whitespace-pre-line">{section.content}</div>
         </div>
       );
     case 'commands':
       return (
-        <div className="mb-6">
+        <div className={cn("mb-6", animClass)} style={animStyle}>
           {section.title && <h3 className="text-lg font-display font-bold mb-3">{section.title}</h3>}
           <div className="space-y-2">
             {section.commands.map((cmd, i) => (
               <div key={i} className="glass p-3 flex flex-col sm:flex-row sm:items-start gap-2">
-                <code className={cn("cmd-tag shrink-0", getBotColor(botId))}>
-                  {cmd.cmd}
-                  {cmd.params?.map(p => <span key={p} className="text-mag-2"> [{p}]</span>)}
-                </code>
+                <div className="flex items-center gap-2 shrink-0">
+                  <span className={cn("text-sm", getBotColor(botId))}>→</span>
+                  <code className={cn("cmd-tag", getBotColor(botId))}>
+                    {cmd.cmd}
+                    {cmd.params?.map(p => <span key={p} className="text-mag-2"> [{p}]</span>)}
+                  </code>
+                </div>
                 <span className="text-xs text-muted-foreground">{cmd.desc}</span>
               </div>
             ))}
@@ -31,16 +77,16 @@ function SectionRenderer({ section, botId }: { section: ContentSection; botId: B
       );
     case 'callout':
       return (
-        <div className={cn("mb-6", section.variant === 'info' ? 'callout-info' : 'callout-warning')}>
+        <div className={cn("mb-6", section.variant === 'info' ? 'callout-info' : 'callout-warning', animClass)} style={animStyle}>
           {section.title && <div className="text-sm font-bold mb-1">{section.title}</div>}
           <div className="text-sm text-foreground/80">{section.content}</div>
         </div>
       );
     case 'table':
       return (
-        <div className="mb-6">
+        <div className={cn("mb-6", animClass)} style={animStyle}>
           {section.title && <h3 className="text-lg font-display font-bold mb-3">{section.title}</h3>}
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto glass p-1">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border">
@@ -60,7 +106,7 @@ function SectionRenderer({ section, botId }: { section: ContentSection; botId: B
       );
     case 'timeline':
       return (
-        <div className="mb-6">
+        <div className={cn("mb-6", animClass)} style={animStyle}>
           {section.title && <h3 className="text-lg font-display font-bold mb-3">{section.title}</h3>}
           <div className="relative pl-6 border-l-2 border-border space-y-6">
             {section.entries.map((entry, i) => (
@@ -76,37 +122,9 @@ function SectionRenderer({ section, botId }: { section: ContentSection; botId: B
           </div>
         </div>
       );
-    case 'flowchart':
-      return (
-        <div className="mb-6">
-          {section.title && <h3 className="text-lg font-display font-bold mb-3">{section.title}</h3>}
-          <div className="glass p-6 overflow-x-auto">
-            <div className="flex flex-wrap gap-3 justify-center">
-              {section.nodes.map(node => (
-                <div key={node.id} className={cn(
-                  "px-4 py-2 rounded-lg text-xs font-mono font-medium border",
-                  node.type === 'trigger' && "bg-cash/10 border-cash/30 text-cash",
-                  node.type === 'process' && "bg-bob/10 border-bob/30 text-bob",
-                  node.type === 'condition' && "bg-mag-2/10 border-mag-2/30 text-mag-2",
-                  node.type === 'output' && "bg-bob-end/10 border-bob-end/30 text-bob-end",
-                )}>
-                  {node.label}
-                </div>
-              ))}
-            </div>
-            <div className="mt-3 text-center text-[10px] text-muted-foreground">
-              {section.connections.map(([from, to], i) => {
-                const fromNode = section.nodes.find(n => n.id === from);
-                const toNode = section.nodes.find(n => n.id === to);
-                return fromNode && toNode ? <span key={i} className="inline-block mx-1">{fromNode.label} → {toNode.label}</span> : null;
-              })}
-            </div>
-          </div>
-        </div>
-      );
     case 'limits':
       return (
-        <div className="mb-6">
+        <div className={cn("mb-6", animClass)} style={animStyle}>
           {section.title && <h3 className="text-lg font-display font-bold mb-3">{section.title}</h3>}
           <div className="space-y-3">
             {section.limits.map((limit, i) => (
@@ -123,7 +141,7 @@ function SectionRenderer({ section, botId }: { section: ContentSection; botId: B
       );
     case 'glossary':
       return (
-        <div className="mb-6">
+        <div className={cn("mb-6", animClass)} style={animStyle}>
           {section.title && <h3 className="text-lg font-display font-bold mb-3">{section.title}</h3>}
           <div className="space-y-2">
             {section.terms.map((term, i) => (
@@ -149,8 +167,8 @@ export default function ContentPage() {
   if (!content) return <div className="p-8 text-center text-muted-foreground">Contenu non disponible</div>;
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-10 animate-fade-in">
-      <div className="mb-8">
+    <div className="max-w-3xl mx-auto px-6 py-10">
+      <div className="mb-8 animate-fade-in-up opacity-0 stagger-1">
         <div className="flex items-center gap-3 mb-2">
           <span className="text-2xl">{content.icon}</span>
           <h1 className={cn("text-3xl font-display font-extrabold bg-gradient-to-r bg-clip-text text-transparent", getBotGradient(bot.id))}>
@@ -160,7 +178,7 @@ export default function ContentPage() {
         <p className="text-sm text-muted-foreground">{content.subtitle}</p>
       </div>
       {content.sections.map((section, i) => (
-        <SectionRenderer key={i} section={section} botId={bot.id} />
+        <SectionRenderer key={i} section={section} botId={bot.id} index={i} />
       ))}
     </div>
   );
