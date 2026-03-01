@@ -70,15 +70,15 @@ export default function GuideHome() {
       <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16 max-w-4xl w-full relative z-10 justify-center animate-fade-in-up opacity-0 stagger-3">
         {botList.map((id) => {
           const bot = bots[id];
-          const bgMap: Record<string, string> = {
-            bob: 'bg-[hsl(262,40%,18%)]',
-            cash: 'bg-[hsl(160,40%,14%)]',
-            mag: 'bg-[hsl(220,40%,14%)]',
+          const styleMap: Record<string, string> = {
+            bob: 'bg-[hsl(262,40%,18%)] border border-[hsl(262,83%,58%,0.4)] shadow-[0_0_18px_-4px_hsl(262,83%,58%,0.5),inset_0_0_30px_-10px_hsl(262,83%,58%,0.12)]',
+            cash: 'bg-[hsl(160,40%,14%)] border border-[hsl(160,84%,39%,0.4)] shadow-[0_0_18px_-4px_hsl(160,84%,39%,0.5),inset_0_0_30px_-10px_hsl(160,84%,39%,0.12)]',
+            mag: 'bg-[hsl(220,40%,14%)] border border-[hsl(25,90%,55%,0.4)] shadow-[0_0_18px_-4px_hsl(25,90%,55%,0.5),inset_0_0_30px_-10px_hsl(25,90%,55%,0.12)]',
           };
           return (
             <button key={id} onClick={() => handleBotClick(id)}
               className="flex flex-col items-center gap-3 cursor-pointer group transition-transform duration-300 hover:scale-105">
-              <div className={cn("w-28 h-28 md:w-32 md:h-32 rounded-[22px] flex items-center justify-center shadow-lg transition-shadow duration-300", bgMap[id])}>
+              <div className={cn("w-28 h-28 md:w-32 md:h-32 rounded-[22px] flex items-center justify-center transition-shadow duration-300", styleMap[id])}>
                 <BotLogo botId={id} size="xl" className="transition-transform duration-300 group-hover:scale-110" />
               </div>
               <h2 className={cn("text-base font-display font-bold bg-gradient-to-r bg-clip-text text-transparent", getBotGradient(id))}>
