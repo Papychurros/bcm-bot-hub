@@ -1,5 +1,6 @@
 import { useParams } from 'react-router-dom';
 import { bots, getBotGradient, getBotColor, type BotId } from '@/data/bots';
+import BotLogo from '@/components/BotLogo';
 import { qaTests } from '@/data/qa-tests';
 import { useApp } from '@/contexts/AppContext';
 import { cn } from '@/lib/utils';
@@ -67,9 +68,7 @@ export default function QABotPage() {
     <div className="max-w-3xl mx-auto px-6 py-10 animate-fade-in">
       {/* Header */}
       <div className="flex items-center gap-4 mb-6">
-        <div className={cn("w-16 h-16 rounded-2xl flex items-center justify-center text-3xl bg-gradient-to-br shrink-0", getBotGradient(bot.id))}>
-          {bot.emoji}
-        </div>
+        <BotLogo botId={bot.id} size="md" className="shrink-0" />
         <div>
           <h1 className={cn("text-3xl font-display font-extrabold bg-gradient-to-r bg-clip-text text-transparent", getBotGradient(bot.id))}>
             {bot.name}

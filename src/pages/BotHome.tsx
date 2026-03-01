@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom';
 import { bots, botList, getBotGradient, getBotColor, type BotId } from '@/data/bots';
+import BotLogo from '@/components/BotLogo';
 import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 
@@ -34,11 +35,8 @@ export default function BotHome() {
     <div className="max-w-3xl mx-auto px-6 py-12">
       {/* Hero */}
       <div className="text-center mb-12">
-        <div className={cn(
-          "w-24 h-24 rounded-3xl mx-auto mb-6 flex items-center justify-center text-5xl bg-gradient-to-br shadow-2xl animate-fade-in-up opacity-0 stagger-1",
-          getBotGradient(bot.id)
-        )}>
-          {bot.emoji}
+        <div className="mx-auto mb-6 flex items-center justify-center animate-fade-in-up opacity-0 stagger-1">
+          <BotLogo botId={bot.id} size="xl" />
         </div>
         <h1
           className={cn("text-6xl md:text-8xl lg:text-[clamp(72px,10vw,108px)] font-display font-extrabold mb-3 bg-gradient-to-r bg-clip-text text-transparent animate-fade-in-up opacity-0 stagger-2", getBotGradient(bot.id))}
@@ -72,9 +70,7 @@ export default function BotHome() {
             const other = bots[id];
             return (
               <Link key={id} to={`/guide/${id}`} className="glass-hover p-5 flex items-center gap-4">
-                <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center text-2xl bg-gradient-to-br shrink-0", getBotGradient(id))}>
-                  {other.emoji}
-                </div>
+                <BotLogo botId={id} size="sm" className="shrink-0" />
                 <div>
                   <div className={cn("font-display font-bold bg-gradient-to-r bg-clip-text text-transparent", getBotGradient(id))}>
                     {other.name}
