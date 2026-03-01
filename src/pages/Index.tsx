@@ -67,7 +67,7 @@ export default function GuideHome() {
         </p>
       </div>
 
-      <div className="flex flex-col md:flex-row items-center gap-0 max-w-4xl w-full relative z-10 justify-center animate-fade-in-up opacity-0 stagger-3">
+      <div className="flex flex-col md:flex-row items-center gap-6 md:gap-0 max-w-4xl w-full relative z-10 justify-center animate-fade-in-up opacity-0 stagger-3">
         {botList.map((id, i) => {
           const bot = bots[id];
           return (
@@ -75,16 +75,14 @@ export default function GuideHome() {
               {i > 0 && <div className="hidden md:block w-px h-24 bg-border/50 mx-6" />}
               {i > 0 && <div className="md:hidden h-px w-24 bg-border/50 my-4" />}
               <button onClick={() => handleBotClick(id)}
-                className="glass-hover p-8 text-center group cursor-pointer min-w-[160px] transition-all duration-300 hover:scale-[1.05] relative">
-                <div className="mx-auto flex items-center justify-center">
+                className="glass-hover p-8 text-center group cursor-pointer min-w-[160px] transition-all duration-300 hover:scale-[1.05] flex flex-col items-center">
+                <div className="flex items-center justify-center mb-4">
                   <BotLogo botId={id} size="lg" className="transition-all duration-300 group-hover:scale-110" />
                 </div>
-                <div className="absolute inset-x-0 bottom-2 flex flex-col items-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
-                  <h2 className={cn("text-lg font-display font-bold bg-gradient-to-r bg-clip-text text-transparent", getBotGradient(id))}>
-                    {bot.name}
-                  </h2>
-                  <p className="text-[11px] text-muted-foreground">{bot.subtitle}</p>
-                </div>
+                <h2 className={cn("text-lg font-display font-bold bg-gradient-to-r bg-clip-text text-transparent", getBotGradient(id))}>
+                  {bot.name}
+                </h2>
+                <p className="text-[11px] text-muted-foreground">{bot.subtitle}</p>
               </button>
             </div>
           );
