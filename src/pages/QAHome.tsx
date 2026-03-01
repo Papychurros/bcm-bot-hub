@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { bots, botList, getBotGradient } from '@/data/bots';
 import { useApp } from '@/contexts/AppContext';
+import BotLogo from '@/components/BotLogo';
 import { cn } from '@/lib/utils';
 import { Save } from 'lucide-react';
 import { toast } from 'sonner';
@@ -30,9 +31,7 @@ export default function QAHome() {
       <div className="text-center mb-10">
         <div className="flex justify-center gap-3 mb-4">
           {botList.map(id => (
-            <span key={id} className={cn("w-14 h-14 rounded-2xl flex items-center justify-center text-2xl bg-gradient-to-br", getBotGradient(id))}>
-              {bots[id].emoji}
-            </span>
+            <BotLogo key={id} botId={id} size="sm" className="w-14 h-14" />
           ))}
         </div>
         <h1 className="text-4xl md:text-5xl font-display font-extrabold mb-2 bg-gradient-to-r from-bob via-mag-2 to-cash bg-clip-text text-transparent">
@@ -85,9 +84,7 @@ export default function QAHome() {
               <div className={cn("h-1 bg-gradient-to-r", getBotGradient(id))} />
               <div className="p-5">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center text-xl bg-gradient-to-br", getBotGradient(id))}>
-                    {bot.emoji}
-                  </div>
+                  <BotLogo botId={id} size="sm" />
                   <div>
                     <div className={cn("font-display font-bold bg-gradient-to-r bg-clip-text text-transparent", getBotGradient(id))}>{bot.name}</div>
                     <div className="text-[10px] text-muted-foreground">{bot.subtitle}</div>

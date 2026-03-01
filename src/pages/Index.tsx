@@ -1,6 +1,7 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { bots, botList, getBotGradient } from '@/data/bots';
+import BotLogo from '@/components/BotLogo';
 import { cn } from '@/lib/utils';
 
 function Particles() {
@@ -46,11 +47,9 @@ export default function GuideHome() {
     )}>
       <Particles />
 
-      {/* Background glows */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-bob/5 rounded-full blur-[120px] animate-glow-pulse" />
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cash/5 rounded-full blur-[120px] animate-glow-pulse" style={{ animationDelay: '1s' }} />
 
-      {/* Bienvenue */}
       <div className="animate-fade-in-up opacity-0 stagger-1 relative z-10 mb-2">
         <p className="text-xs tracking-[0.4em] uppercase text-muted-foreground font-medium text-center">Bienvenue</p>
       </div>
@@ -72,20 +71,12 @@ export default function GuideHome() {
           const bot = bots[id];
           return (
             <div key={id} className="flex items-center">
-              {i > 0 && (
-                <div className="hidden md:block w-px h-24 bg-border/50 mx-6" />
-              )}
-              {i > 0 && (
-                <div className="md:hidden h-px w-24 bg-border/50 my-4" />
-              )}
+              {i > 0 && <div className="hidden md:block w-px h-24 bg-border/50 mx-6" />}
+              {i > 0 && <div className="md:hidden h-px w-24 bg-border/50 my-4" />}
               <button onClick={() => handleBotClick(id)}
                 className="glass-hover p-8 text-center group cursor-pointer min-w-[200px] transition-all duration-300 hover:scale-[1.05]">
-                <div className={cn(
-                  "w-20 h-20 rounded-2xl mx-auto mb-5 flex items-center justify-center text-4xl bg-gradient-to-br shadow-lg transition-all duration-300",
-                  getBotGradient(id),
-                  `group-hover:shadow-2xl`
-                )}>
-                  {bot.emoji}
+                <div className="mx-auto mb-5 flex items-center justify-center">
+                  <BotLogo botId={id} size="lg" className="transition-all duration-300 group-hover:scale-110" />
                 </div>
                 <h2 className={cn("text-2xl font-display font-bold mb-1 bg-gradient-to-r bg-clip-text text-transparent", getBotGradient(id))}>
                   {bot.name}
@@ -97,7 +88,6 @@ export default function GuideHome() {
         })}
       </div>
 
-      {/* Pulsing hint */}
       <div className="mt-12 blink-hint text-xs text-muted-foreground tracking-widest relative z-10 animate-fade-in-up opacity-0 stagger-4">
         ▼ Cliquez pour explorer ▼
       </div>

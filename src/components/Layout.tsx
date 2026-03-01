@@ -5,6 +5,7 @@ import { bots, botList, getBotGradient, getBotColor, type BotId } from '@/data/b
 import { useApp } from '@/contexts/AppContext';
 import { useThemeToggle } from '@/contexts/ThemeContext';
 import SearchBar from '@/components/SearchBar';
+import BotLogo from '@/components/BotLogo';
 import { cn } from '@/lib/utils';
 
 const sidebarIcons: Record<string, string> = {
@@ -116,10 +117,8 @@ export default function Layout() {
                       <span className="text-bob">B</span>.<span className="text-cash">C</span>.<span className="text-mag-2">M</span>
                     </div>
                     <div className="flex justify-center gap-2 mt-2">
-                      {botList.map(id => (
-                        <span key={id} className={cn("w-7 h-7 rounded-lg flex items-center justify-center text-sm bg-gradient-to-br", getBotGradient(id))}>
-                          {bots[id].emoji}
-                        </span>
+                       {botList.map(id => (
+                        <BotLogo key={id} botId={id} size="xs" />
                       ))}
                     </div>
                   </div>
@@ -141,7 +140,7 @@ export default function Layout() {
                           : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50")}>
                         <span className="flex items-center gap-2">
                           <span className={cn("w-2 h-2 rounded-full", id === 'bob' ? 'bg-bob' : id === 'cash' ? 'bg-cash' : 'bg-mag-2')} />
-                          <span className="text-base">{bot.emoji}</span> {bot.name}
+                          <BotLogo botId={id} size="xs" /> {bot.name}
                         </span>
                         <span className={cn("text-xs px-1.5 py-0.5 rounded-full",
                           completed === stats.total ? "bg-cash/20 text-cash" : "bg-secondary text-muted-foreground")}>
