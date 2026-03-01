@@ -9,9 +9,9 @@ function Particles() {
     Array.from({ length: 30 }, (_, i) => ({
       id: i,
       left: Math.random() * 100,
-      size: 2 + Math.random() * 4,
-      duration: 8 + Math.random() * 12,
-      delay: Math.random() * 10,
+      size: 1 + Math.random() * 1.5,
+      duration: 12 + Math.random() * 18,
+      delay: Math.random() * 15,
       color: ['hsl(262,83%,58%)', 'hsl(160,84%,39%)', 'hsl(45,93%,58%)', 'hsl(330,81%,60%)'][Math.floor(Math.random() * 4)],
     })), []);
 
@@ -25,6 +25,7 @@ function Particles() {
           animationDuration: `${p.duration}s`,
           animationDelay: `${p.delay}s`,
           opacity: 0,
+          filter: `blur(${0.5 + Math.random() * 0.5}px)`,
         }} />
       ))}
     </>
@@ -56,9 +57,9 @@ export default function GuideHome() {
 
       <div className="text-center mb-12 animate-fade-in-up opacity-0 stagger-2 relative z-10">
         <h1 className="text-4xl md:text-6xl font-display font-extrabold mb-4 leading-tight">
-          Guide d'utilisation des{' '}
-          <span className="bg-gradient-to-r from-bob via-mag-2 to-cash bg-clip-text text-transparent">
-            Bots Telegram
+          Guide d'utilisation des<br />
+          <span className="bg-gradient-to-r from-[hsl(330,81%,60%)] to-[hsl(262,83%,58%)] bg-clip-text text-transparent">
+            Bots Télégram
           </span>
         </h1>
         <p className="text-xs md:text-sm tracking-[0.3em] uppercase text-muted-foreground font-medium">
@@ -74,14 +75,16 @@ export default function GuideHome() {
               {i > 0 && <div className="hidden md:block w-px h-24 bg-border/50 mx-6" />}
               {i > 0 && <div className="md:hidden h-px w-24 bg-border/50 my-4" />}
               <button onClick={() => handleBotClick(id)}
-                className="glass-hover p-8 text-center group cursor-pointer min-w-[200px] transition-all duration-300 hover:scale-[1.05]">
-                <div className="mx-auto mb-5 flex items-center justify-center">
+                className="glass-hover p-8 text-center group cursor-pointer min-w-[160px] transition-all duration-300 hover:scale-[1.05] relative">
+                <div className="mx-auto flex items-center justify-center">
                   <BotLogo botId={id} size="lg" className="transition-all duration-300 group-hover:scale-110" />
                 </div>
-                <h2 className={cn("text-2xl font-display font-bold mb-1 bg-gradient-to-r bg-clip-text text-transparent", getBotGradient(id))}>
-                  {bot.name}
-                </h2>
-                <p className="text-sm text-muted-foreground">{bot.subtitle}</p>
+                <div className="absolute inset-x-0 bottom-2 flex flex-col items-center opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300">
+                  <h2 className={cn("text-lg font-display font-bold bg-gradient-to-r bg-clip-text text-transparent", getBotGradient(id))}>
+                    {bot.name}
+                  </h2>
+                  <p className="text-[11px] text-muted-foreground">{bot.subtitle}</p>
+                </div>
               </button>
             </div>
           );
