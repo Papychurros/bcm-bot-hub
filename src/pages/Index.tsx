@@ -67,24 +67,25 @@ export default function GuideHome() {
         </p>
       </div>
 
-      <div className="flex flex-col md:flex-row items-center gap-6 md:gap-0 max-w-4xl w-full relative z-10 justify-center animate-fade-in-up opacity-0 stagger-3">
-        {botList.map((id, i) => {
+      <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16 max-w-4xl w-full relative z-10 justify-center animate-fade-in-up opacity-0 stagger-3">
+        {botList.map((id) => {
           const bot = bots[id];
+          const bgMap: Record<string, string> = {
+            bob: 'bg-[hsl(262,40%,18%)]',
+            cash: 'bg-[hsl(160,40%,14%)]',
+            mag: 'bg-[hsl(220,40%,14%)]',
+          };
           return (
-            <div key={id} className="flex items-center">
-              {i > 0 && <div className="hidden md:block w-px h-24 bg-border/50 mx-6" />}
-              {i > 0 && <div className="md:hidden h-px w-24 bg-border/50 my-4" />}
-              <button onClick={() => handleBotClick(id)}
-                className="glass-hover p-8 text-center group cursor-pointer min-w-[160px] transition-all duration-300 hover:scale-[1.05] flex flex-col items-center">
-                <div className="flex items-center justify-center mb-4">
-                  <BotLogo botId={id} size="lg" className="transition-all duration-300 group-hover:scale-110" />
-                </div>
-                <h2 className={cn("text-lg font-display font-bold bg-gradient-to-r bg-clip-text text-transparent", getBotGradient(id))}>
-                  {bot.name}
-                </h2>
-                <p className="text-[11px] text-muted-foreground">{bot.subtitle}</p>
-              </button>
-            </div>
+            <button key={id} onClick={() => handleBotClick(id)}
+              className="flex flex-col items-center gap-3 cursor-pointer group transition-transform duration-300 hover:scale-105">
+              <div className={cn("w-28 h-28 md:w-32 md:h-32 rounded-[22px] flex items-center justify-center shadow-lg transition-shadow duration-300", bgMap[id])}>
+                <BotLogo botId={id} size="xl" className="transition-transform duration-300 group-hover:scale-110" />
+              </div>
+              <h2 className={cn("text-base font-display font-bold bg-gradient-to-r bg-clip-text text-transparent", getBotGradient(id))}>
+                {bot.name}
+              </h2>
+              <p className="text-[11px] text-muted-foreground -mt-2">{bot.subtitle}</p>
+            </button>
           );
         })}
       </div>
