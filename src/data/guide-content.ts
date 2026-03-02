@@ -24,9 +24,9 @@ export const guideContent: Record<string, Record<string, PageContent>> = {
       sections: [
         { type: 'text', title: 'Présentation', content: "Le Mode Normal est le mode de fonctionnement par défaut de B.O.B. Il fournit des réponses courtes, directes et pratiques. Idéal pour les questions rapides du quotidien : météo, calculs, recherches, agenda." },
         { type: 'commands', title: 'Commandes disponibles', commands: [
-          { cmd: '$présente-toi', desc: 'B.O.B se présente et liste ses fonctionnalités' },
-          { cmd: '$qui es-tu ?', desc: 'Réponse d\'identité courte' },
-          { cmd: '$à quoi tu sers ?', desc: 'Explication de son utilité' },
+          { cmd: 'présente-toi', desc: 'B.O.B se présente et liste ses fonctionnalités' },
+          { cmd: 'qui es-tu ?', desc: 'Réponse d\'identité courte' },
+          { cmd: 'à quoi tu sers ?', desc: 'Explication de son utilité' },
           { cmd: 'Question libre', desc: 'Posez n\'importe quelle question en langage naturel', params: ['question'] },
         ]},
         { type: 'callout', variant: 'info', title: 'Bon à savoir', content: "En Mode Normal, B.O.B utilise un seul agent IA avec un contexte réduit pour des réponses plus rapides. Pour des recherches approfondies, passez en Mode Précis." },
@@ -94,8 +94,8 @@ export const guideContent: Record<string, Record<string, PageContent>> = {
         { type: 'text', title: 'Récap Matinal', content: "Chaque matin à 8h00, Mini B.O.B Info vous envoie automatiquement un récapitulatif contenant : la météo du jour, vos rendez-vous, et un résumé de l'actualité." },
         { type: 'text', title: 'Veille Actualités', content: "Après le récap matinal (1 minute de délai), B.O.B vous envoie une veille actualités avec les dernières news pertinentes, triées par catégorie." },
         { type: 'commands', title: 'Commande Liens', commands: [
-          { cmd: '$liens', desc: 'Affiche les liens des dernières actualités envoyées' },
-          { cmd: '$liens [X] [Y]', desc: 'Affiche les liens des actualités numéro X à Y', params: ['X', 'Y'] },
+          { cmd: 'liens', desc: 'Affiche les liens des dernières actualités envoyées' },
+          { cmd: 'liens [X] [Y]', desc: 'Affiche les liens des actualités numéro X à Y', params: ['X', 'Y'] },
         ]},
         { type: 'callout', variant: 'info', content: "Le récap matinal est entièrement automatique — il se déclenche via un cron n8n à 8h00 tous les jours." },
       ],
@@ -174,7 +174,7 @@ export const guideContent: Record<string, Record<string, PageContent>> = {
       icon: '➕',
       subtitle: 'Ajouter des abonnements, courses, factures et autres dépenses',
       sections: [
-        { type: 'text', title: 'Types de dépenses', content: "C.A.S.H reconnaît automatiquement 4 types de dépenses :\n• **Abonnement** : dépenses récurrentes (Netflix, Spotify, iCloud...)\n• **Courses** : achats alimentaires et quotidiens\n• **Facture** : factures ponctuelles (EDF, loyer, assurance...)\n• **Autre** : tout ce qui ne rentre pas dans les catégories ci-dessus" },
+        { type: 'text', title: 'Types de dépenses', content: "C.A.S.H reconnaît automatiquement 4 types de dépenses :\n• Abonnement : dépenses récurrentes (Netflix, Spotify, iCloud...)\n• Courses : achats alimentaires et quotidiens\n• Facture : factures ponctuelles (EDF, loyer, assurance...)\n• Autre : tout ce qui ne rentre pas dans les catégories ci-dessus" },
         { type: 'commands', title: 'Commandes d\'ajout', commands: [
           { cmd: 'J\'ai payé [montant]€ pour [description]', desc: 'Ajout rapide d\'une dépense', params: ['montant', 'description'] },
           { cmd: 'Abonnement Netflix 15.99€ par mois', desc: 'Ajout d\'un abonnement mensuel avec montant' },
@@ -320,7 +320,7 @@ export const guideContent: Record<string, Record<string, PageContent>> = {
           ['👤 Perso', '✅ Notification', 'Les messages personnels méritent une alerte'],
           ['📦 Autre', '✅ Notification', 'Par défaut, mieux vaut prévenir'],
         ]},
-        { type: 'text', title: 'Format de notification', content: "Chaque notification Telegram contient :\n• 📬 Emoji identifiant\n• **De :** nom de l'expéditeur\n• **Sujet :** objet du mail\n• **Catégorie :** label attribué" },
+        { type: 'text', title: 'Format de notification', content: "Chaque notification Telegram contient :\n• 📬 Emoji identifiant\n• De : nom de l'expéditeur\n• Sujet : objet du mail\n• Catégorie : label attribué" },
         { type: 'callout', variant: 'info', content: "M.A.G vérifie les nouveaux emails toutes les minutes via un polling n8n." },
       ],
     },
