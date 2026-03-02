@@ -1,6 +1,8 @@
 import { useParams } from 'react-router-dom';
 import { bots, getBotGradient, getBotColor, type BotId } from '@/data/bots';
 import { guideContent, type ContentSection } from '@/data/guide-content';
+import { architectureData } from '@/data/architecture-data';
+import ArchitectureRenderer from '@/components/ArchitectureRenderer';
 import { cn } from '@/lib/utils';
 
 function FlowchartRenderer({ section, botId }: { section: Extract<ContentSection, { type: 'flowchart' }>; botId: BotId }) {
@@ -162,6 +164,11 @@ export default function ContentPage() {
   const { botId, pageSlug } = useParams<{ botId: string; pageSlug: string }>();
   const bot = bots[botId as BotId];
   if (!bot || !pageSlug) return <div className="p-8 text-center text-muted-foreground">Page introuvable</div>;
+
+  // Use dedicated architecture renderer for architecture pages
+  if (pageSlug === 'architecture' && architectureData[bot.id]) {
+    return <ArchitectureRenderer data={architectureData[bot.id]} botId={bot.id} />;
+  }
 
   const content = guideContent[bot.id]?.[pageSlug];
   if (!content) return <div className="p-8 text-center text-muted-foreground">Contenu non disponible</div>;
