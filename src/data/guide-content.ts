@@ -23,7 +23,7 @@ export const guideContent: Record<string, Record<string, PageContent>> = {
       subtitle: 'Toutes vos demandes quotidiennes — aucun mot clé requis',
       sections: [
         { type: 'text', title: '☀️ Météo Simple', content: "Réponse en une phrase naturelle" },
-        { type: 'commands', title: 'PAR VILLE', commands: [
+        { type: 'commands', commands: [
           { cmd: 'La météo à', desc: '', params: ['ville'] },
           { cmd: 'Quel temps à', desc: 'demain', params: ['ville'] },
           { cmd: 'Il fait quoi à', desc: '', params: ['ville', 'heure'] },
@@ -54,15 +54,25 @@ export const guideContent: Record<string, Record<string, PageContent>> = {
     },
     'mode-precis': {
       title: 'Mode Précis',
-      icon: '🎯',
-      subtitle: 'Réponses détaillées avec agents spécialisés',
+      icon: '🔴',
+      subtitle: 'Analyses approfondies — toujours commencer par "passe en mode précis et..."',
       sections: [
-        { type: 'text', title: 'Qu\'est-ce que le Mode Précis ?', content: "Le Mode Précis active les agents spécialisés de B.O.B pour fournir des réponses plus détaillées et structurées. Il utilise plusieurs sous-agents pour traiter votre demande en profondeur." },
-        { type: 'commands', title: 'Activation', commands: [
-          { cmd: 'passe en mode précis et [demande]', desc: 'Active le mode précis pour une demande spécifique', params: ['demande'] },
+        { type: 'callout', variant: 'info', title: 'Phrase de déclenchement', content: 'Commencez toujours par : "Passe en mode précis et..."\npuis enchaînez avec votre demande.' },
+        { type: 'text', title: '🌦️ Météo Détaillée', content: "Rapport météo complet" },
+        { type: 'commands', title: 'MÉTÉO COMPLÈTE', commands: [
+          { cmd: '...donne moi la météo pour', desc: 'demain', params: ['ville'] },
+          { cmd: '...météo complète', desc: '', params: ['ville', 'heure'] },
+          { cmd: '...prévisions', desc: 'cette semaine', params: ['ville'] },
         ]},
-        { type: 'text', title: 'Différences avec le Mode Normal', content: "• Réponses plus longues et structurées\n• Utilisation de plusieurs agents spécialisés\n• Recherche web approfondie\n• Données météo complètes avec prévisions horaires\n• Temps de réponse plus long (5-15 secondes)" },
-        { type: 'callout', variant: 'info', content: "Le mode précis est particulièrement utile pour les prévisions météo détaillées, les explications techniques, et les recherches approfondies." },
+        { type: 'callout', variant: 'info', content: "Inclut : températures min/max, ressenti, précipitations, probabilité de pluie, vent, rafales, direction, pression, couverture nuageuse, indice UV." },
+        { type: 'text', title: '🔎 Recherche Approfondie', content: "Synthèse structurée et détaillée — GPT-4o" },
+        { type: 'commands', title: 'RECHERCHE AVANCÉE', commands: [
+          { cmd: '...fais une recherche sur', desc: '', params: ['sujet'] },
+          { cmd: '...analyse', desc: '', params: ['sujet'] },
+          { cmd: '...compare', desc: '', params: ['A', 'B'] },
+          { cmd: '...fais-moi un résumé complet sur', desc: '', params: ['sujet'] },
+        ]},
+        { type: 'callout', variant: 'info', content: "Modèle : GPT-4o — effectue 2 à 3 recherches avec des angles différents pour une réponse approfondie." },
       ],
     },
     'agenda-mails': {
