@@ -19,24 +19,35 @@ export const guideContent: Record<string, Record<string, PageContent>> = {
   bob: {
     'mode-normal': {
       title: 'Mode Normal',
-      icon: '💬',
-      subtitle: 'Le mode par défaut de B.O.B — réponses concises et efficaces',
+      icon: '🟢',
+      subtitle: 'Toutes vos demandes quotidiennes — aucun mot clé requis',
       sections: [
-        { type: 'text', title: 'Présentation', content: "Le Mode Normal est le mode de fonctionnement par défaut de B.O.B. Il fournit des réponses courtes, directes et pratiques. Idéal pour les questions rapides du quotidien : météo, calculs, recherches, agenda." },
-        { type: 'commands', title: 'Commandes disponibles', commands: [
-          { cmd: 'présente-toi', desc: 'B.O.B se présente et liste ses fonctionnalités' },
-          { cmd: 'qui es-tu ?', desc: 'Réponse d\'identité courte' },
-          { cmd: 'à quoi tu sers ?', desc: 'Explication de son utilité' },
-          { cmd: 'Question libre', desc: 'Posez n\'importe quelle question en langage naturel', params: ['question'] },
+        { type: 'text', title: '☀️ Météo Simple', content: "Réponse en une phrase naturelle" },
+        { type: 'commands', title: 'PAR VILLE', commands: [
+          { cmd: 'La météo à', desc: '', params: ['ville'] },
+          { cmd: 'Quel temps à', desc: 'demain', params: ['ville'] },
+          { cmd: 'Il fait quoi à', desc: '', params: ['ville', 'heure'] },
+          { cmd: 'Météo', desc: 'cette semaine', params: ['ville'] },
         ]},
-        { type: 'callout', variant: 'info', title: 'Bon à savoir', content: "En Mode Normal, B.O.B utilise un seul agent IA avec un contexte réduit pour des réponses plus rapides. Pour des recherches approfondies, passez en Mode Précis." },
-        { type: 'commands', title: 'Exemples de questions', commands: [
-          { cmd: 'Quelle est la capitale de l\'Australie ?', desc: 'Recherche de connaissance générale → Canberra' },
-          { cmd: 'Combien font 248 × 37 ?', desc: 'Calcul mathématique → 9 176' },
-          { cmd: 'Quelle heure est-il ?', desc: 'Heure actuelle en France' },
-          { cmd: 'Quel temps fait-il à Pau ?', desc: 'Météo actuelle avec température et conditions' },
+        { type: 'text', title: '🔍 Recherche Internet', content: "Réponse courte et directe" },
+        { type: 'commands', title: 'RECHERCHE', commands: [
+          { cmd: 'Cherche', desc: '', params: ['sujet'] },
+          { cmd: 'Trouve-moi', desc: '', params: ['info'] },
+          { cmd: 'C\'est quoi', desc: '', params: ['terme'] },
+          { cmd: 'Qui est', desc: '', params: ['personne'] },
         ]},
-        { type: 'callout', variant: 'warning', title: 'Attention', content: "B.O.B ne répond qu'en français et utilise le vouvoiement. Il n'inventera jamais d'information — s'il ne sait pas, il le dira." },
+        { type: 'text', title: '🧮 Calcul', content: "Avec explication si demandée" },
+        { type: 'commands', title: 'CALCUL', commands: [
+          { cmd: 'Calcule', desc: '', params: ['opération'] },
+          { cmd: 'Combien font', desc: '', params: ['X × Y'] },
+          { cmd: 'Explique-moi le calcul', desc: '' },
+        ]},
+        { type: 'text', title: '🕐 Date & Heure', content: "Heure, jour et date en temps réel" },
+        { type: 'commands', title: 'DATE & HEURE', commands: [
+          { cmd: 'Quelle heure est-il ?', desc: '' },
+          { cmd: 'On est quel jour ?', desc: '' },
+          { cmd: 'Quelle est la date ?', desc: '' },
+        ]},
       ],
     },
     'mode-precis': {
