@@ -30,24 +30,26 @@ export const guideContent: Record<string, Record<string, PageContent>> = {
           { cmd: 'Météo', desc: 'cette semaine', params: ['ville'] },
         ]},
         { type: 'text', title: '🔍 Recherche Internet', content: "Réponse courte et directe" },
-        { type: 'commands', title: 'RECHERCHE', commands: [
+        { type: 'commands', commands: [
           { cmd: 'Cherche', desc: '', params: ['sujet'] },
           { cmd: 'Trouve-moi', desc: '', params: ['info'] },
           { cmd: 'C\'est quoi', desc: '', params: ['terme'] },
           { cmd: 'Qui est', desc: '', params: ['personne'] },
         ]},
         { type: 'text', title: '🧮 Calcul', content: "Avec explication si demandée" },
-        { type: 'commands', title: 'CALCUL', commands: [
+        { type: 'commands', commands: [
           { cmd: 'Calcule', desc: '', params: ['opération'] },
           { cmd: 'Combien font', desc: '', params: ['X × Y'] },
           { cmd: 'Explique-moi le calcul', desc: '' },
         ]},
         { type: 'text', title: '🕐 Date & Heure', content: "Heure, jour et date en temps réel" },
-        { type: 'commands', title: 'DATE & HEURE', commands: [
+        { type: 'commands', commands: [
           { cmd: 'Quelle heure est-il ?', desc: '' },
           { cmd: 'On est quel jour ?', desc: '' },
           { cmd: 'Quelle est la date ?', desc: '' },
         ]},
+        { type: 'callout', variant: 'info', title: 'Bon à savoir', content: "En Mode Normal, B.O.B utilise un seul agent IA avec un contexte réduit pour des réponses plus rapides. Pour des recherches approfondies, passez en Mode Précis." },
+        { type: 'callout', variant: 'warning', title: 'Attention', content: "B.O.B ne répond qu'en français et utilise le vouvoiement. Il n'inventera jamais d'information — s'il ne sait pas, il le dira." },
       ],
     },
     'mode-precis': {
