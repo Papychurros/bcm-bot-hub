@@ -49,6 +49,10 @@ export const bots: Record<BotId, BotConfig> = {
           { title: 'Mode Précis', slug: 'mode-precis' },
           { title: 'Agenda & Mails', slug: 'agenda-mails' },
           { title: 'Musique', slug: 'musique' },
+        ]
+      },
+      {
+        group: 'AUTOMATISATION', items: [
           { title: 'Mini B.O.B Info', slug: 'mini-bob-info' },
         ]
       },
