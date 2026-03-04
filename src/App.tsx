@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AppProvider } from "@/contexts/AppContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import Layout from "@/components/Layout";
+import QAPasswordGate from "@/components/QAPasswordGate";
 import GuideHome from "./pages/Index";
 import BotHome from "./pages/BotHome";
 import ContentPage from "./pages/ContentPage";
@@ -28,8 +29,8 @@ const App = () => (
                 <Route path="/" element={<GuideHome />} />
                 <Route path="/guide/:botId" element={<BotHome />} />
                 <Route path="/guide/:botId/:pageSlug" element={<ContentPage />} />
-                <Route path="/qa" element={<QAHome />} />
-                <Route path="/qa/:botId" element={<QABotPage />} />
+                <Route path="/qa" element={<QAPasswordGate><QAHome /></QAPasswordGate>} />
+                <Route path="/qa/:botId" element={<QAPasswordGate><QABotPage /></QAPasswordGate>} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
