@@ -29,8 +29,8 @@ const App = () => (
                 <Route path="/" element={<GuideHome />} />
                 <Route path="/guide/:botId" element={<BotHome />} />
                 <Route path="/guide/:botId/:pageSlug" element={<ContentPage />} />
-                <Route path="/qa" element={<QAHome />} />
-                <Route path="/qa/:botId" element={<QABotPage />} />
+                <Route path="/qa" element={<QAPasswordGate><QAHome /></QAPasswordGate>} />
+                <Route path="/qa/:botId" element={<QAPasswordGate><QABotPage /></QAPasswordGate>} />
               </Route>
               <Route path="*" element={<NotFound />} />
             </Routes>
