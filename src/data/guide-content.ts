@@ -131,15 +131,30 @@ export const guideContent: Record<string, Record<string, PageContent>> = {
     'mini-bob-info': {
       title: 'Mini B.O.B Info',
       icon: '📰',
-      subtitle: 'Récap matinal automatique et veille actualités',
+      subtitle: 'Workflow autonome — récap matinal + veille quotidienne',
       sections: [
-        { type: 'text', title: 'Récap Matinal', content: "Chaque matin à 8h00, Mini B.O.B Info vous envoie automatiquement un récapitulatif contenant : la météo du jour, vos rendez-vous, et un résumé de l'actualité." },
-        { type: 'text', title: 'Veille Actualités', content: "Après le récap matinal (1 minute de délai), B.O.B vous envoie une veille actualités avec les dernières news pertinentes, triées par catégorie." },
-        { type: 'commands', title: 'Commande Liens', commands: [
-          { cmd: 'liens', desc: 'Affiche les liens des dernières actualités envoyées' },
-          { cmd: 'liens [X] [Y]', desc: 'Affiche les liens des actualités numéro X à Y', params: ['X', 'Y'] },
+        { type: 'callout', variant: 'info', title: 'DÉCLENCHEMENT AUTOMATIQUE', content: "Chaque matin à 8h00 — deux messages Telegram successifs envoyés automatiquement.\nWorkflow séparé de B.O.B principal — fonctionne en totale autonomie." },
+        { type: 'table', title: '', headers: ['', ''], rows: [
+          ['⏰ DÉCLENCHEUR', '8h00 chaque matin'],
+          ['🤖 MODÈLE', 'gpt-4o-mini'],
+          ['💬 MESSAGES', '2 messages successifs'],
+          ['🔗 STOCKAGE LIENS', 'Google Sheets'],
         ]},
-        { type: 'callout', variant: 'info', content: "Le récap matinal est entièrement automatique — il se déclenche via un cron n8n à 8h00 tous les jours." },
+        { type: 'text', title: '🌅 Message 1 — Récap matinal', content: "Météo + Agenda + Mails non lus — 5 sources en parallèle" },
+        { type: 'text', title: 'FLUX N8N', content: "⏰ Schedule Trigger 8h00\n→ 🌤 Météo Pau | 📅 Agenda | 📬 Gmail Travail | 📬 Gmail Perso | 📬 Gmail Autre\n→ 🔀 Merge (5 inputs) → ⚙️ Code JS — Formate JSON → 🤖 LLM gpt-4o-mini → 📱 Telegram" },
+        { type: 'text', title: 'FORMAT DU MESSAGE', content: "📬 Bonjour — Récap du Lundi 3 Février 2026\n──────────────\n🌤 Météo à Pau\n• Température : max / min\n• Ressenti max\n• Probabilité de pluie\n──────────────\n📅 Agenda du jour\nListe des événements ou \"Aucun événement\"\n──────────────\n📬 Mails non lus\n• Travail : X mail(s)\n• Perso : X mail(s)\n• Autre : X mail(s)" },
+        { type: 'text', title: '📰 Message 2 — Veille d\'actualités', content: "Envoyé 1 minute après le récap — 3 recherches SerpAPI" },
+        { type: 'text', title: 'FLUX N8N', content: "⏳ Wait 1 minute → 🤖 Mini B.O.B Infos (Agent IA) → ⚙️ Code JS\n📱 Send Veille → 📊 Sheets — Sauvegarde liens" },
+        { type: 'text', title: '3 RECHERCHES SERPAPI DANS L\'ORDRE', content: "1. Pau — Faits divers & actualités locales\n2. Jeux vidéo — News, sorties, annonces\n3. IA & Agents — Intelligence artificielle, actualités" },
+        { type: 'callout', variant: 'info', content: "Liens : chaque info est accompagnée de son URL source. Les liens sont sauvegardés dans Google Sheets et accessibles via commande Télégram." },
+        { type: 'text', title: '🔗 Workflow Liens', content: "Workflow séparé — récupère les liens de la veille sur demande" },
+        { type: 'commands', title: 'COMMANDES TÉLÉGRAM', commands: [
+          { cmd: 'liens', desc: 'Envoie tous les liens de la veille' },
+          { cmd: 'liens 3', desc: 'Envoie uniquement le lien n°3' },
+          { cmd: 'liens 3 11', desc: 'Envoie les liens n°3 et n°11' },
+        ]},
+        { type: 'text', title: 'FLUX N8N', content: "📱 Telegram Trigger → IF \"liens\" ?\n✓ oui → 📊 Sheets — Get liens → ⚙️ Parse numéros → 📱 Send\n✗ non → (ignoré)" },
+        { type: 'callout', variant: 'warning', content: "B.O.B principal est configuré pour ignorer tout message commençant par \"liens\" afin d'éviter tout conflit avec ce workflow." },
       ],
     },
     'architecture': {
