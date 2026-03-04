@@ -94,7 +94,19 @@ export default function GuideHome() {
         ▼ Cliquez pour explorer ▼
       </div>
 
-      <footer className="mt-8 text-xs text-muted-foreground/50 animate-fade-in-up opacity-0 stagger-5 relative z-10">
+      <div className="mt-10 relative z-10 animate-fade-in-up opacity-0 stagger-5 w-full max-w-sm mx-auto">
+        <div className="rounded-xl overflow-hidden border border-border/40 shadow-lg">
+          <iframe
+            src="https://www.youtube.com/embed/VomJ_nvhTGw"
+            title="Présentation des Bots"
+            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+            allowFullScreen
+            className="w-full aspect-video"
+          />
+        </div>
+      </div>
+
+      <footer className="mt-8 text-xs text-muted-foreground/50 animate-fade-in-up opacity-0 stagger-6 relative z-10">
         Fait par Alexandre Bertoneche
       </footer>
     </div>
