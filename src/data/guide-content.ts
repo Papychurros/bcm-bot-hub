@@ -114,14 +114,18 @@ export const guideContent: Record<string, Record<string, PageContent>> = {
     'musique': {
       title: 'Musique',
       icon: '🎵',
-      subtitle: 'Agent YouTube Music — ajout de titres à vos playlists',
+      subtitle: 'Ajout de musiques dans vos playlists YouTube — via YouTube Data API v3',
       sections: [
-        { type: 'text', title: 'Fonctionnement', content: "L'agent YouTube de B.O.B vous permet d'ajouter des morceaux à vos playlists YouTube directement depuis Telegram. Il recherche le titre sur YouTube, vous propose le meilleur résultat, puis l'ajoute à la playlist de votre choix." },
-        { type: 'commands', title: 'Commandes', commands: [
-          { cmd: 'Ajoute [titre] [artiste] dans mes playlists', desc: 'Recherche et ajoute un morceau', params: ['titre', 'artiste'] },
+        { type: 'callout', variant: 'info', title: 'COMMENT ÇA FONCTIONNE', content: "Envoyez le nom d'un artiste ou d'une chanson. B.O.B propose 3 résultats YouTube correspondants, vous choisissez le bon, puis il vous demande dans quelle playlist ajouter la musique. Elle est automatiquement ajoutée dans la playlist thématique choisie et dans la playlist globale #ALL#." },
+        { type: 'text', title: '🔘 Flux interactif', content: "3 étapes pour ajouter une musique" },
+        { type: 'commands', title: 'ÉTAPE 1 — VOTRE DEMANDE', commands: [
+          { cmd: 'Ajoute', desc: 'à ma playlist', params: ['artiste / titre'] },
+          { cmd: 'Met', desc: 'dans ma playlist', params: ['artiste'] },
+          { cmd: 'Cherche', desc: '', params: ['titre', 'artiste'] },
         ]},
-        { type: 'text', title: 'Processus', content: "1. B.O.B recherche le titre sur YouTube\n2. Il vous présente le résultat trouvé\n3. Vous confirmez ou refusez\n4. Il vous demande dans quelle playlist l'ajouter\n5. Le morceau est ajouté et vous recevez une confirmation" },
-        { type: 'callout', variant: 'warning', content: "L'agent YouTube nécessite une connexion OAuth valide. Si l'ajout échoue, vérifiez que le token n'a pas expiré." },
+        { type: 'text', title: 'ÉTAPE 2 — RÉPONSE DE B.O.B', content: "🎵 3 résultats trouvés :\n1. Ninho — Lettre à une femme (Official) · 4:12\n2. Ninho — Lettre à une femme (Lyrics) · 4:08\n3. Ninho ft. Dadju — Lettre à une femme · 4:15\n\n👉 Laquelle voulez-vous ajouter ? (1, 2 ou 3)" },
+        { type: 'text', title: 'ÉTAPE 3 — CHOIX DE LA PLAYLIST', content: "📁 Dans quelle playlist ?\n1. Rap FR\n2. Chill\n3. Workout\n... (14 playlists disponibles)\n\n✅ Ajouté dans Rap FR + #ALL#" },
+        { type: 'callout', variant: 'info', content: "Ajout automatique : chaque musique est toujours ajoutée dans la playlist thématique choisie ET dans la playlist globale #ALL# — 14 playlists thématiques disponibles." },
       ],
     },
     'mini-bob-info': {
