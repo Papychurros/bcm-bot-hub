@@ -81,22 +81,34 @@ export const guideContent: Record<string, Record<string, PageContent>> = {
     'agenda-mails': {
       title: 'Agenda & Mails',
       icon: '📅',
-      subtitle: 'Gestion Google Calendar et Gmail intégrée',
+      subtitle: 'Gestion Google Calendar et Gmail',
       sections: [
-        { type: 'text', title: 'Google Calendar', content: "B.O.B est connecté à votre Google Calendar. Vous pouvez consulter, créer, modifier et supprimer des événements directement depuis Telegram." },
-        { type: 'commands', title: 'Commandes Agenda', commands: [
-          { cmd: 'Quels sont mes prochains rendez-vous ?', desc: 'Affiche les prochains événements de votre calendrier' },
-          { cmd: 'Ajoute un rendez-vous [titre] [jour] à [heure]', desc: 'Crée un nouvel événement', params: ['titre', 'jour', 'heure'] },
-          { cmd: 'Déplace mon rendez-vous [titre] à [jour] [heure]', desc: 'Modifie un événement existant', params: ['titre', 'jour', 'heure'] },
-          { cmd: 'Supprime mon rendez-vous [titre] [jour]', desc: 'Supprime un événement', params: ['titre', 'jour'] },
+        { type: 'text', title: '📅 Google Calendar', content: "Voir, créer, modifier, supprimer" },
+        { type: 'commands', title: 'VOIR', commands: [
+          { cmd: 'Mes rendez-vous cette semaine', desc: '' },
+          { cmd: "Qu'est-ce que j'ai demain ?", desc: '' },
         ]},
-        { type: 'text', title: 'Gmail', content: "B.O.B peut lire, envoyer et supprimer des emails Gmail. Il gère aussi un carnet de contacts pour les envois simplifiés." },
-        { type: 'commands', title: 'Commandes Mail', commands: [
-          { cmd: 'Montre-moi mes [N] derniers mails', desc: 'Affiche les N derniers emails reçus', params: ['N'] },
-          { cmd: 'Envoie un mail à [destinataire] pour [contenu]', desc: 'Envoie un email', params: ['destinataire', 'contenu'] },
-          { cmd: 'Supprime le dernier mail de [expéditeur]', desc: 'Supprime un email', params: ['expéditeur'] },
+        { type: 'commands', title: 'CRÉER', commands: [
+          { cmd: 'Crée un RDV', desc: '', params: ['titre', 'date', 'heure'] },
         ]},
-        { type: 'callout', variant: 'info', content: "B.O.B utilise un carnet de contacts stocké dans Supabase. Vous pouvez dire \"Envoie un mail à maman\" s'il connaît l'adresse." },
+        { type: 'commands', title: 'MODIFIER / SUPPRIMER', commands: [
+          { cmd: 'Modifie', desc: '', params: ['événement', 'heure'] },
+          { cmd: 'Supprime', desc: '', params: ['événement'] },
+        ]},
+        { type: 'text', title: '✉️ Gmail', content: "Lire, envoyer, supprimer" },
+        { type: 'commands', title: 'LIRE', commands: [
+          { cmd: 'Mes nouveaux mails', desc: '' },
+          { cmd: 'Lis mes emails', desc: '' },
+          { cmd: 'Résume mes mails en une phrase', desc: '' },
+          { cmd: 'Résume le mail de', desc: '', params: ['contact'] },
+        ]},
+        { type: 'text', content: "BOB rédige, vous validez avant envoi" },
+        { type: 'commands', title: 'ENVOYER — RÉDACTION ASSISTÉE', commands: [
+          { cmd: 'Envoie un mail à', desc: '', params: ['contact'] },
+          { cmd: 'Réponds à', desc: '', params: ['contact'] },
+        ]},
+        { type: 'callout', variant: 'warning', title: 'CONFIRMATION OBLIGATOIRE', content: "→ Suppression d'un événement Calendar\n→ Suppression d'un mail\n→ Envoi d'un mail\n→ Modification d'un événement" },
+        { type: 'callout', variant: 'warning', content: "Évitez de demander à BOB de traiter toute votre boîte mail d'un coup. Préférez travailler par petits groupes : \"Lis mes 5 derniers mails\" ou \"Traite les 10 premiers non lus\"." },
       ],
     },
     'musique': {
