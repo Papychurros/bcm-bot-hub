@@ -102,7 +102,8 @@ export const guideContent: Record<string, Record<string, PageContent>> = {
           { cmd: 'Résume mes mails en une phrase', desc: '' },
           { cmd: 'Résume le mail de', desc: '', params: ['contact'] },
         ]},
-        { type: 'commands', title: 'ENVOYER — RÉDACTION ASSISTÉE', description: 'BOB rédige, vous validez avant envoi', commands: [
+        { type: 'text', content: "BOB rédige, vous validez avant envoi" },
+        { type: 'commands', title: 'ENVOYER — RÉDACTION ASSISTÉE', commands: [
           { cmd: 'Envoie un mail à', desc: '', params: ['contact'] },
           { cmd: 'Réponds à', desc: '', params: ['contact'] },
         ]},
