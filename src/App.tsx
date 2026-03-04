@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AppProvider } from "@/contexts/AppContext";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import Layout from "@/components/Layout";
+import QAPasswordGate from "@/components/QAPasswordGate";
 import GuideHome from "./pages/Index";
 import BotHome from "./pages/BotHome";
 import ContentPage from "./pages/ContentPage";
