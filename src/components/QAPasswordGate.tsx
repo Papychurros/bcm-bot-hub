@@ -5,14 +5,14 @@ import { cn } from '@/lib/utils';
 const QA_PASSWORD = '1409';
 const QA_AUTH_KEY = 'bcm-qa-auth';
 
-const EASTER_EGGS_3: Record<string, { type: 'fullscreen' | 'center'; src: string; text?: string }> = {
-  '777': { type: 'fullscreen', src: '/Casino.gif' },
-  '666': { type: 'fullscreen', src: '/Diablo.gif' },
-  '420': { type: 'fullscreen', src: '/Snoop.gif' },
-  '404': { type: 'fullscreen', src: '/404.gif' },
-  '000': { type: 'fullscreen', src: '/Chiken.gif' },
-  '123': { type: 'center', src: '/rizz-monkey-flirty-usagif.gif', text: 'Vraiment ?' },
-  '321': { type: 'center', src: '/rizz-monkey-flirty-usagif.gif', text: 'Vraiment ?' },
+const EASTER_EGGS_3: Record<string, { src: string; text?: string }> = {
+  '777': { src: '/Casino.gif', text: '🎰 Jackpot !' },
+  '666': { src: '/Diablo.gif', text: '👹 Enfer !' },
+  '420': { src: '/Snoop.gif', text: '💨 Chill...' },
+  '404': { src: '/404.gif', text: 'Not Found' },
+  '000': { src: '/Chiken.gif', text: '🐔 Poulet !' },
+  '123': { src: '/rizz-monkey-flirty-usagif.gif', text: 'Vraiment ?' },
+  '321': { src: '/rizz-monkey-flirty-usagif.gif', text: 'Vraiment ?' },
 };
 
 export function useQAAuth() {
