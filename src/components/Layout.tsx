@@ -4,6 +4,7 @@ import { Menu, X, Home, BookOpen, FlaskConical, ChevronRight, Sun, Moon } from '
 import { bots, botList, getBotGradient, getBotColor, type BotId } from '@/data/bots';
 import { useApp } from '@/contexts/AppContext';
 import { useThemeToggle } from '@/contexts/ThemeContext';
+import { useQAAuth } from '@/components/QAPasswordGate';
 import SearchBar from '@/components/SearchBar';
 import BotLogo from '@/components/BotLogo';
 import AboutBobModal from '@/components/AboutBobModal';
@@ -24,6 +25,7 @@ export default function Layout() {
   const navigate = useNavigate();
   const { sidebarOpen, setSidebarOpen, getBotStats } = useApp();
   const { theme, toggleTheme } = useThemeToggle();
+  const { authenticated: qaAuthenticated } = useQAAuth();
   const [aboutBobOpen, setAboutBobOpen] = useState(false);
   const [aboutCashOpen, setAboutCashOpen] = useState(false);
   const [aboutMagOpen, setAboutMagOpen] = useState(false);
@@ -105,7 +107,7 @@ export default function Layout() {
 
         <div className="flex flex-1 overflow-hidden">
           {/* SIDEBAR */}
-          {!isHome && (
+          {!isHome && !(isQA && !qaAuthenticated) && (
             <>
               <div className={cn(
                 "fixed inset-0 bg-black/60 z-30 lg:hidden transition-opacity",
