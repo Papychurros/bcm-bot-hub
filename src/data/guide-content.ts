@@ -307,7 +307,7 @@ export const guideContent: Record<string, Record<string, PageContent>> = {
       subtitle: 'Comprendre le fonctionnement technique de B.O.B — version vulgarisée',
       sections: [
         { type: 'glossary', title: '🧠 Le "Cerveau" et l\'Organisation', terms: [
-          { term: 'B.O.B', definition: 'Bot Orchestrateur Branché — votre assistant personnel multi-agent qui fonctionne sur Telegram.' },
+          { term: 'B.O.B', definition: 'Bots d\'Organisation Bureautique — votre assistant personnel multi-agent qui fonctionne sur Telegram.' },
           { term: 'n8n', definition: 'C\'est l\'outil principal (la plateforme) qui permet de construire BOB. On peut l\'imaginer comme un grand tableau où l\'on branche des boîtes entre elles pour créer des automatismes sans forcément écrire de code complexe.' },
           { term: 'Workflow (Flux)', definition: 'C\'est le chemin que suit l\'information. Par exemple, le workflow commence quand vous envoyez un message et s\'arrête quand BOB vous répond.' },
           { term: 'Node (Nœud)', definition: 'C\'est une "étape" ou une brique dans le workflow. Chaque nœud a une mission précise : recevoir un message, faire un calcul ou envoyer un mail.' },
