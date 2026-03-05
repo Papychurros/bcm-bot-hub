@@ -7,6 +7,7 @@ import { useThemeToggle } from '@/contexts/ThemeContext';
 import SearchBar from '@/components/SearchBar';
 import BotLogo from '@/components/BotLogo';
 import AboutBobModal from '@/components/AboutBobModal';
+import AboutCashModal from '@/components/AboutCashModal';
 import { cn } from '@/lib/utils';
 
 const sidebarIcons: Record<string, string> = {
@@ -22,7 +23,8 @@ export default function Layout() {
   const navigate = useNavigate();
   const { sidebarOpen, setSidebarOpen, getBotStats } = useApp();
   const { theme, toggleTheme } = useThemeToggle();
-  const [aboutOpen, setAboutOpen] = useState(false);
+  const [aboutBobOpen, setAboutBobOpen] = useState(false);
+  const [aboutCashOpen, setAboutCashOpen] = useState(false);
 
   const isQA = location.pathname.startsWith('/qa');
   const pathParts = location.pathname.split('/').filter(Boolean);
@@ -176,9 +178,10 @@ export default function Layout() {
                             const icon = sidebarIcons[item.title] || '📄';
 
                             // Special "à propos" entry opens modal instead of navigating
-                            if (item.slug === 'a-propos' && activeBotId === 'bob') {
+                            if (item.slug === 'a-propos' && (activeBotId === 'bob' || activeBotId === 'cash')) {
+                              const openFn = activeBotId === 'bob' ? () => setAboutBobOpen(true) : () => setAboutCashOpen(true);
                               return (
-                                <button key="a-propos" onClick={() => setAboutOpen(true)}
+                                <button key="a-propos" onClick={openFn}
                                   className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors text-sidebar-foreground/70 hover:bg-sidebar-accent/50 w-full text-left">
                                   <span className="text-sm">{icon}</span>
                                   <em>{item.title}</em>
@@ -221,7 +224,8 @@ export default function Layout() {
           </main>
         </div>
       </div>
-      <AboutBobModal open={aboutOpen} onOpenChange={setAboutOpen} />
+      <AboutBobModal open={aboutBobOpen} onOpenChange={setAboutBobOpen} />
+      <AboutCashModal open={aboutCashOpen} onOpenChange={setAboutCashOpen} />
     </>
   );
 }
