@@ -99,12 +99,16 @@ export default function QAPasswordGate({ children }: { children: React.ReactNode
       </div>
 
       {hellfire && (
-        <div className={`hellfire-overlay ${hellfire ? 'active' : ''}`}>
-          <div className="flame-layer flame-1" />
-          <div className="flame-layer flame-2" />
-          <div className="flame-layer flame-3" />
-          <div className="flame-layer flame-4" />
-          <div className="hellfire-text">6 6 6</div>
+        <div className="hellfire-overlay">
+          <div className="hellfire-bg" />
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div key={i} className={`flame flame-${(i % 4) + 1}`} style={{
+              left: `${(i / 12) * 100 + Math.random() * 8 - 4}%`,
+              animationDelay: `${i * 0.15}s`,
+              animationDuration: `${1.2 + Math.random() * 0.8}s`,
+            }} />
+          ))}
+          <div className="ember-layer" />
         </div>
       )}
     </div>
