@@ -95,13 +95,15 @@ export default function QAPasswordGate({ children }: { children: React.ReactNode
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
+            ref={inputRef}
             type="password"
             value={password}
             onChange={handleChange}
             placeholder="Mot de passe"
             autoFocus
+            disabled={inputDisabled}
             className={cn(
-              "w-full px-4 py-3 rounded-xl bg-secondary/50 border text-center font-mono text-lg tracking-[0.3em] focus:outline-none focus:ring-2 focus:ring-bob/50 transition-colors",
+              "w-full px-4 py-3 rounded-xl bg-secondary/50 border text-center font-mono text-lg tracking-[0.3em] focus:outline-none focus:ring-2 focus:ring-bob/50 transition-colors disabled:opacity-50",
               error ? "border-destructive text-destructive" : "border-border"
             )}
           />
