@@ -485,14 +485,35 @@ export const guideContent: Record<string, Record<string, PageContent>> = {
     'glossaire': {
       title: 'Glossaire',
       icon: '📖',
-      subtitle: 'Termes techniques C.A.S.H',
+      subtitle: 'Comprendre le fonctionnement technique de C.A.S.H — version vulgarisée',
       sections: [
-        { type: 'glossary', terms: [
-          { term: 'Abonnement', definition: 'Dépense récurrente avec fréquence (mensuel, annuel)' },
-          { term: 'Bilan mensuel', definition: 'Rapport automatique généré le 1er de chaque mois' },
-          { term: 'Intent', definition: 'Intention détectée par l\'IA (ajouter, consulter, modifier, supprimer)' },
-          { term: 'ID dépense', definition: 'Identifiant unique attribué à chaque dépense dans Supabase' },
-          { term: 'Supabase', definition: 'Base de données cloud utilisée pour stocker toutes les dépenses' },
+        { type: 'glossary', title: '🏗️ Infrastructure et Plateformes', terms: [
+          { term: 'C.A.S.H', definition: 'Comptabilité Assistée & Système d\'Historique — le nom de votre assistant financier personnel qui fonctionne sur Telegram.' },
+          { term: 'n8n', definition: 'La plateforme d\'automatisation (ou "orchestrateur") qui relie tous les services (Telegram, Google, IA) entre eux pour faire fonctionner les workflows.' },
+          { term: 'Self-hosted', definition: 'Signifie que le logiciel n8n est installé sur votre propre serveur privé (ici chez Hostinger KVM2) plutôt que d\'utiliser une version en ligne prête à l\'emploi.' },
+          { term: 'Telegram', definition: 'L\'application de messagerie qui sert d\'interface utilisateur pour envoyer des commandes et recevoir des rapports.' },
+        ]},
+        { type: 'glossary', title: '🧠 Intelligence Artificielle et Logique', terms: [
+          { term: 'Agent IA', definition: 'C\'est le "cerveau" du système, utilisant le modèle gpt-4o-mini. Il interprète vos phrases en langage naturel pour décider quelle action entreprendre.' },
+          { term: 'Prompt', definition: 'Les instructions textuelles précises données à l\'IA pour lui définir sa personnalité (vouvoyer l\'utilisateur), ses règles (utiliser la virgule pour les décimaux) et ses capacités.' },
+          { term: 'Mémoire tampon', definition: 'Système (Window Buffer Memory) qui permet à l\'agent de se souvenir du contexte de la conversation actuelle (clé : cash_agent) pour comprendre les questions de suivi.' },
+          { term: 'Tools (Outils)', definition: 'Capacités spécifiques données à l\'IA, comme "Ajouter une dépense" ou "Lire les abonnements", qu\'elle appelle selon votre demande.' },
+        ]},
+        { type: 'glossary', title: '⚙️ Fonctionnement de n8n', terms: [
+          { term: 'Workflow', definition: 'Un enchaînement automatisé d\'étapes (flux). CASH possède un workflow principal pour répondre aux messages et un second pour le bilan mensuel.' },
+          { term: 'Node (Nœud)', definition: 'Un bloc individuel dans n8n qui effectue une tâche précise (ex: un nœud pour lire Google Sheets, un nœud pour envoyer un message Telegram).' },
+          { term: 'Telegram Trigger', definition: 'Déclenche le bot quand vous lui écrivez — c\'est l\'événement qui démarre le workflow principal.' },
+          { term: 'Schedule Trigger', definition: 'Déclenche une action à une heure précise (ex: le 1er du mois à 9h00) pour le bilan mensuel automatique.' },
+          { term: 'Cron', definition: 'Un format de code spécial (ex: 0 9 1 * *) utilisé pour planifier des tâches automatiques de manière très précise.' },
+        ]},
+        { type: 'glossary', title: '📊 Gestion des Données', terms: [
+          { term: 'Google Sheets', definition: 'Le tableur utilisé comme base de données principale pour stocker vos dépenses, factures et totaux.' },
+          { term: 'Google Tasks', definition: 'Service utilisé spécifiquement pour enregistrer et suivre les dates de prélèvement de vos abonnements.' },
+          { term: 'ID (CASH-XXXX)', definition: 'Un identifiant unique composé de 4 chiffres généré pour chaque entrée. Il permet de modifier ou supprimer une dépense précise sans risque d\'erreur.' },
+          { term: 'Suppression logique', definition: 'Au lieu d\'effacer physiquement une ligne dans Google Sheets, le bot remplace la description par "SUPPRIMÉ" et met le montant à 0 pour garder une trace historique.' },
+          { term: 'Append Row', definition: 'Ajouter une nouvelle ligne dans Google Sheets.' },
+          { term: 'Get Rows', definition: 'Lire les informations existantes dans Google Sheets.' },
+          { term: 'Update Row', definition: 'Modifier une information déjà enregistrée dans Google Sheets.' },
         ]},
       ],
     },
