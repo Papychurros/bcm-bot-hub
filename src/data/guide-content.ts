@@ -13,7 +13,8 @@ export type ContentSection =
   | { type: 'timeline'; title?: string; entries: { version: string; date: string; changes: string[] }[] }
   | { type: 'flowchart'; title?: string; nodes: { id: string; label: string; type: 'trigger' | 'process' | 'condition' | 'output'; }[]; connections: [string, string][] }
   | { type: 'limits'; title?: string; limits: { title: string; description: string }[] }
-  | { type: 'glossary'; title?: string; terms: { term: string; definition: string }[] };
+  | { type: 'glossary'; title?: string; terms: { term: string; definition: string }[] }
+  | { type: 'step'; title: string; lines: { text: string; color?: 'bot' | 'accent' | 'muted' | 'success' }[] };
 
 export const guideContent: Record<string, Record<string, PageContent>> = {
   bob: {
@@ -117,14 +118,39 @@ export const guideContent: Record<string, Record<string, PageContent>> = {
       subtitle: 'Ajout de musiques dans vos playlists YouTube — via YouTube Data API v3',
       sections: [
         { type: 'callout', variant: 'info', title: 'COMMENT ÇA FONCTIONNE', content: "Envoyez le nom d'un artiste ou d'une chanson. B.O.B propose 3 résultats YouTube correspondants, vous choisissez le bon, puis il vous demande dans quelle playlist ajouter la musique. Elle est automatiquement ajoutée dans la playlist thématique choisie et dans la playlist globale #ALL#." },
-        { type: 'text', title: '🔘 Flux interactif', content: "3 étapes pour ajouter une musique" },
-        { type: 'commands', title: 'ÉTAPE 1 — VOTRE DEMANDE', commands: [
-          { cmd: 'Ajoute', desc: 'à ma playlist', params: ['artiste / titre'] },
-          { cmd: 'Met', desc: 'dans ma playlist', params: ['artiste'] },
-          { cmd: 'Cherche', desc: '', params: ['titre', 'artiste'] },
-        ]},
-        { type: 'text', title: 'ÉTAPE 2 — RÉPONSE DE B.O.B', content: "🎵 3 résultats trouvés :\n1. Ninho — Lettre à une femme (Official) · 4:12\n2. Ninho — Lettre à une femme (Lyrics) · 4:08\n3. Ninho ft. Dadju — Lettre à une femme · 4:15\n\n👉 Laquelle voulez-vous ajouter ? (1, 2 ou 3)" },
-        { type: 'text', title: 'ÉTAPE 3 — CHOIX DE LA PLAYLIST', content: "📁 Dans quelle playlist ?\n1. Rap FR\n2. Chill\n3. Workout\n... (14 playlists disponibles)\n\n✅ Ajouté dans Rap FR + #ALL#" },
+        { type: 'text', title: '💬 Flux interactif', content: '3 étapes pour ajouter une musique' },
+        {
+          type: 'step',
+          title: 'ÉTAPE 1 — VOTRE DEMANDE',
+          lines: [
+            { text: '→ Ajoute [artiste / titre] à ma playlist', color: 'bot' },
+            { text: '→ Met [artiste] dans ma playlist', color: 'bot' },
+            { text: '→ Cherche [titre] de [artiste]', color: 'bot' },
+          ],
+        },
+        {
+          type: 'step',
+          title: 'ÉTAPE 2 — RÉPONSE DE B.O.B',
+          lines: [
+            { text: '🎵 3 résultats trouvés :', color: 'accent' },
+            { text: '1. Ninho — Lettre à une femme (Official) · 4:12', color: 'muted' },
+            { text: '2. Ninho — Lettre à une femme (Lyrics) · 4:08', color: 'muted' },
+            { text: '3. Ninho ft. Dadju — Lettre à une femme · 4:15', color: 'muted' },
+            { text: '👉 Laquelle voulez-vous ajouter ? (1, 2 ou 3)', color: 'accent' },
+          ],
+        },
+        {
+          type: 'step',
+          title: 'ÉTAPE 3 — CHOIX DE LA PLAYLIST',
+          lines: [
+            { text: '📁 Dans quelle playlist ?', color: 'accent' },
+            { text: '1. Rap FR', color: 'success' },
+            { text: '2. Chill', color: 'success' },
+            { text: '3. Workout', color: 'success' },
+            { text: '... (14 playlists disponibles)', color: 'muted' },
+            { text: '✅ Ajouté dans Rap FR + #ALL#', color: 'success' },
+          ],
+        },
         { type: 'callout', variant: 'info', content: "Ajout automatique : chaque musique est toujours ajoutée dans la playlist thématique choisie ET dans la playlist globale #ALL# — 14 playlists thématiques disponibles." },
       ],
     },

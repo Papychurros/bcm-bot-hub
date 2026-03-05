@@ -157,6 +157,28 @@ function SectionRenderer({ section, botId, index }: { section: ContentSection; b
           </div>
         </div>
       );
+    case 'step': {
+      const colorMap: Record<string, string> = {
+        bot: getBotColor(botId),
+        accent: 'text-mag-2',
+        muted: 'text-muted-foreground',
+        success: 'text-cash',
+      };
+      return (
+        <div className={cn("mb-4", animClass)} style={animStyle}>
+          <div className="glass p-5 border border-border/60">
+            <div className="text-[10px] font-mono font-bold tracking-[0.15em] text-muted-foreground mb-3">{section.title}</div>
+            <div className="space-y-1.5">
+              {section.lines.map((line, i) => (
+                <div key={i} className={cn("text-sm font-mono", colorMap[line.color || 'muted'] || 'text-foreground/80')}>
+                  {line.text}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
     default:
       return null;
   }
