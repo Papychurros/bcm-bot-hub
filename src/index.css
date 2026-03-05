@@ -175,6 +175,92 @@
   .animate-shake {
     animation: shake 0.4s ease-in-out;
   }
+
+  /* Hellfire easter egg */
+  @keyframes flame-rise {
+    0% { transform: translateY(100%) scaleX(1); opacity: 0.8; }
+    25% { transform: translateY(60%) scaleX(1.1); opacity: 1; }
+    50% { transform: translateY(20%) scaleX(0.9); opacity: 0.9; }
+    75% { transform: translateY(-10%) scaleX(1.05); opacity: 0.7; }
+    100% { transform: translateY(-30%) scaleX(1); opacity: 0.5; }
+  }
+
+  @keyframes flame-flicker {
+    0%, 100% { opacity: 0.7; transform: scaleY(1) scaleX(1); }
+    25% { opacity: 1; transform: scaleY(1.05) scaleX(0.95); }
+    50% { opacity: 0.8; transform: scaleY(0.95) scaleX(1.05); }
+    75% { opacity: 1; transform: scaleY(1.02) scaleX(0.98); }
+  }
+
+  @keyframes hellfire-fade {
+    0%, 70% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  @keyframes hellfire-text-pulse {
+    0%, 100% { opacity: 0; transform: scale(0.8); }
+    20%, 80% { opacity: 1; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.1); text-shadow: 0 0 60px hsl(0 100% 50%), 0 0 120px hsl(30 100% 50%); }
+  }
+
+  .hellfire-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    animation: hellfire-fade 5s ease-in-out forwards;
+    overflow: hidden;
+  }
+
+  .flame-layer {
+    position: absolute;
+    bottom: 0;
+    left: -10%;
+    width: 120%;
+    height: 100%;
+    animation: flame-rise 2s ease-in-out infinite;
+  }
+
+  .flame-1 {
+    background: radial-gradient(ellipse at 50% 100%, hsl(0 100% 50% / 0.9) 0%, hsl(20 100% 50% / 0.6) 30%, transparent 70%);
+    animation-duration: 1.8s;
+    animation-delay: 0s;
+  }
+
+  .flame-2 {
+    background: radial-gradient(ellipse at 40% 100%, hsl(30 100% 55% / 0.8) 0%, hsl(45 100% 50% / 0.5) 35%, transparent 65%);
+    animation-duration: 2.2s;
+    animation-delay: 0.3s;
+    animation-name: flame-rise, flame-flicker;
+  }
+
+  .flame-3 {
+    background: radial-gradient(ellipse at 60% 100%, hsl(45 100% 55% / 0.7) 0%, hsl(0 90% 45% / 0.4) 40%, transparent 70%);
+    animation-duration: 1.5s;
+    animation-delay: 0.6s;
+  }
+
+  .flame-4 {
+    background: radial-gradient(ellipse at 50% 100%, hsl(15 100% 50% / 0.6) 0%, hsl(40 100% 50% / 0.3) 30%, transparent 60%);
+    animation-duration: 2.5s;
+    animation-delay: 0.15s;
+    animation-name: flame-rise, flame-flicker;
+  }
+
+  .hellfire-text {
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Syne', sans-serif;
+    font-size: 5rem;
+    font-weight: 900;
+    color: hsl(0 100% 60%);
+    text-shadow: 0 0 40px hsl(0 100% 50%), 0 0 80px hsl(30 100% 50%), 0 0 120px hsl(45 100% 50%);
+    letter-spacing: 0.5em;
+    animation: hellfire-text-pulse 5s ease-in-out forwards;
+    z-index: 10;
+  }
 }
 
 ::-webkit-scrollbar {
