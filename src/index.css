@@ -180,48 +180,8 @@
   @keyframes hellfire-fade {
     0% { opacity: 0; }
     8% { opacity: 1; }
-    75% { opacity: 1; }
+    80% { opacity: 1; }
     100% { opacity: 0; }
-  }
-
-  @keyframes flame-dance {
-    0% {
-      transform: translateY(0) scaleX(1) scaleY(1);
-      opacity: 0.9;
-    }
-    15% {
-      transform: translateY(-15vh) scaleX(0.85) scaleY(1.15);
-      opacity: 1;
-    }
-    30% {
-      transform: translateY(-35vh) scaleX(1.1) scaleY(0.9);
-      opacity: 0.85;
-    }
-    50% {
-      transform: translateY(-55vh) scaleX(0.75) scaleY(1.2);
-      opacity: 0.7;
-    }
-    70% {
-      transform: translateY(-72vh) scaleX(0.9) scaleY(1.05);
-      opacity: 0.45;
-    }
-    100% {
-      transform: translateY(-100vh) scaleX(0.5) scaleY(1.3);
-      opacity: 0;
-    }
-  }
-
-  @keyframes ember-rise {
-    0% { background-position: 0 0; opacity: 0.6; }
-    50% { opacity: 0.4; }
-    100% { background-position: 100px -800px; opacity: 0; }
-  }
-
-  @keyframes bg-redden {
-    0% { background-color: transparent; }
-    15% { background-color: hsl(0 80% 10% / 0.7); }
-    70% { background-color: hsl(0 80% 8% / 0.8); }
-    100% { background-color: transparent; }
   }
 
   .hellfire-overlay {
@@ -230,80 +190,13 @@
     z-index: 100;
     pointer-events: none;
     animation: hellfire-fade 5s ease-in-out forwards;
-    overflow: hidden;
+    background: black;
   }
 
-  .hellfire-bg {
-    position: absolute;
-    inset: 0;
-    animation: bg-redden 5s ease-in-out forwards;
-  }
-
-  .flame {
-    position: absolute;
-    bottom: -20px;
-    width: 60px;
-    height: 120px;
-    background: radial-gradient(ellipse at 50% 90%,
-      hsl(45 100% 60% / 0.95) 0%,
-      hsl(30 100% 55% / 0.9) 15%,
-      hsl(15 100% 50% / 0.8) 30%,
-      hsl(0 100% 45% / 0.6) 50%,
-      hsl(0 80% 30% / 0.3) 70%,
-      transparent 100%
-    );
-    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    filter: blur(3px);
-    animation: flame-dance 1.5s ease-in-out infinite;
-    mix-blend-mode: screen;
-  }
-
-  .flame-1 {
-    width: 50px; height: 110px;
-    border-radius: 40% 60% 50% 50% / 65% 55% 45% 35%;
-    filter: blur(2px);
-  }
-  .flame-2 {
-    width: 70px; height: 140px;
-    border-radius: 55% 45% 50% 50% / 60% 60% 40% 40%;
-    filter: blur(4px);
-    background: radial-gradient(ellipse at 50% 85%,
-      hsl(50 100% 65% / 0.9) 0%,
-      hsl(35 100% 55% / 0.85) 20%,
-      hsl(10 100% 48% / 0.7) 45%,
-      hsl(0 90% 35% / 0.4) 65%,
-      transparent 100%
-    );
-  }
-  .flame-3 {
-    width: 45px; height: 100px;
-    border-radius: 50% 50% 45% 55% / 70% 50% 50% 30%;
-    filter: blur(2.5px);
-  }
-  .flame-4 {
-    width: 80px; height: 160px;
-    border-radius: 45% 55% 50% 50% / 55% 65% 35% 45%;
-    filter: blur(5px);
-    background: radial-gradient(ellipse at 50% 88%,
-      hsl(40 100% 62% / 0.85) 0%,
-      hsl(20 100% 50% / 0.8) 25%,
-      hsl(0 100% 40% / 0.6) 50%,
-      hsl(0 70% 25% / 0.3) 70%,
-      transparent 100%
-    );
-  }
-
-  .ember-layer {
-    position: absolute;
-    inset: 0;
-    background-image:
-      radial-gradient(1px 1px at 20% 80%, hsl(40 100% 70%) 50%, transparent 100%),
-      radial-gradient(1.5px 1.5px at 50% 60%, hsl(30 100% 65%) 50%, transparent 100%),
-      radial-gradient(1px 1px at 80% 70%, hsl(15 100% 55%) 50%, transparent 100%),
-      radial-gradient(1.5px 1.5px at 35% 50%, hsl(45 100% 70%) 50%, transparent 100%),
-      radial-gradient(1px 1px at 65% 40%, hsl(25 100% 60%) 50%, transparent 100%);
-    background-size: 200px 200px;
-    animation: ember-rise 5s linear forwards;
+  .hellfire-gif {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
   }
 }
 
