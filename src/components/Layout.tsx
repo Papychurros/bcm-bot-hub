@@ -75,8 +75,8 @@ export default function Layout() {
 
           <SearchBar />
 
-          <span className="font-display font-bold text-sm tracking-widest bg-gradient-to-r from-bob via-cash to-mag-2 bg-clip-text text-transparent">
-            B.C.M
+          <span className="font-display font-bold text-sm tracking-widest">
+            <span className="text-bob">B</span>.<span className="text-cash">C</span>.<span className="text-mag-2">M</span>
           </span>
 
           <div className="flex-1" />
