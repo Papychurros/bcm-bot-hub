@@ -54,7 +54,7 @@ export default function Layout() {
     <>
       <div className="min-h-screen bg-background flex flex-col">
         {/* TOP BAR */}
-        <header className="h-14 border-b border-border bg-card/50 backdrop-blur-xl flex items-center px-4 gap-3 sticky top-0 z-40 shrink-0">
+        <header className="h-14 min-h-[3.5rem] border-b border-border bg-card/50 backdrop-blur-xl flex items-center px-4 gap-3 sticky top-0 z-40 shrink-0">
           {!isHome && (
             <button onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden p-1.5 rounded-lg hover:bg-secondary transition-colors">
               {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -112,8 +112,8 @@ export default function Layout() {
                 sidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
               )} onClick={() => setSidebarOpen(false)} />
               <aside className={cn(
-                "fixed top-14 left-0 bottom-0 w-64 bg-sidebar border-r border-sidebar-border z-30 flex flex-col overflow-y-auto transition-transform duration-300",
-                "lg:translate-x-0 lg:sticky lg:top-14 lg:h-[calc(100vh-3.5rem)]",
+                "fixed top-[3.5rem] left-0 bottom-0 w-64 bg-sidebar border-r border-sidebar-border z-30 flex flex-col overflow-y-auto transition-transform duration-300",
+                "lg:translate-x-0 lg:sticky lg:top-[3.5rem] lg:h-[calc(100vh-3.5rem)]",
                 sidebarOpen ? "translate-x-0" : "-translate-x-full"
               )}>
                 {isQA ? (
