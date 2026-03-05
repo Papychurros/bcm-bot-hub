@@ -46,8 +46,11 @@ export default function QAPasswordGate({ children }: { children: React.ReactNode
 
   const triggerRizz = useCallback(() => {
     setRizz(true);
+    setInputDisabled(true);
+    inputRef.current?.blur();
     setTimeout(() => {
       setRizz(false);
+      setInputDisabled(false);
       setPassword('');
     }, 5000);
   }, []);
