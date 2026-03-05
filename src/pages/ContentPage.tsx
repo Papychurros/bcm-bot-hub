@@ -172,7 +172,7 @@ export default function ContentPage() {
   }
 
   // Use dedicated prompts page
-  if (pageSlug === 'prompts' && bot.id === 'bob') {
+  if (pageSlug === 'prompts' && promptsData[bot.id]) {
     return <PromptsPage botId={bot.id} />;
   }
 

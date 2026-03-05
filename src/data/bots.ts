@@ -96,6 +96,7 @@ export const bots: Record<BotId, BotConfig> = {
       {
         group: 'TECHNIQUE', items: [
           { title: 'Architecture', slug: 'architecture' },
+          { title: 'Prompts', slug: 'prompts' },
           { title: 'Patch Notes', slug: 'patch-notes' },
           { title: 'Limites connues', slug: 'limites' },
           { title: 'Glossaire', slug: 'glossaire' },
