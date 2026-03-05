@@ -212,7 +212,7 @@ export const guideContent: Record<string, Record<string, PageContent>> = {
         ]},
         { type: 'text', title: '3 RECHERCHES SERPAPI DANS L\'ORDRE', content: "1. Pau — Faits divers & actualités locales\n2. Jeux vidéo — News, sorties, annonces\n3. IA & Agents — Intelligence artificielle, actualités" },
         { type: 'callout', variant: 'info', content: "Liens : chaque info est accompagnée de son URL source. Les liens sont sauvegardés dans Google Sheets et accessibles via commande Télégram." },
-        { type: 'text', title: '🔗 Workflow Liens', content: "Workflow séparé — récupère les liens de la veille sur demande" },
+        { type: 'text', title: '🔗 Workflow Liens', content: "Workflow fusionné a B.O.B — récupère les liens de la veille sur demande" },
         { type: 'commands', title: 'COMMANDES TÉLÉGRAM', commands: [
           { cmd: 'liens', desc: 'Envoie tous les liens de la veille' },
           { cmd: 'liens 3', desc: 'Envoie uniquement le lien n°3' },
