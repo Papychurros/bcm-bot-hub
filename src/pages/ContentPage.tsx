@@ -69,9 +69,9 @@ function SectionRenderer({ section, botId, index }: { section: ContentSection; b
                 <div className="flex items-start gap-2">
                   <span className={cn("text-sm shrink-0 mt-0.5", getBotColor(botId))}>→</span>
                   <div className="min-w-0">
-                    <code className={cn("cmd-tag whitespace-nowrap", getBotColor(botId))}>
+                    <code className={cn("cmd-tag break-words", getBotColor(botId))}>
                       {cmd.cmd}
-                      {cmd.params?.map(p => <span key={p} className="text-mag-2"> [{p}]</span>)}
+                      {cmd.params?.map(p => <span key={p} className="text-mag-2 whitespace-nowrap"> [{p}]</span>)}
                     </code>
                     {cmd.desc && <span className="text-xs text-muted-foreground ml-2">{cmd.desc}</span>}
                   </div>
