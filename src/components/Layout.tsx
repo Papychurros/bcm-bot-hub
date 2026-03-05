@@ -54,7 +54,7 @@ export default function Layout() {
     <>
       <div className="min-h-screen bg-background flex flex-col">
         {/* TOP BAR */}
-        <header className="h-14 border-b border-border bg-card/50 backdrop-blur-xl flex items-center px-4 gap-3 sticky top-0 z-40 shrink-0">
+        <header className="h-14 min-h-[3.5rem] border-b border-border bg-card/50 backdrop-blur-xl flex items-center px-4 gap-3 sticky top-0 z-40 shrink-0">
           {!isHome && (
             <button onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden p-1.5 rounded-lg hover:bg-secondary transition-colors">
               {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
