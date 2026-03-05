@@ -28,7 +28,7 @@ export default function QAPasswordGate({ children }: { children: React.ReactNode
   const [error, setError] = useState(false);
   const [shake, setShake] = useState(false);
   const [disabled, setDisabled] = useState(false);
-  const [overlay, setOverlay] = useState<{ type: 'fullscreen' | 'center'; src: string; text?: string } | null>(null);
+  const [overlay, setOverlay] = useState<{ src: string; text?: string } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const resetCode = useCallback(() => {
