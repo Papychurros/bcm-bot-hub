@@ -52,7 +52,7 @@ export default function QAPasswordGate({ children }: { children: React.ReactNode
         <div className="w-14 h-14 rounded-2xl bg-bob/10 border border-bob/30 flex items-center justify-center mx-auto mb-5">
           <Lock className="w-6 h-6 text-bob" />
         </div>
-        <h2 className="text-xl font-display font-bold mb-1">QA Hub</h2>
+        <h2 className="text-xl font-display font-extrabold uppercase mb-1">Développeur</h2>
         <p className="text-xs text-muted-foreground mb-6">Accès restreint — entrez le mot de passe</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
