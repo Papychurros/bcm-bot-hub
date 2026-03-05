@@ -115,6 +115,13 @@ export default function QAPasswordGate({ children }: { children: React.ReactNode
           <img src="/fire-15.gif" alt="" className="hellfire-gif" />
         </div>
       )}
+
+      {rizz && (
+        <div className="rizz-overlay">
+          <img src="/rizz-monkey-flirty-usagif.gif" alt="" className="rizz-gif" />
+          <p className="rizz-text">Vraiment ?</p>
+        </div>
+      )}
     </div>
   );
 }
