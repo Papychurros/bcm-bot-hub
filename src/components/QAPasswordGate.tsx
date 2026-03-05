@@ -145,15 +145,8 @@ export default function QAPasswordGate({ children }: { children: React.ReactNode
         </div>
       </div>
 
-      {/* Fullscreen overlay */}
-      {overlay?.type === 'fullscreen' && (
-        <div className="hellfire-overlay">
-          <img src={overlay.src} alt="" className="hellfire-gif" />
-        </div>
-      )}
-
-      {/* Center overlay */}
-      {overlay?.type === 'center' && (
+      {/* Center overlay (all easter eggs same format) */}
+      {overlay && (
         <div className="rizz-overlay">
           <img src={overlay.src} alt="" className="rizz-gif" />
           {overlay.text && <p className="rizz-text">{overlay.text}</p>}
