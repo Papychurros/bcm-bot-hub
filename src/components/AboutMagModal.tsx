@@ -35,6 +35,10 @@ export default function AboutMagModal({ open, onOpenChange }: AboutMagModalProps
             <ImageLightbox src={archi1} alt="Architecture M.A.G — Vue détaillée" className="w-full rounded-lg border border-border/50" />
           </div>
 
+          <div className="rounded-lg border border-red-500/40 bg-red-500/10 p-3 text-xs text-red-400 font-mono">
+            <span className="font-bold">⚠ ATTENTION :</span> Les vidéos et images sont générées par "Notebook LM". SEUL la vidéo en page d'accueil et les dossiers techniques sont faits maison !
+          </div>
+
           <div className="flex justify-center pt-2">
             <Button asChild variant="outline" className="gap-2 border-mag-2/40 text-mag-2 hover:bg-mag-2/10 font-mono">
               <a href="https://bcm-hub.fr/M_A_G_Dossier_Technique.pdf" download>
