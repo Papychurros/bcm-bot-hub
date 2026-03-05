@@ -3,6 +3,7 @@ import { bots, getBotGradient, getBotColor, type BotId } from '@/data/bots';
 import { guideContent, type ContentSection } from '@/data/guide-content';
 import { architectureData } from '@/data/architecture-data';
 import ArchitectureRenderer from '@/components/ArchitectureRenderer';
+import PromptsPage from '@/pages/PromptsPage';
 import { cn } from '@/lib/utils';
 
 function FlowchartRenderer({ section, botId }: { section: Extract<ContentSection, { type: 'flowchart' }>; botId: BotId }) {
@@ -168,6 +169,11 @@ export default function ContentPage() {
   // Use dedicated architecture renderer for architecture pages
   if (pageSlug === 'architecture' && architectureData[bot.id]) {
     return <ArchitectureRenderer data={architectureData[bot.id]} botId={bot.id} />;
+  }
+
+  // Use dedicated prompts page
+  if (pageSlug === 'prompts' && bot.id === 'bob') {
+    return <PromptsPage botId={bot.id} />;
   }
 
   const content = guideContent[bot.id]?.[pageSlug];
