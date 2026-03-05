@@ -30,6 +30,8 @@ export default function QAPasswordGate({ children }: { children: React.ReactNode
   const [shake, setShake] = useState(false);
   const [hellfire, setHellfire] = useState(false);
   const [rizz, setRizz] = useState(false);
+  const [inputDisabled, setInputDisabled] = useState(false);
+  const inputRef = React.useRef<HTMLInputElement>(null);
 
   const triggerHellfire = useCallback(() => {
     setHellfire(true);
