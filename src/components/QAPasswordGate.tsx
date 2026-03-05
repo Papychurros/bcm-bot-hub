@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FlaskConical, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -28,6 +28,24 @@ export default function QAPasswordGate({ children }: { children: React.ReactNode
   const [password, setPassword] = useState('');
   const [error, setError] = useState(false);
   const [shake, setShake] = useState(false);
+  const [hellfire, setHellfire] = useState(false);
+
+  const triggerHellfire = useCallback(() => {
+    setHellfire(true);
+    setTimeout(() => {
+      setHellfire(false);
+      setPassword('');
+    }, 5000);
+  }, []);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setPassword(val);
+    setError(false);
+    if (val === '666' && !hellfire) {
+      triggerHellfire();
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,7 +77,7 @@ export default function QAPasswordGate({ children }: { children: React.ReactNode
           <input
             type="password"
             value={password}
-            onChange={(e) => { setPassword(e.target.value); setError(false); }}
+            onChange={handleChange}
             placeholder="Mot de passe"
             autoFocus
             className={cn(
@@ -79,6 +97,16 @@ export default function QAPasswordGate({ children }: { children: React.ReactNode
           </button>
         </form>
       </div>
+
+      {hellfire && (
+        <div className={`hellfire-overlay ${hellfire ? 'active' : ''}`}>
+          <div className="flame-layer flame-1" />
+          <div className="flame-layer flame-2" />
+          <div className="flame-layer flame-3" />
+          <div className="flame-layer flame-4" />
+          <div className="hellfire-text">6 6 6</div>
+        </div>
+      )}
     </div>
   );
 }
