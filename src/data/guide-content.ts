@@ -353,7 +353,7 @@ export const guideContent: Record<string, Record<string, PageContent>> = {
           { cmd: 'Courses Lidl 47.30€', desc: 'Ajout de courses avec enseigne et montant' },
           { cmd: 'Facture EDF 89€', desc: 'Ajout d\'une facture avec type et montant' },
         ]},
-        { type: 'callout', variant: 'info', content: "C.A.S.H détecte automatiquement la catégorie de la dépense grâce à l'IA. Vous n'avez pas besoin de la préciser." },
+        
         { type: 'callout', variant: 'warning', content: "Si aucune date n'est précisée, C.A.S.H utilise la date du jour par défaut." },
       ],
     },
