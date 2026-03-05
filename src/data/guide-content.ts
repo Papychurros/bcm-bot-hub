@@ -341,7 +341,12 @@ export const guideContent: Record<string, Record<string, PageContent>> = {
       icon: '➕',
       subtitle: 'Ajouter des abonnements, courses, factures et autres dépenses',
       sections: [
-        { type: 'text', title: 'Types de dépenses', content: "C.A.S.H reconnaît automatiquement 4 types de dépenses :\n• Abonnement : dépenses récurrentes (Netflix, Spotify, iCloud...)\n• Courses : achats alimentaires et quotidiens\n• Facture : factures ponctuelles (EDF, loyer, assurance...)\n• Autre : tout ce qui ne rentre pas dans les catégories ci-dessus" },
+        { type: 'table', title: 'Types de dépenses', headers: ['Catégorie', 'Description', 'Exemple'], rows: [
+          ['🔁 Abonnement', 'Dépenses récurrentes mensuelles ou annuelles', 'Netflix, Spotify, iCloud'],
+          ['🛒 Courses', 'Achats alimentaires et quotidiens', 'Lidl, Carrefour, Leclerc'],
+          ['📄 Facture', 'Factures ponctuelles ou régulières', 'EDF, loyer, assurance'],
+          ['📦 Autre', 'Tout ce qui ne rentre pas dans les catégories', 'Cadeau, réparation, divers'],
+        ]},
         { type: 'commands', title: 'Commandes d\'ajout', commands: [
           { cmd: 'J\'ai payé [montant]€ pour [description]', desc: 'Ajout rapide d\'une dépense', params: ['montant', 'description'] },
           { cmd: 'Abonnement Netflix 15.99€ par mois', desc: 'Ajout d\'un abonnement mensuel avec montant' },
