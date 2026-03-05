@@ -35,8 +35,11 @@ export default function QAPasswordGate({ children }: { children: React.ReactNode
 
   const triggerHellfire = useCallback(() => {
     setHellfire(true);
+    setInputDisabled(true);
+    inputRef.current?.blur();
     setTimeout(() => {
       setHellfire(false);
+      setInputDisabled(false);
       setPassword('');
     }, 5000);
   }, []);
