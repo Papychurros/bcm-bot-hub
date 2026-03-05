@@ -611,14 +611,35 @@ export const guideContent: Record<string, Record<string, PageContent>> = {
     'glossaire': {
       title: 'Glossaire',
       icon: '📖',
-      subtitle: 'Termes techniques M.A.G',
+      subtitle: 'Comprendre le fonctionnement technique de M.A.G — version vulgarisée',
       sections: [
-        { type: 'glossary', terms: [
-          { term: 'Polling', definition: 'Vérification périodique de la boîte Gmail pour détecter de nouveaux emails' },
-          { term: 'Label Gmail', definition: 'Étiquette appliquée aux emails pour les organiser dans Gmail' },
-          { term: 'INBOX', definition: 'Boîte de réception Gmail. M.A.G retire les mails triés de l\'INBOX.' },
-          { term: 'Catégorisation IA', definition: 'Processus d\'analyse du contenu d\'un email pour déterminer sa catégorie' },
-          { term: 'Notification silencieuse', definition: 'Email trié sans envoi de notification Telegram (Pub, Réseaux Sociaux, Moi)' },
+        { type: 'glossary', title: '📧 Le Projet et ses Outils de Base', terms: [
+          { term: 'M.A.G', definition: 'Manage Account Gmail — le nom du projet. Son but est d\'utiliser l\'intelligence artificielle pour trier automatiquement vos emails Gmail.' },
+          { term: 'n8n', definition: 'C\'est le "chef d\'orchestre" ou moteur de workflow. C\'est le logiciel qui relie tous les outils entre eux (Gmail, l\'IA, Telegram) et exécute les tâches dans l\'ordre.' },
+          { term: 'Self-hosted', definition: 'Signifie que le logiciel n\'est pas utilisé sur un site web tiers, mais installé sur un serveur privé (ici, chez Hostinger) dont vous avez le contrôle total.' },
+          { term: 'Workflow', definition: 'C\'est la suite logique d\'étapes automatisées que suit un email, de sa réception jusqu\'à son classement final.' },
+        ]},
+        { type: 'glossary', title: '⚙️ Le Fonctionnement de l\'Automatisation', terms: [
+          { term: 'Trigger', definition: 'C\'est l\'événement qui lance le workflow. Pour MAG, le déclencheur est le Gmail Trigger, qui s\'active dès qu\'un nouvel email arrive.' },
+          { term: 'Polling', definition: 'Technique consistant à vérifier à intervalle régulier (toutes les 60 secondes pour MAG) s\'il y a de nouveaux messages, plutôt que d\'attendre que Gmail les envoie.' },
+          { term: 'Node (Nœud)', definition: 'Dans n8n, chaque petite boîte qui effectue une action est un "nœud". Il y a des nœuds pour filtrer, des nœuds pour envoyer des messages, etc.' },
+          { term: 'Node IF', definition: 'Un nœud de décision de type "Si... alors...". Par exemple : Si l\'expéditeur est moi-même, alors traite-le d\'une certaine façon.' },
+          { term: 'JSON', definition: 'C\'est le format de données informatique utilisé pour transmettre les informations de l\'email (sujet, contenu, adresse) d\'un nœud à l\'autre dans n8n.' },
+        ]},
+        { type: 'glossary', title: '🧠 L\'Intelligence Artificielle (IA)', terms: [
+          { term: 'Text Classifier', definition: 'Un outil d\'IA entraîné pour lire un texte et décider à quelle catégorie il appartient (Travail, Perso, Pub, etc.).' },
+          { term: 'LLM', definition: 'Large Language Model — le "cerveau" de l\'IA. Dans MAG, le modèle utilisé est gpt-4o-mini d\'OpenAI.' },
+          { term: 'Prompt', definition: 'Les descriptions complètes données à l\'IA pour qu\'elle sache comment classer chaque mail selon les catégories définies.' },
+        ]},
+        { type: 'glossary', title: '📬 Les Actions sur Gmail et Telegram', terms: [
+          { term: 'Libellés (Labels)', definition: 'Ce sont les dossiers ou "étiquettes" de couleur dans Gmail (ex: "Travail", "Pub"). MAG les applique automatiquement.' },
+          { term: 'markAsRead', definition: 'Action automatique qui retire l\'état "non lu" d\'un email, souvent utilisée pour les publicités afin de ne pas être dérangé.' },
+          { term: 'removeINBOX', definition: 'Action d\'archiver l\'email. Il reste disponible sous son libellé mais n\'apparaît plus dans la boîte de réception principale pour garder celle-ci propre.' },
+          { term: 'Telegram', definition: 'Application de messagerie sécurisée utilisée ici pour envoyer des notifications instantanées sur votre téléphone lorsqu\'un email important (Perso ou Travail) est reçu.' },
+        ]},
+        { type: 'glossary', title: '🖥️ Infrastructure Technique', terms: [
+          { term: 'Hostinger KVM2', definition: 'Le serveur virtuel spécifique sur lequel tout le système est installé.' },
+          { term: 'Docker', definition: 'Un système qui permet d\'emballer des logiciels (comme n8n) pour qu\'ils fonctionnent facilement sur n\'importe quel serveur.' },
         ]},
       ],
     },
