@@ -83,7 +83,7 @@ export const bots: Record<BotId, BotConfig> = {
       { value: '1', label: 'BASE DE DONNÉES' },
       { value: '24/7', label: 'DISPONIBLE' },
     ],
-    techTags: ['GESTION FINANCIÈRE', 'TÉLÉGRAM', 'GPT-4O-MINI', 'SUPABASE', 'N8N'],
+    techTags: ['GESTION FINANCIÈRE', 'TÉLÉGRAM', 'GPT-4O-MINI', 'GOOGLE SHEETS', 'N8N'],
     guideNav: [
       { group: 'GÉNÉRAL', items: [{ title: 'Accueil', slug: '' }] },
       {
