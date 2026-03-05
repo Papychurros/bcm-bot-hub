@@ -95,7 +95,7 @@ export default function GuideHome() {
       </div>
 
       <div className="mt-10 relative z-10 animate-fade-in-up opacity-0 stagger-5 w-full max-w-sm mx-auto">
-        <div className="rounded-xl overflow-hidden border border-border/40 shadow-lg">
+        <div className="rounded-xl overflow-hidden border border-[hsl(40,20%,75%)]/40 shadow-[0_0_15px_rgba(255,250,240,0.08)]">
           <iframe
             src="https://www.youtube.com/embed/VomJ_nvhTGw"
             title="Présentation des Bots"
