@@ -1,0 +1,123 @@
+<!-- ======== SECTION PROMPTS M.A.G — LOVABLE ======== -->
+<style>
+.prompts-wrap { font-family: 'Courier New', monospace; background: #0f0f1a; border-radius: 14px; padding: 24px; color: #e2e2f0; }
+.prompts-wrap .p-title { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+.prompts-wrap .p-icon { width: 38px; height: 38px; border-radius: 10px; background: rgba(66,133,244,.1); display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.prompts-wrap .p-title h2 { font-family: sans-serif; font-size: 22px; font-weight: 800; color: #fff; margin: 0; }
+.prompts-wrap .p-subtitle { font-family: sans-serif; font-size: 12px; color: #6b6b90; margin-bottom: 20px; }
+.prompts-wrap .p-inner { background: rgba(255,255,255,.03); border: 1px solid rgba(255,255,255,.1); border-radius: 10px; padding: 16px 18px; }
+.p-block { margin-bottom: 16px; }
+.p-block:last-child { margin-bottom: 0; }
+.p-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; flex-wrap: wrap; gap: 8px; }
+.p-name { font-size: 11px; font-weight: 700; font-family: 'Courier New', monospace; }
+.p-btns { display: flex; gap: 8px; }
+.p-btn { font-family: 'Courier New', monospace; font-size: 9px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.15); color: #9090b0; padding: 4px 10px; border-radius: 5px; cursor: pointer; transition: all .2s; }
+.p-pre { display: none; background: #0a0a14; border-radius: 8px; padding: 14px 16px; font-size: 10px; line-height: 1.7; color: #c9d1d9; overflow-x: auto; white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto; margin: 0; }
+</style>
+
+<div class="prompts-wrap">
+  <div class="p-title">
+    <div class="p-icon">📋</div>
+    <h2>Prompts</h2>
+  </div>
+  <div class="p-subtitle">Descriptions du Text Classifier — à coller dans les catégories du node n8n</div>
+  <div class="p-inner">
+
+    <!-- Autre -->
+    <div class="p-block" id="pb-0">
+      <div class="p-row">
+        <div class="p-name" style="color:#a78bfa">Autre</div>
+        <div class="p-btns">
+          <button class="p-btn" onclick="pToggle('pb-0')" id="pb-0-btn">▶ Afficher</button>
+          <button class="p-btn" onclick="pCopy('pb-0-pre')">⎘ Copier</button>
+        </div>
+      </div>
+      <pre class="p-pre" id="pb-0-pre" style="border:1px solid rgba(167,139,250,.2)">Autre — Email qui ne correspond à aucune autre catégorie définie. Contenu inclassifiable, newsletters non publicitaires, notifications diverses, messages automatiques sans rapport avec le travail, les réseaux sociaux ou la publicité.</pre>
+    </div>
+
+    <!-- Perso -->
+    <div class="p-block" id="pb-1">
+      <div class="p-row">
+        <div class="p-name" style="color:#f472b6">Perso</div>
+        <div class="p-btns">
+          <button class="p-btn" onclick="pToggle('pb-1')" id="pb-1-btn">▶ Afficher</button>
+          <button class="p-btn" onclick="pCopy('pb-1-pre')">⎘ Copier</button>
+        </div>
+      </div>
+      <pre class="p-pre" id="pb-1-pre" style="border:1px solid rgba(244,114,182,.2)">Perso — Email échangé avec des proches (famille, amis) sans lien avec le travail. Inclut les conversations avec des parents (père, mère, frères, sœurs) ou des amis, les messages de soutien, nouvelles familiales, invitations personnelles ou discussions du quotidien.</pre>
+    </div>
+
+    <!-- Pub -->
+    <div class="p-block" id="pb-2">
+      <div class="p-row">
+        <div class="p-name" style="color:#f87171">Pub</div>
+        <div class="p-btns">
+          <button class="p-btn" onclick="pToggle('pb-2')" id="pb-2-btn">▶ Afficher</button>
+          <button class="p-btn" onclick="pCopy('pb-2-pre')">⎘ Copier</button>
+        </div>
+      </div>
+      <pre class="p-pre" id="pb-2-pre" style="border:1px solid rgba(248,113,113,.2)">Pub — Email à caractère publicitaire ou promotionnel. Inclut les offres commerciales, soldes, codes promo, newsletters de marques, emails marketing, offres d'abonnement, et tout message visant à vendre un produit ou un service.</pre>
+    </div>
+
+    <!-- Réseau Soc. -->
+    <div class="p-block" id="pb-3">
+      <div class="p-row">
+        <div class="p-name" style="color:#60a5fa">Réseau Soc.</div>
+        <div class="p-btns">
+          <button class="p-btn" onclick="pToggle('pb-3')" id="pb-3-btn">▶ Afficher</button>
+          <button class="p-btn" onclick="pCopy('pb-3-pre')">⎘ Copier</button>
+        </div>
+      </div>
+      <pre class="p-pre" id="pb-3-pre" style="border:1px solid rgba(96,165,250,.2)">Réseau Soc. — Email provenant d'une plateforme de réseau social. Inclut les notifications de LinkedIn, Instagram, Facebook, X (Twitter), TikTok, Snapchat, Discord, etc. — mentions, messages reçus, suggestions d'abonnés, alertes d'activité sur un profil.</pre>
+    </div>
+
+    <!-- Travail -->
+    <div class="p-block" id="pb-4">
+      <div class="p-row">
+        <div class="p-name" style="color:#34d399">Travail</div>
+        <div class="p-btns">
+          <button class="p-btn" onclick="pToggle('pb-4')" id="pb-4-btn">▶ Afficher</button>
+          <button class="p-btn" onclick="pCopy('pb-4-pre')">⎘ Copier</button>
+        </div>
+      </div>
+      <pre class="p-pre" id="pb-4-pre" style="border:1px solid rgba(52,211,153,.2)">Travail — Email en lien avec la vie professionnelle. Inclut les offres d'emploi, convocations à des entretiens d'embauche, réponses de recruteurs, documents RH, fiches de paie, plannings, communications internes liées à l'emploi chez Foundever, ou tout échange avec un employeur ou un organisme lié à l'emploi (Pôle Emploi, agences d'intérim, etc.).</pre>
+    </div>
+
+    <!-- Moi -->
+    <div class="p-block" id="pb-5">
+      <div class="p-row">
+        <div class="p-name" style="color:#9ca3af">Moi</div>
+        <div class="p-btns">
+          <button class="p-btn" onclick="pToggle('pb-5')" id="pb-5-btn">▶ Afficher</button>
+          <button class="p-btn" onclick="pCopy('pb-5-pre')">⎘ Copier</button>
+        </div>
+      </div>
+      <pre class="p-pre" id="pb-5-pre" style="border:1px solid rgba(156,163,175,.2)">Moi — Détecté en amont par le node IF (avant le Text Classifier). Condition : l'adresse expéditeur ($json.from.value[0].address) est strictement égale à abertoneche@gmail.com. Ce libellé est réservé aux emails envoyés par l'utilisateur à lui-même — notes personnelles, fichiers à conserver, rappels, brouillons envoyés.</pre>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function pToggle(id) {
+  var pre = document.getElementById(id + '-pre');
+  var btn = document.getElementById(id + '-btn');
+  if (!pre || !btn) return;
+  var hidden = pre.style.display === 'none' || pre.style.display === '';
+  pre.style.display = hidden ? 'block' : 'none';
+  btn.textContent = hidden ? '▼ Masquer' : '▶ Afficher';
+}
+function pCopy(preId) {
+  var pre = document.getElementById(preId);
+  if (!pre) return;
+  navigator.clipboard.writeText(pre.textContent).then(function() {
+    var block = pre.parentElement;
+    var btns = block.querySelectorAll('.p-btn');
+    var copyBtn = btns[btns.length - 1];
+    var orig = copyBtn.textContent;
+    copyBtn.textContent = '✓ Copié !';
+    setTimeout(function() { copyBtn.textContent = orig; }, 2000);
+  });
+}
+</script>
+<!-- ======== FIN SECTION PROMPTS M.A.G ======== -->
