@@ -260,7 +260,7 @@ export const architectureData: Record<BotId, ArchitectureData> = {
         items: [
           { icon: '🧠', label: 'MODÈLE IA', value: 'gpt-4o-mini' },
           { icon: '⚙️', label: 'ORCHESTRATION', value: 'n8n self-hosted' },
-          { icon: '💾', label: 'BASE DE DONNÉES', value: 'Supabase (Postgres)' },
+          { icon: '💾', label: 'BASE DE DONNÉES', value: 'Google Sheets' },
           { icon: '📱', label: 'INTERFACE', value: 'Télégram' },
         ],
       },
