@@ -340,4 +340,51 @@ RÈGLES DE FORMATAGE TELEGRAM :
       },
     ],
   },
+  mag: {
+    subtitle: 'Descriptions du Text Classifier — à coller dans les catégories du node n8n',
+    prompts: [
+      {
+        id: 'mag-0',
+        name: 'Autre',
+        color: 'text-[#a78bfa]',
+        borderColor: 'border-[rgba(167,139,250,0.2)]',
+        content: `Autre — Email qui ne correspond à aucune autre catégorie définie. Contenu inclassifiable, newsletters non publicitaires, notifications diverses, messages automatiques sans rapport avec le travail, les réseaux sociaux ou la publicité.`,
+      },
+      {
+        id: 'mag-1',
+        name: 'Perso',
+        color: 'text-[#f472b6]',
+        borderColor: 'border-[rgba(244,114,182,0.2)]',
+        content: `Perso — Email échangé avec des proches (famille, amis) sans lien avec le travail. Inclut les conversations avec des parents (père, mère, frères, sœurs) ou des amis, les messages de soutien, nouvelles familiales, invitations personnelles ou discussions du quotidien.`,
+      },
+      {
+        id: 'mag-2',
+        name: 'Pub',
+        color: 'text-[#f87171]',
+        borderColor: 'border-[rgba(248,113,113,0.2)]',
+        content: `Pub — Email à caractère publicitaire ou promotionnel. Inclut les offres commerciales, soldes, codes promo, newsletters de marques, emails marketing, offres d'abonnement, et tout message visant à vendre un produit ou un service.`,
+      },
+      {
+        id: 'mag-3',
+        name: 'Réseau Soc.',
+        color: 'text-[#60a5fa]',
+        borderColor: 'border-[rgba(96,165,250,0.2)]',
+        content: `Réseau Soc. — Email provenant d'une plateforme de réseau social. Inclut les notifications de LinkedIn, Instagram, Facebook, X (Twitter), TikTok, Snapchat, Discord, etc. — mentions, messages reçus, suggestions d'abonnés, alertes d'activité sur un profil.`,
+      },
+      {
+        id: 'mag-4',
+        name: 'Travail',
+        color: 'text-[#34d399]',
+        borderColor: 'border-[rgba(52,211,153,0.2)]',
+        content: `Travail — Email en lien avec la vie professionnelle. Inclut les offres d'emploi, convocations à des entretiens d'embauche, réponses de recruteurs, documents RH, fiches de paie, plannings, communications internes liées à l'emploi chez Foundever, ou tout échange avec un employeur ou un organisme lié à l'emploi (Pôle Emploi, agences d'intérim, etc.).`,
+      },
+      {
+        id: 'mag-5',
+        name: 'Moi',
+        color: 'text-[#9ca3af]',
+        borderColor: 'border-[rgba(156,163,175,0.2)]',
+        content: `Moi — Détecté en amont par le node IF (avant le Text Classifier). Condition : l'adresse expéditeur ($json.from.value[0].address) est strictement égale à abertoneche@gmail.com. Ce libellé est réservé aux emails envoyés par l'utilisateur à lui-même — notes personnelles, fichiers à conserver, rappels, brouillons envoyés.`,
+      },
+    ],
+  },
 };
