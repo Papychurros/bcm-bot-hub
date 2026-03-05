@@ -32,6 +32,36 @@ function Particles() {
   );
 }
 
+function VideoEmbed() {
+  const [playing, setPlaying] = useState(false);
+
+  return (
+    <div className="mt-10 relative z-10 animate-fade-in-up opacity-0 stagger-5 w-full max-w-sm mx-auto">
+      <div className="rounded-xl overflow-hidden border border-[hsl(40,20%,75%)]/40 shadow-[0_0_15px_rgba(255,250,240,0.08)] relative aspect-video bg-black">
+        {!playing && (
+          <button
+            onClick={() => setPlaying(true)}
+            className="absolute inset-0 z-10 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-all hover:bg-black/40 group cursor-pointer"
+          >
+            <div className="w-16 h-16 rounded-full border-2 border-white/70 flex items-center justify-center bg-white/10 group-hover:bg-white/20 group-hover:scale-110 transition-all shadow-[0_0_20px_rgba(255,255,255,0.15)]">
+              <svg viewBox="0 0 24 24" className="w-7 h-7 ml-1 fill-white/90" xmlns="http://www.w3.org/2000/svg">
+                <polygon points="5,3 19,12 5,21" />
+              </svg>
+            </div>
+          </button>
+        )}
+        <iframe
+          src={`https://www.youtube.com/embed/VomJ_nvhTGw${playing ? '?autoplay=1' : ''}`}
+          title="Présentation des Bots"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+          allowFullScreen
+          className="w-full h-full absolute inset-0"
+        />
+      </div>
+    </div>
+  );
+}
+
 export default function GuideHome() {
   const navigate = useNavigate();
   const [unlocking, setUnlocking] = useState(false);
@@ -94,17 +124,7 @@ export default function GuideHome() {
         ▼ Cliquez pour explorer ▼
       </div>
 
-      <div className="mt-10 relative z-10 animate-fade-in-up opacity-0 stagger-5 w-full max-w-sm mx-auto">
-        <div className="rounded-xl overflow-hidden border border-[hsl(40,20%,75%)]/40 shadow-[0_0_15px_rgba(255,250,240,0.08)]">
-          <iframe
-            src="https://www.youtube.com/embed/VomJ_nvhTGw"
-            title="Présentation des Bots"
-            allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-            allowFullScreen
-            className="w-full aspect-video"
-          />
-        </div>
-      </div>
+      <VideoEmbed />
 
       <footer className="mt-8 text-xs text-muted-foreground/50 animate-fade-in-up opacity-0 stagger-6 relative z-10">
         Fait par Alexandre Bertoneche
