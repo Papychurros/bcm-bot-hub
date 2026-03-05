@@ -29,11 +29,20 @@ export default function QAPasswordGate({ children }: { children: React.ReactNode
   const [error, setError] = useState(false);
   const [shake, setShake] = useState(false);
   const [hellfire, setHellfire] = useState(false);
+  const [rizz, setRizz] = useState(false);
 
   const triggerHellfire = useCallback(() => {
     setHellfire(true);
     setTimeout(() => {
       setHellfire(false);
+      setPassword('');
+    }, 5000);
+  }, []);
+
+  const triggerRizz = useCallback(() => {
+    setRizz(true);
+    setTimeout(() => {
+      setRizz(false);
       setPassword('');
     }, 5000);
   }, []);
@@ -44,6 +53,9 @@ export default function QAPasswordGate({ children }: { children: React.ReactNode
     setError(false);
     if (val === '666' && !hellfire) {
       triggerHellfire();
+    }
+    if ((val === '123' || val === '321') && !rizz) {
+      triggerRizz();
     }
   };
 
