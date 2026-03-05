@@ -65,15 +65,17 @@ function SectionRenderer({ section, botId, index }: { section: ContentSection; b
           {section.title && <h3 className="text-lg font-display font-bold mb-3">{section.title}</h3>}
           <div className="space-y-2">
             {section.commands.map((cmd, i) => (
-              <div key={i} className="glass p-3 flex flex-col sm:flex-row sm:items-start gap-2">
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className={cn("text-sm", getBotColor(botId))}>→</span>
-                  <code className={cn("cmd-tag", getBotColor(botId))}>
-                    {cmd.cmd}
-                    {cmd.params?.map(p => <span key={p} className="text-mag-2"> [{p}]</span>)}
-                  </code>
+              <div key={i} className="glass p-3">
+                <div className="flex items-start gap-2">
+                  <span className={cn("text-sm shrink-0 mt-0.5", getBotColor(botId))}>→</span>
+                  <div className="min-w-0">
+                    <code className={cn("cmd-tag", getBotColor(botId))}>
+                      {cmd.cmd}
+                      {cmd.params?.map(p => <span key={p} className="text-mag-2"> [{p}]</span>)}
+                    </code>
+                    {cmd.desc && <span className="text-xs text-muted-foreground ml-2">{cmd.desc}</span>}
+                  </div>
                 </div>
-                <span className="text-xs text-muted-foreground">{cmd.desc}</span>
               </div>
             ))}
           </div>
