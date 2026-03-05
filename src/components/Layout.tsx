@@ -6,12 +6,13 @@ import { useApp } from '@/contexts/AppContext';
 import { useThemeToggle } from '@/contexts/ThemeContext';
 import SearchBar from '@/components/SearchBar';
 import BotLogo from '@/components/BotLogo';
+import AboutBobModal from '@/components/AboutBobModal';
 import { cn } from '@/lib/utils';
 
 const sidebarIcons: Record<string, string> = {
   'Accueil': '🏠', 'Mode Normal': '💬', 'Mode Précis': '🎯',
   'Agenda & Mails': '📅', 'Musique': '🎵', 'Mini B.O.B Info': '🌅',
-  'Architecture': '⚙️', 'Patch Notes': '📋', 'Limites connues': '⚠️', 'Glossaire': '📖',
+  'Architecture': '⚙️', 'Prompts': '🧬', 'Patch Notes': '📋', 'Limites connues': '⚠️', 'Glossaire': '📖', 'à propos': '❓',
   'Ajouter': '➕', 'Consulter & Rechercher': '🔍', 'Modifier & Supprimer': '✏️', 'Bilan Mensuel': '📊',
   'Catégories': '📂', 'Notifications': '🔔',
 };
@@ -21,6 +22,7 @@ export default function Layout() {
   const navigate = useNavigate();
   const { sidebarOpen, setSidebarOpen, getBotStats } = useApp();
   const { theme, toggleTheme } = useThemeToggle();
+  const [aboutOpen, setAboutOpen] = useState(false);
 
   const isQA = location.pathname.startsWith('/qa');
   const pathParts = location.pathname.split('/').filter(Boolean);
@@ -170,9 +172,21 @@ export default function Layout() {
                       <div className="text-[10px] font-bold tracking-[0.15em] text-muted-foreground mb-2 px-3">{group.group}</div>
                       <div className="space-y-0.5">
                         {group.items.map(item => {
+                          const icon = sidebarIcons[item.title] || '📄';
+
+                          // Special "à propos" entry opens modal instead of navigating
+                          if (item.slug === 'a-propos' && activeBotId === 'bob') {
+                            return (
+                              <button key="a-propos" onClick={() => setAboutOpen(true)}
+                                className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors text-sidebar-foreground/70 hover:bg-sidebar-accent/50 w-full text-left">
+                                <span className="text-sm">{icon}</span>
+                                <em>{item.title}</em>
+                              </button>
+                            );
+                          }
+
                           const href = item.slug ? `/guide/${activeBotId}/${item.slug}` : `/guide/${activeBotId}`;
                           const active = item.slug ? activePageSlug === item.slug : (!activePageSlug && location.pathname === `/guide/${activeBotId}`);
-                          const icon = sidebarIcons[item.title] || '📄';
                           return (
                             <Link key={item.slug || 'home'} to={href}
                               className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors",
@@ -205,6 +219,8 @@ export default function Layout() {
           </div>
         </main>
       </div>
+    </div>
+    <AboutBobModal open={aboutOpen} onOpenChange={setAboutOpen} />
     </div>
   );
 }
