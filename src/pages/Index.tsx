@@ -41,7 +41,7 @@ function VideoEmbed() {
         {!playing && (
           <button
             onClick={() => setPlaying(true)}
-            className="absolute inset-0 z-10 flex items-center justify-center bg-black/60 backdrop-blur-sm transition-all hover:bg-black/40 group cursor-pointer"
+            className="absolute inset-0 z-10 flex items-center justify-center bg-[#0f0f1a] transition-all hover:bg-[#0f0f1a]/90 group cursor-pointer"
           >
             <div className="w-16 h-16 rounded-full border-2 border-white/70 flex items-center justify-center bg-white/10 group-hover:bg-white/20 group-hover:scale-110 transition-all shadow-[0_0_20px_rgba(255,255,255,0.15)]">
               <svg viewBox="0 0 24 24" className="w-7 h-7 ml-1 fill-white/90" xmlns="http://www.w3.org/2000/svg">
