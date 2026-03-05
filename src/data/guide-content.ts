@@ -309,8 +309,26 @@ export const guideContent: Record<string, Record<string, PageContent>> = {
       icon: '📊',
       subtitle: 'Rapport automatique de fin de mois',
       sections: [
-        { type: 'text', title: 'Fonctionnement', content: "Chaque fin de mois, C.A.S.H génère automatiquement un bilan mensuel détaillé comprenant :\n• Total des dépenses\n• Répartition par catégorie (abonnements, courses, factures, autre)\n• Top 5 des plus grosses dépenses\n• Comparaison avec le mois précédent\n• Graphique de tendance" },
-        { type: 'callout', variant: 'info', content: "Le bilan est envoyé automatiquement le 1er de chaque mois à 9h00 via Telegram." },
+        { type: 'callout', variant: 'info', title: 'DÉCLENCHEMENT AUTOMATIQUE', content: "Le 1er de chaque mois à 9h00, C.A.S.H envoie le bilan complet du mois écoulé sur Telegram.\nWorkflow indépendant — doit être activé séparément dans n8n." },
+        { type: 'text', title: '📊 Format du bilan', content: 'Synthèse des 4 catégories + total général' },
+        {
+          type: 'step',
+          title: '📊 Bilan complet — Mois XXXX',
+          lines: [
+            { text: '🛒 Dépenses                                    XXX,XX€', color: 'muted' },
+            { text: '🧾 Factures                                     XXX,XX€', color: 'muted' },
+            { text: '🔁 Abonnements                                  XXX,XX€', color: 'muted' },
+            { text: '🎁 Autre                                        XXX,XX€', color: 'muted' },
+          ],
+        },
+        {
+          type: 'step',
+          title: '',
+          lines: [
+            { text: '💰 Total                                       XXX,XX€', color: 'accent' },
+          ],
+        },
+        { type: 'callout', variant: 'warning', title: 'Gestion mensuelle', content: "Chaque mois, dupliquer le fichier Google Sheets du mois précédent, le renommer (ex: Mar 2026), vider les données et mettre à jour le nom dans les 12 nodes Google Sheets de n8n." },
       ],
     },
     'architecture': {
