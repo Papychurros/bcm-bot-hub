@@ -1,135 +1,162 @@
-import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { FlaskConical, Lock } from 'lucide-react';
+import React, { useState, useCallback, useRef } from 'react';
+import { Lock, Delete } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const QA_PASSWORD = '1409';
 const QA_AUTH_KEY = 'bcm-qa-auth';
 
+const EASTER_EGGS_3: Record<string, { type: 'fullscreen' | 'center'; src: string; text?: string }> = {
+  '777': { type: 'fullscreen', src: '/Casino.gif' },
+  '666': { type: 'fullscreen', src: '/Diablo.gif' },
+  '420': { type: 'fullscreen', src: '/Snoop.gif' },
+  '404': { type: 'fullscreen', src: '/404.gif' },
+  '000': { type: 'fullscreen', src: '/Chiken.gif' },
+  '123': { type: 'center', src: '/rizz-monkey-flirty-usagif.gif', text: 'Vraiment ?' },
+  '321': { type: 'center', src: '/rizz-monkey-flirty-usagif.gif', text: 'Vraiment ?' },
+};
+
 export function useQAAuth() {
   const [authenticated, setAuthenticated] = useState(() => sessionStorage.getItem(QA_AUTH_KEY) === 'true');
-
-  const login = () => {
-    sessionStorage.setItem(QA_AUTH_KEY, 'true');
-    setAuthenticated(true);
-  };
-
-  const logout = () => {
-    sessionStorage.removeItem(QA_AUTH_KEY);
-    setAuthenticated(false);
-  };
-
+  const login = () => { sessionStorage.setItem(QA_AUTH_KEY, 'true'); setAuthenticated(true); };
+  const logout = () => { sessionStorage.removeItem(QA_AUTH_KEY); setAuthenticated(false); };
   return { authenticated, login, logout };
 }
 
 export default function QAPasswordGate({ children }: { children: React.ReactNode }) {
-  const navigate = useNavigate();
   const { authenticated, login } = useQAAuth();
-  const [password, setPassword] = useState('');
+  const [code, setCode] = useState('');
   const [error, setError] = useState(false);
   const [shake, setShake] = useState(false);
-  const [hellfire, setHellfire] = useState(false);
-  const [rizz, setRizz] = useState(false);
-  const [inputDisabled, setInputDisabled] = useState(false);
+  const [disabled, setDisabled] = useState(false);
+  const [overlay, setOverlay] = useState<{ type: 'fullscreen' | 'center'; src: string; text?: string } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const triggerHellfire = useCallback(() => {
-    setHellfire(true);
-    setInputDisabled(true);
-    inputRef.current?.blur();
-    setTimeout(() => {
-      setHellfire(false);
-      setInputDisabled(false);
-      setPassword('');
-    }, 5000);
-  }, []);
-
-  const triggerRizz = useCallback(() => {
-    setRizz(true);
-    setInputDisabled(true);
-    inputRef.current?.blur();
-    setTimeout(() => {
-      setRizz(false);
-      setInputDisabled(false);
-      setPassword('');
-    }, 5000);
-  }, []);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    setPassword(val);
+  const resetCode = useCallback(() => {
+    setCode('');
     setError(false);
-    if (val === '666' && !hellfire) {
-      triggerHellfire();
-    }
-    if ((val === '123' || val === '321') && !rizz) {
-      triggerRizz();
-    }
-  };
+  }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (password === QA_PASSWORD) {
-      login();
-    } else {
-      setError(true);
-      setShake(true);
-      setTimeout(() => setShake(false), 500);
-      setTimeout(() => navigate('/'), 1200);
+  const triggerOverlay = useCallback((egg: typeof overlay) => {
+    setOverlay(egg);
+    setDisabled(true);
+    inputRef.current?.blur();
+    setTimeout(() => {
+      setOverlay(null);
+      setDisabled(false);
+      resetCode();
+    }, 5000);
+  }, [resetCode]);
+
+  const handleDigit = useCallback((digit: string) => {
+    if (disabled) return;
+    setError(false);
+
+    const next = code + digit;
+    setCode(next);
+
+    // Check 3-digit easter eggs
+    if (next.length === 3 && EASTER_EGGS_3[next]) {
+      triggerOverlay(EASTER_EGGS_3[next]);
+      return;
     }
-  };
+
+    // At 4 digits, validate password
+    if (next.length === 4) {
+      if (next === QA_PASSWORD) {
+        login();
+      } else {
+        setError(true);
+        setShake(true);
+        setTimeout(() => setShake(false), 500);
+        setTimeout(() => resetCode(), 1500);
+      }
+    }
+  }, [code, disabled, login, triggerOverlay, resetCode]);
+
+  const handleDelete = useCallback(() => {
+    if (disabled) return;
+    setError(false);
+    setCode(prev => prev.slice(0, -1));
+  }, [disabled]);
 
   if (authenticated) return <>{children}</>;
 
+  const keys = ['1','2','3','4','5','6','7','8','9','','0','del'];
+
   return (
     <div className="min-h-[calc(100vh-3.5rem)] flex items-center justify-center p-6">
-      <div className={cn(
-        "glass p-8 w-full max-w-sm text-center",
-        shake && "animate-shake"
-      )}>
+      <div className={cn("glass p-8 w-full max-w-xs text-center", shake && "animate-shake")}>
         <div className="w-14 h-14 rounded-2xl bg-bob/10 border border-bob/30 flex items-center justify-center mx-auto mb-5">
           <Lock className="w-6 h-6 text-bob" />
         </div>
         <h2 className="text-xl font-display font-extrabold uppercase mb-1">Développeur</h2>
-        <p className="text-xs text-muted-foreground mb-6">Accès restreint — entrez le mot de passe</p>
+        <p className="text-xs text-muted-foreground mb-6">Accès restreint</p>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            ref={inputRef}
-            type="password"
-            value={password}
-            onChange={handleChange}
-            placeholder="Mot de passe"
-            autoFocus
-            disabled={inputDisabled}
-            className={cn(
-              "w-full px-4 py-3 rounded-xl bg-secondary/50 border text-center font-mono text-lg tracking-[0.3em] focus:outline-none focus:ring-2 focus:ring-bob/50 transition-colors disabled:opacity-50",
-              error ? "border-destructive text-destructive" : "border-border"
-            )}
-          />
-          {error && (
-            <p className="text-xs text-destructive animate-fade-in">Mot de passe incorrect — redirection...</p>
-          )}
-          <button
-            type="submit"
-            disabled={!password || error}
-            className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-bob text-primary-foreground font-medium text-sm hover:opacity-90 transition-opacity disabled:opacity-50"
-          >
-            <FlaskConical className="w-4 h-4" /> Accéder
-          </button>
-        </form>
+        {/* Hidden readonly input for accessibility */}
+        <input ref={inputRef} type="password" value={code} readOnly className="sr-only" tabIndex={-1} />
+
+        {/* Dots display */}
+        <div className="flex items-center justify-center gap-3 mb-6">
+          {[0, 1, 2, 3].map(i => (
+            <div
+              key={i}
+              className={cn(
+                "w-4 h-4 rounded-full border-2 transition-all duration-150",
+                i < code.length
+                  ? error ? "bg-destructive border-destructive" : "bg-bob border-bob"
+                  : "border-muted-foreground/40 bg-transparent"
+              )}
+            />
+          ))}
+        </div>
+
+        {/* Error message */}
+        {error && (
+          <p className="text-sm text-destructive font-medium mb-4 animate-fade-in">Incorrect ❌</p>
+        )}
+
+        {/* Numeric keypad */}
+        <div className="grid grid-cols-3 gap-2">
+          {keys.map((key, i) => {
+            if (key === '') return <div key={i} />;
+            if (key === 'del') {
+              return (
+                <button
+                  key={i}
+                  onClick={handleDelete}
+                  disabled={disabled || code.length === 0}
+                  className="h-14 rounded-xl bg-secondary/50 border border-border/50 flex items-center justify-center text-muted-foreground hover:bg-secondary/80 transition-colors disabled:opacity-30"
+                >
+                  <Delete className="w-5 h-5" />
+                </button>
+              );
+            }
+            return (
+              <button
+                key={i}
+                onClick={() => handleDigit(key)}
+                disabled={disabled || code.length >= 4}
+                className="h-14 rounded-xl bg-secondary/50 border border-border/50 font-mono text-lg font-semibold text-foreground hover:bg-secondary/80 active:scale-95 transition-all disabled:opacity-30"
+              >
+                {key}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      {hellfire && (
+      {/* Fullscreen overlay */}
+      {overlay?.type === 'fullscreen' && (
         <div className="hellfire-overlay">
-          <img src="/fire-15.gif" alt="" className="hellfire-gif" />
+          <img src={overlay.src} alt="" className="hellfire-gif" />
         </div>
       )}
 
-      {rizz && (
+      {/* Center overlay */}
+      {overlay?.type === 'center' && (
         <div className="rizz-overlay">
-          <img src="/rizz-monkey-flirty-usagif.gif" alt="" className="rizz-gif" />
-          <p className="rizz-text">Vraiment ?</p>
+          <img src={overlay.src} alt="" className="rizz-gif" />
+          {overlay.text && <p className="rizz-text">{overlay.text}</p>}
         </div>
       )}
     </div>
