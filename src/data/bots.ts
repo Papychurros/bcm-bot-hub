@@ -113,7 +113,7 @@ export const bots: Record<BotId, BotConfig> = {
     subtitle: 'Trieur Gmail Automatique',
     tagline: '• AUTO-CLASSEMENT GMAIL •',
     description: "M.A.G est un bot de tri automatique pour Gmail. Il classe vos emails entrants dans les bonnes catégories (Pub, Réseaux Sociaux, Moi, Travail, Perso, Autre) et vous envoie des notifications Telegram pour les messages importants.",
-    version: 'V1.2.3',
+    version: 'V1',
     emoji: '📬',
     stats: [
       { value: '6', label: 'CATÉGORIES' },
