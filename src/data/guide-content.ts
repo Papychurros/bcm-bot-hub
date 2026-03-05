@@ -211,10 +211,29 @@ export const guideContent: Record<string, Record<string, PageContent>> = {
       subtitle: "Historique des versions de B.O.B",
       sections: [
         { type: 'timeline', title: 'Historique des versions', entries: [
-          { version: 'V2.1.18', date: 'Février 2026', changes: ['Ajout de l\'agent YouTube Music', 'Amélioration du formatage Telegram', 'Correction du bug de double réponse'] },
-          { version: 'V2.1.0', date: 'Janvier 2026', changes: ['Mode Précis avec agents spécialisés', 'Intégration Google Calendar complète', 'Mini B.O.B Info — récap matinal'] },
-          { version: 'V2.0.0', date: 'Décembre 2025', changes: ['Refonte complète en multi-agent', 'Migration vers GPT-4o-mini', 'Nouvelle architecture n8n'] },
-          { version: 'V1.0.0', date: 'Septembre 2025', changes: ['Première version de B.O.B', 'Questions-réponses basiques', 'Météo simple'] },
+          { version: 'V2.1.18', date: 'Février 2026', changes: [
+            '☀️ Récap matinal automatique — 8h00 chaque matin — météo + agenda + mails non lus (3 boîtes)',
+            '📰 Veille d\'actualités quotidienne — 3 catégories : Pau, Jeux Vidéo, IA & Agents — via SerpAPI',
+            '🔗 Commande "liens" — récupération des URLs de la veille par numéro — liens / liens 3 / liens 3 11',
+            '💾 Stockage des liens — Google Sheets — clear + append à chaque nouvelle veille',
+          ]},
+          { version: 'V2.1.0', date: 'Janvier 2026', changes: [
+            '🎵 YouTube Agent — 15 tools — ajout titre dans playlist — ID fixe par playlist — mémoire indépendante',
+          ]},
+          { version: 'V2.0.0', date: 'Décembre 2025', changes: [
+            '🤖 B.O.B Orchestrateur — gpt-4o-mini — routing multi-agent via Telegram',
+            '🎤 Réponses vocales intelligentes — OpenAI TTS — détection [VOCAL] + transcription Whisper',
+            '🧠 Mémoire longue durée — Supabase Session Pooler — table bob_memory — fenêtre 100 entrées',
+            '🔍 Search Easy Agent — gpt-4o-mini — SerpAPI + Date & Time + Calculator',
+            '🔍 Search Hard Agent — gpt-4o — SerpAPI 2-3 appels + Weather Hard Agent',
+            '🌤️ Weather Easy Agent — température en une phrase naturelle — Open-Meteo',
+            '⛈️ Weather Hard Agent — 5 tools — rapport complet : température, pluie, vent, atmosphère, UV',
+            '📅 Calendar Agent — Google Calendar — lecture, création, modification, suppression',
+            '📧 Gmail Agent — Gmail — lecture, envoi, suppression + base contacts Google Sheets',
+          ]},
+          { version: 'V1.0.0', date: 'Septembre 2025', changes: [
+            'Automate créé en code Python',
+          ]},
         ]},
       ],
     },
