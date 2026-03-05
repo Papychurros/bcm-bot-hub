@@ -198,6 +198,42 @@
     height: 100%;
     object-fit: cover;
   }
+
+  /* Rizz monkey easter egg */
+  @keyframes rizz-fade {
+    0% { opacity: 0; }
+    8% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  .rizz-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: hsl(var(--background) / 0.85);
+    animation: rizz-fade 5s ease-in-out forwards;
+  }
+
+  .rizz-gif {
+    max-width: 320px;
+    border-radius: 1rem;
+  }
+
+  .rizz-text {
+    margin-top: 1rem;
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: hsl(var(--foreground));
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
 }
 
 ::-webkit-scrollbar {
