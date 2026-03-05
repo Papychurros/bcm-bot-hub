@@ -293,23 +293,15 @@ export const guideContent: Record<string, Record<string, PageContent>> = {
       icon: '✏️',
       subtitle: 'Modifiez ou supprimez des dépenses existantes',
       sections: [
-        {
-          type: 'step',
-          title: 'MODIFIER',
-          lines: [
-            { text: '→ Modifie [CASH-XXXX] montant [nouveau montant] €', color: 'bot' },
-            { text: '→ Change la description de [CASH-XXXX]', color: 'bot' },
-          ],
-        },
-        {
-          type: 'step',
-          title: 'SUPPRIMER',
-          lines: [
-            { text: '→ Supprime [CASH-XXXX]', color: 'bot' },
-            { text: '→ Supprime l\'entrée [description]', color: 'bot' },
-          ],
-        },
-        { type: 'callout', variant: 'info', title: 'ID unique :', content: "Chaque entrée possède un identifiant CASH-XXXX affiché lors de l'ajout ou la consultation. Utilisez-le pour modifier ou supprimer précisément." },
+        { type: 'commands', title: 'Modification', commands: [
+          { cmd: 'Modifie', desc: 'Modifie le montant d\'une dépense', params: ['CASH-XXXX', 'montant', 'nouveau montant'] },
+          { cmd: 'Change la description de', desc: 'Modifie la description', params: ['CASH-XXXX'] },
+        ]},
+        { type: 'commands', title: 'Suppression', commands: [
+          { cmd: 'Supprime', desc: 'Supprime une dépense par son identifiant', params: ['CASH-XXXX'] },
+          { cmd: 'Supprime l\'entrée', desc: 'Supprime par description', params: ['description'] },
+        ]},
+        { type: 'callout', variant: 'info', title: 'ID unique', content: "Chaque entrée possède un identifiant CASH-XXXX affiché lors de l'ajout ou la consultation. Utilisez-le pour modifier ou supprimer précisément." },
       ],
     },
     'bilan-mensuel': {
