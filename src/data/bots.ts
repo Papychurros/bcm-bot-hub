@@ -137,6 +137,7 @@ export const bots: Record<BotId, BotConfig> = {
           { title: 'Patch Notes', slug: 'patch-notes' },
           { title: 'Limites connues', slug: 'limites' },
           { title: 'Glossaire', slug: 'glossaire' },
+          { title: 'à propos', slug: 'a-propos' },
         ]
       },
     ],
