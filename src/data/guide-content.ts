@@ -579,9 +579,19 @@ export const guideContent: Record<string, Record<string, PageContent>> = {
       subtitle: "Historique des versions de M.A.G",
       sections: [
         { type: 'timeline', entries: [
-          { version: 'V1.2.3', date: 'Février 2026', changes: ['Ajout de la catégorie "Moi"', 'Amélioration de la catégorisation IA', 'Fix du removeINBOX pour toutes catégories'] },
-          { version: 'V1.1.0', date: 'Janvier 2026', changes: ['Notifications Telegram pour Travail/Perso/Autre', 'Format de notification enrichi', 'Gestion des emails simultanés'] },
-          { version: 'V1.0.0', date: 'Décembre 2025', changes: ['Première version de M.A.G', 'Tri automatique en 4 catégories', 'Polling Gmail toutes les 5 min'] },
+          { version: 'V1.0.0', date: 'Janvier 2026', changes: [
+            '✉ Gmail Trigger — polling toutes les minutes — nouveaux messages',
+            '🔍 Filtre expéditeur (IF) — détection mail personnel — adresse abertoneche@gmail.com',
+            '🧠 Text Classifier IA — gpt-4o-mini — classification en 6 catégories',
+            '📤 Label Moi — addLabel + markAsRead + removeINBOX — silencieux',
+            '📬 Label Autre — addLabel + removeINBOX + notification Telegram',
+            '👥 Label Réseau Soc. — addLabel + markAsRead + removeINBOX — silencieux',
+            '💼 Label Travail — addLabel + removeINBOX + notification Telegram',
+            '🚭 Label Pub — addLabel + markAsRead + removeINBOX — silencieux',
+            '📓 Label Perso — addLabel + removeINBOX + notification Telegram',
+            '🔔 Notifications Telegram — Format : 📬 De / Sujet / Catégorie',
+            '🧹 INBOX propre — removeINBOX sur toutes les catégories après traitement',
+          ]},
         ]},
       ],
     },
