@@ -113,7 +113,7 @@ export default function Layout() {
               )} onClick={() => setSidebarOpen(false)} />
               <aside className={cn(
                 "fixed top-[3.5rem] left-0 bottom-0 w-64 bg-sidebar border-r border-sidebar-border z-30 flex flex-col overflow-y-auto transition-transform duration-300",
-                "lg:translate-x-0 lg:sticky lg:top-[3.5rem] lg:h-[calc(100vh-3.5rem)]",
+                "lg:translate-x-0 lg:sticky lg:top-0 lg:h-[calc(100vh-3.5rem)]",
                 sidebarOpen ? "translate-x-0" : "-translate-x-full"
               )}>
                 {isQA ? (
