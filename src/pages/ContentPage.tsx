@@ -2,6 +2,7 @@ import { useParams } from 'react-router-dom';
 import { bots, getBotGradient, getBotColor, type BotId } from '@/data/bots';
 import { guideContent, type ContentSection } from '@/data/guide-content';
 import { architectureData } from '@/data/architecture-data';
+import { promptsData } from '@/data/prompts-data';
 import ArchitectureRenderer from '@/components/ArchitectureRenderer';
 import PromptsPage from '@/pages/PromptsPage';
 import { cn } from '@/lib/utils';
@@ -172,7 +173,7 @@ export default function ContentPage() {
   }
 
   // Use dedicated prompts page
-  if (pageSlug === 'prompts' && bot.id === 'bob') {
+  if (pageSlug === 'prompts' && promptsData[bot.id]) {
     return <PromptsPage botId={bot.id} />;
   }
 
