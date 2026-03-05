@@ -98,7 +98,7 @@ export default function Layout() {
               className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all",
                 isQA ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground")}
             >
-              <FlaskConical className="w-3.5 h-3.5" /> QA HUB
+              <FlaskConical className="w-3.5 h-3.5" /> dév.
             </button>
           </div>
         </header>
