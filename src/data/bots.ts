@@ -75,7 +75,7 @@ export const bots: Record<BotId, BotConfig> = {
     subtitle: 'Assistant Financier',
     tagline: '• ASSISTANT FINANCIER TÉLÉGRAM •',
     description: "C.A.S.H est un assistant de gestion financière connecté à Telegram. Il vous permet d'ajouter, consulter, modifier et supprimer vos dépenses. Il génère également des bilans mensuels automatiques.",
-    version: 'V1.4.7',
+    version: 'V1.6',
     emoji: '💰',
     stats: [
       { value: '4', label: 'MODULES' },
