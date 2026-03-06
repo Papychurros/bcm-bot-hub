@@ -37,15 +37,13 @@ export default function BotHome() {
       <div className="text-center mb-12">
         <div className="mx-auto mb-6 flex flex-col items-center justify-center animate-fade-in-up opacity-0 stagger-1">
           <BotLogo botId={bot.id} size="xl" />
-          {bot.id === 'bob' && (
-            <div className="flex items-center gap-1.5 mt-2">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-[0_0_6px_2px_rgba(16,185,129,0.6)]" />
-              </span>
-              <span className="text-[10px] font-mono tracking-widest text-emerald-400">en ligne</span>
-            </div>
-          )}
+          <div className="flex items-center gap-1.5 mt-2">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500 shadow-[0_0_6px_2px_rgba(16,185,129,0.6)]" />
+            </span>
+            <span className="text-[10px] font-mono tracking-widest text-emerald-400">en ligne</span>
+          </div>
         </div>
         <h1
           className={cn("text-6xl md:text-8xl lg:text-[clamp(72px,10vw,108px)] font-display font-extrabold mb-3 bg-gradient-to-r bg-clip-text text-transparent animate-fade-in-up opacity-0 stagger-2", getBotGradient(bot.id))}
