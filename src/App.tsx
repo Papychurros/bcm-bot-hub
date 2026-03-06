@@ -31,6 +31,8 @@ const App = () => (
                 <Route path="/" element={<GuideHome />} />
                 <Route path="/guide/:botId" element={<BotHome />} />
                 <Route path="/guide/:botId/:pageSlug" element={<ContentPage />} />
+                <Route path="/mini-jeux" element={<MiniJeuxPage />} />
+                <Route path="/tutos" element={<TutosPage />} />
                 <Route path="/qa" element={<QAPasswordGate><QAHome /></QAPasswordGate>} />
                 <Route path="/qa/:botId" element={<QAPasswordGate><QABotPage /></QAPasswordGate>} />
               </Route>
