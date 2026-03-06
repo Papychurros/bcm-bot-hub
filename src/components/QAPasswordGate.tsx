@@ -7,12 +7,24 @@ const QA_AUTH_KEY = 'bcm-qa-auth';
 
 const EASTER_EGGS_3: Record<string, { src: string; text?: string }> = {
   '777': { src: '/Casino.gif', text: '🎰 Jackpot !' },
-  '666': { src: '/Diablo.gif', text: '👹 Enfer !' },
+  '666': { src: '/Diablo custom.gif', text: '👹 Enfer !' },
   '420': { src: '/Snoop.gif', text: '💨 Chill...' },
   '404': { src: '/404.gif', text: 'Not Found' },
   '000': { src: '/Chiken.gif', text: '🐔 Poulet !' },
   '123': { src: '/rizz-monkey-flirty-usagif.gif', text: 'Vraiment ?' },
   '321': { src: '/rizz-monkey-flirty-usagif.gif', text: 'Vraiment ?' },
+  '159': { src: '/Coolmonkey.gif', text: '🐒 Cool !' },
+  '357': { src: '/Jazzdog.gif', text: '🎷 Jazz !' },
+  '456': { src: '/thank.gif', text: '🙏 Merci !' },
+  '789': { src: '/Pinguin.gif', text: '🐧 Pingouin !' },
+  '147': { src: '/angry.gif', text: '😡 Grrr !' },
+  '258': { src: '/Hellow.gif', text: '👋 Hello !' },
+  '369': { src: '/Simpson.gif', text: '🍩 D\'oh !' },
+};
+
+const EASTER_EGGS_4: Record<string, { src: string; text?: string }> = {
+  '1974': { src: '/RastaMerlin.gif', text: '🧙 Rasta Merlin !' },
+  '1999': { src: '/Love.gif', text: '❤️ Love !' },
 };
 
 export function useQAAuth() {
@@ -60,8 +72,12 @@ export default function QAPasswordGate({ children }: { children: React.ReactNode
       return;
     }
 
-    // At 4 digits, validate password
+    // At 4 digits, check easter egg first, then validate password
     if (next.length === 4) {
+      if (EASTER_EGGS_4[next]) {
+        triggerOverlay(EASTER_EGGS_4[next]);
+        return;
+      }
       if (next === QA_PASSWORD) {
         login();
       } else {
