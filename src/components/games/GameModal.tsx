@@ -82,35 +82,35 @@ export default function GameModal({ open, onClose, title, icon, color, children 
 
   if (!open) return null;
 
-  return (
-    <div
-      className="fixed top-0 left-0 w-screen h-screen z-[9999] flex flex-col bg-background animate-fade-in"
-    >
+  const modal = (
+    <div className="fixed inset-0 w-screen h-screen z-[9999] flex flex-col bg-background animate-fade-in">
       {/* Header */}
-      <div className="flex items-center justify-between px-5 py-3 border-b border-border flex-shrink-0 bg-card">
-        <div className="text-lg font-bold tracking-tight" style={{ color }}>
+      <div className="flex items-center justify-between px-4 py-2 border-b border-border flex-shrink-0 bg-card">
+        <div className="text-base font-bold tracking-tight" style={{ color }}>
           {icon} {title}
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => enterFullscreen()}
-            className="w-9 h-9 rounded-full border border-border bg-transparent text-muted-foreground flex items-center justify-center hover:bg-secondary hover:text-foreground transition-colors"
+            className="w-8 h-8 rounded-full border border-border bg-transparent text-muted-foreground flex items-center justify-center hover:bg-secondary hover:text-foreground transition-colors"
             title="Plein écran"
           >
             <Maximize className="w-4 h-4" />
           </button>
           <button
             onClick={handleClose}
-            className="w-9 h-9 rounded-full border border-border bg-transparent text-muted-foreground flex items-center justify-center hover:bg-destructive/15 hover:text-destructive hover:border-destructive transition-colors"
+            className="w-8 h-8 rounded-full border border-border bg-transparent text-muted-foreground flex items-center justify-center hover:bg-destructive/15 hover:text-destructive hover:border-destructive transition-colors"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
       </div>
       {/* Body */}
-      <div className="flex-1 overflow-auto p-4 flex flex-col">
+      <div className="flex-1 overflow-auto p-3 pb-16 sm:pb-3 flex flex-col">
         {children}
       </div>
     </div>
   );
+
+  return createPortal(modal, document.body);
 }
