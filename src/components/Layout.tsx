@@ -160,10 +160,11 @@ export default function Layout() {
                 "fixed inset-0 bg-black/60 z-30 lg:hidden transition-opacity",
                 sidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
               )} onClick={() => setSidebarOpen(false)} />
+              <div className="hidden lg:block w-64 shrink-0" />
               <aside className={cn(
                 "fixed top-[3.5rem] right-0 bottom-0 w-64 bg-sidebar border-l border-sidebar-border z-30 flex flex-col overflow-y-auto transition-transform duration-300",
-                "lg:translate-x-0 lg:sticky lg:top-0 lg:h-[calc(100vh-3.5rem)]",
-                sidebarOpen ? "translate-x-0" : "translate-x-full"
+                "lg:translate-x-0",
+                sidebarOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
               )}>
                 {isQA ? (
                   <nav className="p-3 space-y-1">
