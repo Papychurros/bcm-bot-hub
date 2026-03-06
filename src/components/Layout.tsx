@@ -107,7 +107,8 @@ export default function Layout() {
 
         <div className="flex flex-1 overflow-hidden">
           {/* MAIN SIDEBAR (LEFT) - always visible on desktop */}
-          <aside className="hidden lg:flex w-16 bg-sidebar border-r border-sidebar-border flex-col items-center py-4 gap-1 shrink-0 sticky top-[3.5rem] h-[calc(100vh-3.5rem)]">
+          <div className="hidden lg:block w-16 shrink-0" />
+          <aside className="hidden lg:flex fixed top-[3.5rem] left-0 bottom-0 w-16 bg-sidebar border-r border-sidebar-border flex-col items-center py-4 gap-1 z-30">
             {mainNavItems.map(item => (
               <button
                 key={item.id}
