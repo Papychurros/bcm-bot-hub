@@ -95,7 +95,7 @@ export default function Layout() {
           <SearchBar />
           <div className="flex-1" />
 
-          <span className="absolute left-1/2 -translate-x-1/2 font-display font-bold text-sm tracking-widest pointer-events-none">
+          <span className="absolute left-1/2 lg:left-[calc(50%+2rem)] -translate-x-1/2 font-display font-bold text-sm tracking-widest pointer-events-none">
             <span className="text-bob">B</span>.<span className="text-cash">C</span>.<span className="text-mag-2">M</span>
           </span>
 
