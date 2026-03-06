@@ -47,10 +47,10 @@ function GameCard({ game, onClick }: {game: GameDef;onClick: () => void;}) {
         
         {game.icon}
       </div>
-      <div className="text-xl font-bold tracking-tight mb-2.5">{game.title}</div>
-      <div className="font-mono text-xs leading-relaxed text-muted-foreground flex-1">{game.desc}</div>
+      <div className="text-xl font-bold tracking-tight mb-2.5 min-h-[56px] flex items-start">{game.title}</div>
+      <div className="font-mono text-xs leading-relaxed text-muted-foreground flex-1 min-h-[72px]">{game.desc}</div>
       <span
-        className="inline-block mt-auto pt-5 font-mono text-[10px] tracking-[0.15em] uppercase px-3 py-1 rounded-full border"
+        className="inline-flex items-center justify-center mt-auto pt-5 font-mono text-xs tracking-[0.15em] uppercase px-4 py-1.5 rounded-full border"
         style={{ color: game.color, borderColor: `color-mix(in srgb, ${game.color} 40%, transparent)` }}>
         
         {game.tag}
