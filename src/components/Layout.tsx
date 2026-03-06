@@ -58,7 +58,7 @@ export default function Layout() {
 
   const breadcrumb = () => {
     const parts: string[] = [];
-    if (isQA) parts.push('QA HUB');
+    if (isQA) parts.push('Développeur');
     else parts.push('GUIDE');
     if (activeBotId) parts.push(bots[activeBotId].name);
     if (activePageSlug) {
