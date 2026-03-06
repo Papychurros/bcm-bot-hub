@@ -16,9 +16,9 @@ const EASTER_EGGS_3: Record<string, { src: string; text?: string }> = {
 };
 
 export function useQAAuth() {
-  const [authenticated, setAuthenticated] = useState(() => sessionStorage.getItem(QA_AUTH_KEY) === 'true');
-  const login = () => { sessionStorage.setItem(QA_AUTH_KEY, 'true'); setAuthenticated(true); };
-  const logout = () => { sessionStorage.removeItem(QA_AUTH_KEY); setAuthenticated(false); };
+  const [authenticated, setAuthenticated] = useState(false);
+  const login = () => { setAuthenticated(true); };
+  const logout = () => { setAuthenticated(false); };
   return { authenticated, login, logout };
 }
 
