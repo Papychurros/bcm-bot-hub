@@ -27,7 +27,7 @@ function GameCard({ game, onClick }: {game: GameDef;onClick: () => void;}) {
   return (
     <div
       onClick={onClick}
-      className="relative bg-card border border-border rounded-2xl p-9 pb-14 overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1.5 hover:scale-[1.01] group"
+      className="relative bg-card border border-border rounded-2xl p-9 pb-14 overflow-hidden cursor-pointer transition-all duration-300 hover:-translate-y-1.5 hover:scale-[1.01] group h-full flex flex-col"
       style={{ '--gc': game.color } as React.CSSProperties}>
       
       {/* Glow */}
@@ -40,7 +40,7 @@ function GameCard({ game, onClick }: {game: GameDef;onClick: () => void;}) {
       style={{ borderColor: undefined }} />
       
 
-      <div className="font-mono text-[11px] tracking-[0.2em] mb-5 opacity-70" style={{ color: game.color }}>{game.num}</div>
+      
       <div
         className="w-14 h-14 rounded-[14px] border border-border flex items-center justify-center text-[26px] mb-6 transition-shadow duration-300 group-hover:shadow-lg"
         style={{ background: `color-mix(in srgb, ${game.color} 10%, transparent)` }}>
