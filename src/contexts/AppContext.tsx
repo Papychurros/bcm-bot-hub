@@ -47,10 +47,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(testResults));
   }, [testResults]);
 
-  // Auto-save on change
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(testResults));
-  }, [testResults]);
 
   const getBotStats = useCallback((botId: BotId): BotStats => {
     const categories = qaTests[botId];
