@@ -1,4 +1,5 @@
 import React, { useEffect, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { X, Maximize } from 'lucide-react';
 
 interface GameModalProps {
