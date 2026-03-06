@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Outlet, useLocation, useNavigate, Link } from 'react-router-dom';
-import { Menu, X, Home, BookOpen, FlaskConical, ChevronRight, Sun, Moon } from 'lucide-react';
+import { Menu, X, Home, BookOpen, FlaskConical, ChevronRight, Sun, Moon, Gamepad2, Youtube } from 'lucide-react';
 import { bots, botList, getBotGradient, getBotColor, type BotId } from '@/data/bots';
 import { useApp } from '@/contexts/AppContext';
 import { useThemeToggle } from '@/contexts/ThemeContext';
@@ -20,6 +20,20 @@ const sidebarIcons: Record<string, string> = {
   'Catégories': '📂', 'Notifications': '🔔',
 };
 
+const mainNavItems = [
+  { id: 'guide', label: 'Guide', icon: BookOpen, path: '/' },
+  { id: 'mini-jeux', label: 'Mini Jeux', icon: Gamepad2, path: '/mini-jeux' },
+  { id: 'tutos', label: 'Tutos', icon: Youtube, path: '/tutos' },
+  { id: 'dev', label: 'Dév.', icon: FlaskConical, path: '/qa' },
+];
+
+function getActiveNav(pathname: string): string {
+  if (pathname.startsWith('/qa')) return 'dev';
+  if (pathname.startsWith('/mini-jeux')) return 'mini-jeux';
+  if (pathname.startsWith('/tutos')) return 'tutos';
+  return 'guide';
+}
+
 export default function Layout() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -35,7 +49,10 @@ export default function Layout() {
   const activeBotId = (pathParts.length >= 2 && (pathParts[1] === 'bob' || pathParts[1] === 'cash' || pathParts[1] === 'mag'))
     ? pathParts[1] as BotId : null;
   const activePageSlug = pathParts[2] || '';
-  const isHome = location.pathname === '/';
+  const activeNav = getActiveNav(location.pathname);
+
+  // Show contextual sidebar only on guide bot pages or authenticated QA pages
+  const showContextualSidebar = (activeBotId && !isQA) || (isQA && qaAuthenticated);
 
   useEffect(() => { setSidebarOpen(false); }, [location.pathname]);
 
@@ -57,7 +74,7 @@ export default function Layout() {
       <div className="min-h-screen bg-background flex flex-col">
         {/* TOP BAR */}
         <header className="h-14 min-h-[3.5rem] border-b border-border bg-card/50 backdrop-blur-xl flex items-center px-4 gap-3 sticky top-0 z-40 shrink-0">
-          {!isHome && (
+          {showContextualSidebar && (
             <button onClick={() => setSidebarOpen(!sidebarOpen)} className="lg:hidden p-1.5 rounded-lg hover:bg-secondary transition-colors">
               {sidebarOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -86,37 +103,66 @@ export default function Layout() {
           <button onClick={toggleTheme} className="p-1.5 rounded-lg hover:bg-secondary transition-colors">
             {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
-
-          <div className="flex gap-1 bg-secondary/50 rounded-lg p-0.5">
-            <button
-              onClick={() => navigate('/')}
-              className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all",
-                !isQA ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground")}
-            >
-              <BookOpen className="w-3.5 h-3.5" /> GUIDE
-            </button>
-            <button
-              onClick={() => navigate('/qa')}
-              className={cn("flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all",
-                isQA ? "bg-card text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground")}
-            >
-              <FlaskConical className="w-3.5 h-3.5" /> DÉV.
-            </button>
-          </div>
         </header>
 
         <div className="flex flex-1 overflow-hidden">
-          {/* SIDEBAR */}
-          {!isHome && !(isQA && !qaAuthenticated) && (
+          {/* MAIN SIDEBAR (LEFT) - always visible on desktop */}
+          <aside className="hidden lg:flex w-16 bg-sidebar border-r border-sidebar-border flex-col items-center py-4 gap-1 shrink-0 sticky top-[3.5rem] h-[calc(100vh-3.5rem)]">
+            {mainNavItems.map(item => (
+              <button
+                key={item.id}
+                onClick={() => navigate(item.path)}
+                className={cn(
+                  "flex flex-col items-center gap-1 w-14 py-2.5 rounded-xl text-[10px] font-medium transition-all",
+                  activeNav === item.id
+                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                    : "text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent/50"
+                )}
+              >
+                <item.icon className="w-5 h-5" />
+                <span>{item.label}</span>
+              </button>
+            ))}
+          </aside>
+
+          {/* Mobile: main nav inside hamburger is handled below with contextual sidebar */}
+
+          {/* MAIN CONTENT */}
+          <main className="flex-1 overflow-y-auto">
+            {/* Mobile bottom nav */}
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-sidebar border-t border-sidebar-border flex items-center justify-around py-1.5">
+              {mainNavItems.map(item => (
+                <button
+                  key={item.id}
+                  onClick={() => navigate(item.path)}
+                  className={cn(
+                    "flex flex-col items-center gap-0.5 py-1 px-3 rounded-lg text-[10px] font-medium transition-all",
+                    activeNav === item.id
+                      ? "text-sidebar-accent-foreground"
+                      : "text-sidebar-foreground/50"
+                  )}
+                >
+                  <item.icon className={cn("w-5 h-5", activeNav === item.id && "text-primary")} />
+                  <span>{item.label}</span>
+                </button>
+              ))}
+            </div>
+            <div className="animate-fade-in pb-16 lg:pb-0">
+              <Outlet />
+            </div>
+          </main>
+
+          {/* CONTEXTUAL SIDEBAR (RIGHT) */}
+          {showContextualSidebar && (
             <>
               <div className={cn(
                 "fixed inset-0 bg-black/60 z-30 lg:hidden transition-opacity",
                 sidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"
               )} onClick={() => setSidebarOpen(false)} />
               <aside className={cn(
-                "fixed top-[3.5rem] left-0 bottom-0 w-64 bg-sidebar border-r border-sidebar-border z-30 flex flex-col overflow-y-auto transition-transform duration-300",
+                "fixed top-[3.5rem] right-0 bottom-0 w-64 bg-sidebar border-l border-sidebar-border z-30 flex flex-col overflow-y-auto transition-transform duration-300",
                 "lg:translate-x-0 lg:sticky lg:top-0 lg:h-[calc(100vh-3.5rem)]",
-                sidebarOpen ? "translate-x-0" : "-translate-x-full"
+                sidebarOpen ? "translate-x-0" : "translate-x-full"
               )}>
                 {isQA ? (
                   <nav className="p-3 space-y-1">
@@ -133,7 +179,7 @@ export default function Layout() {
                     </div>
                     <Link to="/qa" className={cn("flex items-center gap-2 px-3 py-2 rounded-lg text-sm transition-colors",
                       location.pathname === '/qa'
-                        ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium border-l-3 border-l-bob"
+                        ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium border-r-3 border-r-bob"
                         : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50")}>
                       <span className="w-2 h-2 rounded-full bg-bob" />
                       🏠 Accueil
@@ -145,7 +191,7 @@ export default function Layout() {
                       return (
                         <Link key={id} to={`/qa/${id}`} className={cn("flex items-center justify-between px-3 py-2 rounded-lg text-sm transition-colors",
                           activeBotId === id
-                            ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium border-l-3 border-l-current"
+                            ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium border-r-3 border-r-current"
                             : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50")}>
                           <span className="flex items-center gap-2">
                             <span className={cn("w-2 h-2 rounded-full", id === 'bob' ? 'bg-bob' : id === 'cash' ? 'bg-cash' : 'bg-mag-2')} />
@@ -181,7 +227,6 @@ export default function Layout() {
                           {group.items.map(item => {
                             const icon = sidebarIcons[item.title] || '📄';
 
-                            // Special "à propos" entry opens modal instead of navigating
                             if (item.slug === 'a-propos' && (activeBotId === 'bob' || activeBotId === 'cash' || activeBotId === 'mag')) {
                               const openFn = activeBotId === 'bob' ? () => setAboutBobOpen(true) : activeBotId === 'cash' ? () => setAboutCashOpen(true) : () => setAboutMagOpen(true);
                               return (
@@ -199,7 +244,7 @@ export default function Layout() {
                               <Link key={item.slug || 'home'} to={href}
                                 className={cn("flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-colors",
                                   active
-                                    ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium border-l-3 border-l-current"
+                                    ? "bg-sidebar-accent text-sidebar-accent-foreground font-medium border-r-3 border-r-current"
                                     : "text-sidebar-foreground/70 hover:bg-sidebar-accent/50")}>
                                 <span className="text-sm">{icon}</span>
                                 {item.title}
@@ -219,13 +264,6 @@ export default function Layout() {
               </aside>
             </>
           )}
-
-          {/* MAIN CONTENT */}
-          <main className={cn("flex-1 overflow-y-auto", !isHome && "lg:ml-0")}>
-            <div className="animate-fade-in">
-              <Outlet />
-            </div>
-          </main>
         </div>
       </div>
       <AboutBobModal open={aboutBobOpen} onOpenChange={setAboutBobOpen} />
