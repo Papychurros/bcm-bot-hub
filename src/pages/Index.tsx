@@ -51,7 +51,7 @@ function VideoEmbed() {
           </button>
         )}
         <iframe
-          src={`https://www.youtube.com/embed/VomJ_nvhTGw${playing ? '?autoplay=1' : ''}`}
+          src={`https://www.youtube.com/embed/QuZVAQL4crU${playing ? '?autoplay=1' : ''}`}
           title="Présentation des Bots"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
           allowFullScreen
