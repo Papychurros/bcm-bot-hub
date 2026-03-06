@@ -12,6 +12,8 @@ import BotHome from "./pages/BotHome";
 import ContentPage from "./pages/ContentPage";
 import QAHome from "./pages/QAHome";
 import QABotPage from "./pages/QABotPage";
+import MiniJeuxPage from "./pages/MiniJeuxPage";
+import TutosPage from "./pages/TutosPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +31,8 @@ const App = () => (
                 <Route path="/" element={<GuideHome />} />
                 <Route path="/guide/:botId" element={<BotHome />} />
                 <Route path="/guide/:botId/:pageSlug" element={<ContentPage />} />
+                <Route path="/mini-jeux" element={<MiniJeuxPage />} />
+                <Route path="/tutos" element={<TutosPage />} />
                 <Route path="/qa" element={<QAPasswordGate><QAHome /></QAPasswordGate>} />
                 <Route path="/qa/:botId" element={<QAPasswordGate><QABotPage /></QAPasswordGate>} />
               </Route>
