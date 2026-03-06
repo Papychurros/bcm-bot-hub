@@ -34,8 +34,8 @@ export default function QAHome() {
             <BotLogo key={id} botId={id} size="sm" className="w-14 h-14" />
           ))}
         </div>
-        <h1 className="text-4xl md:text-5xl font-display font-extrabold mb-2 bg-gradient-to-r from-bob via-mag-2 to-cash bg-clip-text text-transparent">
-          B.C.M
+        <h1 className="text-4xl md:text-5xl font-display font-extrabold mb-2">
+          <span className="text-bob">B</span>.<span className="text-cash">C</span>.<span className="text-mag-2">M</span>
         </h1>
         <p className="text-xs tracking-[0.25em] text-muted-foreground uppercase">Batterie de tests — Suivi qualité</p>
       </div>
