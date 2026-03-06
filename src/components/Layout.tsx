@@ -95,11 +95,9 @@ export default function Layout() {
           <SearchBar />
           <div className="flex-1" />
 
-          <span className="font-display font-bold text-sm tracking-widest">
+          <span className="absolute left-1/2 -translate-x-1/2 font-display font-bold text-sm tracking-widest pointer-events-none">
             <span className="text-bob">B</span>.<span className="text-cash">C</span>.<span className="text-mag-2">M</span>
           </span>
-
-          <div className="flex-1" />
 
           <button onClick={toggleTheme} className="p-1.5 rounded-lg hover:bg-secondary transition-colors">
             {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
