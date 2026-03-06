@@ -72,8 +72,12 @@ export default function QAPasswordGate({ children }: { children: React.ReactNode
       return;
     }
 
-    // At 4 digits, validate password
+    // At 4 digits, check easter egg first, then validate password
     if (next.length === 4) {
+      if (EASTER_EGGS_4[next]) {
+        triggerOverlay(EASTER_EGGS_4[next]);
+        return;
+      }
       if (next === QA_PASSWORD) {
         login();
       } else {
