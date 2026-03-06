@@ -199,9 +199,9 @@ export default function BreakoutGame() {
   }, []);
 
   return (
-    <div className="flex gap-5 items-start flex-col sm:flex-row">
-      <div className="relative flex-1 flex items-center justify-center bg-black rounded-lg overflow-hidden min-h-[420px]">
-        <canvas ref={canvasRef} width={W} height={H} className="block max-w-full max-h-full rounded-lg" />
+    <div className="flex flex-col items-center gap-4 w-full">
+      <div className="relative w-full max-w-[480px] bg-black rounded-lg overflow-hidden" style={{ aspectRatio: `${W}/${H}` }}>
+        <canvas ref={canvasRef} width={W} height={H} className="block w-full h-full rounded-lg" />
         {gameState === 'idle' && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/78 rounded-lg font-mono text-foreground gap-3">
             <div className="text-[34px]">🎯</div>
@@ -224,7 +224,7 @@ export default function BreakoutGame() {
           </div>
         )}
       </div>
-      <div className="flex flex-col items-center gap-4 flex-shrink-0 self-center sm:self-start">
+      <div className="flex flex-col items-center gap-4 flex-shrink-0">
         <Hpad color={COLOR} onDirection={handleDirection} />
         <div className="flex gap-2 flex-wrap justify-center">
           <ActionButton label="▶ Jouer" primary color={COLOR} onClick={start} />

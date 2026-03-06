@@ -240,22 +240,26 @@ export default function TetrisGame() {
   );
 
   return (
-    <div className="flex gap-5 items-start flex-col sm:flex-row">
-      <div className="relative flex items-start justify-center bg-black rounded-lg overflow-hidden min-h-[420px] flex-1 p-3 gap-3">
-        <canvas ref={canvasRef} width={W} height={H} className="block rounded-md border border-border" />
-        <div className="flex flex-col gap-2.5 min-w-[80px]">
-          <div className="font-mono text-[11px] text-foreground leading-relaxed">
-            <div className="font-bold" style={{ color: COLOR }}>SCORE</div>
-            <div>{String(score).padStart(5, '0')}</div>
-            <div className="font-bold mt-1.5" style={{ color: COLOR }}>BEST</div>
-            <div>{String(hiScore).padStart(5, '0')}</div>
-            <div className="font-bold mt-1.5" style={{ color: COLOR }}>LIGNES</div>
-            <div>{lines}</div>
-            <div className="font-bold mt-1.5" style={{ color: COLOR }}>NIVEAU</div>
-            <div>{level}</div>
+    <div className="flex flex-col items-center gap-4 w-full">
+      <div className="relative w-full max-w-[320px] bg-black rounded-lg overflow-hidden p-2">
+        <div className="flex items-start justify-center gap-3">
+          <div className="relative" style={{ aspectRatio: `${W}/${H}` }}>
+            <canvas ref={canvasRef} width={W} height={H} className="block w-full h-full rounded-md border border-border" />
           </div>
-          <div className="font-mono text-[11px] font-bold mt-1.5" style={{ color: COLOR }}>NEXT</div>
-          <canvas ref={nCanvasRef} width={80} height={80} className="rounded-md border border-border bg-[#0a0a0f]" />
+          <div className="flex flex-col gap-2 min-w-[70px]">
+            <div className="font-mono text-[11px] text-foreground leading-relaxed">
+              <div className="font-bold" style={{ color: COLOR }}>SCORE</div>
+              <div>{String(score).padStart(5, '0')}</div>
+              <div className="font-bold mt-1.5" style={{ color: COLOR }}>BEST</div>
+              <div>{String(hiScore).padStart(5, '0')}</div>
+              <div className="font-bold mt-1.5" style={{ color: COLOR }}>LIGNES</div>
+              <div>{lines}</div>
+              <div className="font-bold mt-1.5" style={{ color: COLOR }}>NIVEAU</div>
+              <div>{level}</div>
+            </div>
+            <div className="font-mono text-[11px] font-bold mt-1" style={{ color: COLOR }}>NEXT</div>
+            <canvas ref={nCanvasRef} width={80} height={80} className="rounded-md border border-border bg-[#0a0a0f] w-[70px] h-[70px]" />
+          </div>
         </div>
         {/* Overlays */}
         {gameState === 'idle' && (
@@ -278,7 +282,7 @@ export default function TetrisGame() {
           </div>
         )}
       </div>
-      <div className="flex flex-col items-center gap-4 flex-shrink-0 self-center sm:self-start">
+      <div className="flex flex-col items-center gap-4 flex-shrink-0">
         <Dpad color={COLOR} onDirection={handleDirection} centerButton={centerButton} />
         <div className="flex gap-2 flex-wrap justify-center">
           <ActionButton label="▶ Jouer" primary color={COLOR} onClick={start} />
