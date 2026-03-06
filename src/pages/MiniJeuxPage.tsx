@@ -5,6 +5,8 @@ const SnakeGame = lazy(() => import('@/components/games/SnakeGame'));
 const BreakoutGame = lazy(() => import('@/components/games/BreakoutGame'));
 const TetrisGame = lazy(() => import('@/components/games/TetrisGame'));
 const MemoryGame = lazy(() => import('@/components/games/MemoryGame'));
+const PongGame = lazy(() => import('@/components/games/PongGame'));
+const FlappyBrainGame = lazy(() => import('@/components/games/FlappyBrainGame'));
 
 interface GameDef {
   id: string;
@@ -17,10 +19,12 @@ interface GameDef {
 }
 
 const GAMES: GameDef[] = [
-{ id: 'tetris', num: '01 / 04', icon: '🟪', title: 'B.O.B Tetris', desc: 'Les pièces classiques revisitées aux couleurs BCM. Empile, efface, domine.', tag: 'Arcade', color: '#a855f7' },
-{ id: 'snake', num: '02 / 04', icon: '🐍', title: 'C.A.S.H Snake', desc: 'Le serpent néon sur fond noir absolu. Collecte les €, grandis, survie.', tag: 'Arcade', color: '#39ff14' },
-{ id: 'breakout', num: '03 / 04', icon: '🎯', title: 'M.A.G Casse-Briques', desc: 'Détruis les briques aux couleurs des libellés MAG. Réflexes requis.', tag: 'Arcade', color: '#ff6a00' },
-{ id: 'memory', num: '04 / 04', icon: '🃏', title: 'BCM Mémory', desc: 'Retrouve les paires de logos BOB, CASH et MAG. Bats ton meilleur temps.', tag: 'Réflexion', color: '#00e5ff' }];
+{ id: 'tetris', num: '01 / 06', icon: '🟪', title: 'B.O.B Tetris', desc: 'Les pièces classiques revisitées aux couleurs BCM. Empile, efface, domine.', tag: 'Arcade', color: '#a855f7' },
+{ id: 'snake', num: '02 / 06', icon: '🐍', title: 'C.A.S.H Snake', desc: 'Le serpent néon sur fond noir absolu. Collecte les €, grandis, survie.', tag: 'Arcade', color: '#39ff14' },
+{ id: 'breakout', num: '03 / 06', icon: '🎯', title: 'M.A.G Casse-Briques', desc: 'Détruis les briques aux couleurs des libellés MAG. Réflexes requis.', tag: 'Arcade', color: '#ff6a00' },
+{ id: 'memory', num: '04 / 06', icon: '🃏', title: 'BCM Mémory', desc: 'Retrouve les paires de logos BOB, CASH et MAG. Bats ton meilleur temps.', tag: 'Réflexion', color: '#00e5ff' },
+{ id: 'pong', num: '05 / 06', icon: '🏓', title: 'Tennis de Bot', desc: 'Affronte le bot dans un duel de raquettes néon. Premier à 7 points gagne.', tag: 'Arcade', color: '#00e5ff' },
+{ id: 'flappy', num: '06 / 06', icon: '🧠', title: 'Flappy Brain', desc: 'Guide le cerveau entre les tuyaux neuronaux. Un tap, un battement, zéro erreur.', tag: 'Arcade', color: '#a855f7' }];
 
 
 function GameCard({ game, onClick }: {game: GameDef;onClick: () => void;}) {
@@ -114,6 +118,8 @@ export default function MiniJeuxPage() {
             {activeGame === 'snake' && <SnakeGame />}
             {activeGame === 'breakout' && <BreakoutGame />}
             {activeGame === 'memory' && <MemoryGame />}
+            {activeGame === 'pong' && <PongGame />}
+            {activeGame === 'flappy' && <FlappyBrainGame />}
           </Suspense>
         </GameModal>
       }
