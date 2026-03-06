@@ -59,6 +59,8 @@ export default function Layout() {
   const breadcrumb = () => {
     const parts: string[] = [];
     if (isQA) parts.push('Développeur');
+    else if (location.pathname.startsWith('/mini-jeux')) parts.push('Mini Jeux');
+    else if (location.pathname.startsWith('/tutos')) parts.push('Tutos');
     else parts.push('GUIDE');
     if (activeBotId) parts.push(bots[activeBotId].name);
     if (activePageSlug) {
