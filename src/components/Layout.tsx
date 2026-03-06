@@ -84,7 +84,6 @@ export default function Layout() {
           <Link to="/" className="p-1.5 rounded-lg hover:bg-secondary transition-colors">
             <Home className="w-4 h-4" />
           </Link>
-          <SearchBar />
           <div className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground">
             {breadcrumb().map((part, i) => (
               <span key={i} className="flex items-center gap-1.5">
@@ -93,6 +92,7 @@ export default function Layout() {
               </span>
             ))}
           </div>
+          <SearchBar />
           <div className="flex-1" />
 
           <span className="font-display font-bold text-sm tracking-widest">
