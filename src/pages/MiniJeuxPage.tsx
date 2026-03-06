@@ -85,7 +85,7 @@ export default function MiniJeuxPage() {
         <h1 className="text-[clamp(2.8rem,6vw,5rem)] font-extrabold leading-[1.05] tracking-tight">
           Mini<span className="block bg-gradient-to-br from-[#a855f7] via-[#ff6a00] to-[#39ff14] bg-clip-text text-transparent">Jeux</span>
         </h1>
-        <p className="mt-4 font-mono text-[13px] text-muted-foreground tracking-wider">// 4 jeux · dark mode · made for BCM</p>
+        
       </header>
 
       {/* Grid */}
