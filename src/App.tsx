@@ -12,6 +12,8 @@ import BotHome from "./pages/BotHome";
 import ContentPage from "./pages/ContentPage";
 import QAHome from "./pages/QAHome";
 import QABotPage from "./pages/QABotPage";
+import MiniJeuxPage from "./pages/MiniJeuxPage";
+import TutosPage from "./pages/TutosPage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
