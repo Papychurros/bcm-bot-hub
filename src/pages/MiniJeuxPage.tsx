@@ -80,7 +80,7 @@ export default function MiniJeuxPage() {
       <header className="text-center mb-[72px]">
         <div className="inline-flex items-center gap-2 font-mono text-[11px] tracking-[0.15em] uppercase text-muted-foreground border border-border rounded-full px-4 py-1.5 mb-7">
           <span className="w-1.5 h-1.5 rounded-full bg-[#00e5ff] shadow-[0_0_8px_#00e5ff] animate-pulse" />
-          BCM — Espace Jeux
+          ESPACE JEUX
         </div>
         <h1 className="text-[clamp(2.8rem,6vw,5rem)] font-extrabold leading-[1.05] tracking-tight">
           Mini<span className="block bg-gradient-to-br from-[#a855f7] via-[#ff6a00] to-[#39ff14] bg-clip-text text-transparent">Jeux</span>
