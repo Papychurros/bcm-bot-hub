@@ -4,36 +4,56 @@ interface TourStep {
   targetSelector: string;
   text: string;
   arrowDirection: 'up' | 'down';
+  mobileRadiusExtra?: number;
 }
+
+const isMobile = () => window.innerWidth < 1024;
 
 const STEPS: TourStep[] = [
   {
     targetSelector: '[data-tour="bot-bob"]',
-    text: 'Cliquez sur un logo de bot\npour en apprendre plus !',
+    text: 'Cliquez sur un logo de bot\npour en apprendre plus\nou descendez pour voir la vidéo\nde présentation !',
     arrowDirection: 'up',
+    mobileRadiusExtra: 10,
   },
   {
     targetSelector: '[data-tour="bottom-nav"]',
     text: 'Sélectionnez un menu pour\nvous déplacer dans le site.',
     arrowDirection: 'down',
+    mobileRadiusExtra: 8,
   },
 ];
 
+const TOUR_DONE_KEY = '__bcm_tour_done';
+
 export default function OnboardingTour() {
-  const [step, setStep] = useState(-1); // -1 = not started
+  const [step, setStep] = useState(-1);
   const [visible, setVisible] = useState(false);
   const [fading, setFading] = useState(false);
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const rafRef = useRef(0);
 
-  // Start after 700ms
+  // Check sessionStorage so tour only runs once per session (survives tab switches)
   useEffect(() => {
+    if (sessionStorage.getItem(TOUR_DONE_KEY)) return;
     const t = setTimeout(() => {
       setStep(0);
       setVisible(true);
     }, 700);
     return () => clearTimeout(t);
   }, []);
+
+  // Block scrolling while tour is active
+  useEffect(() => {
+    if (visible) {
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+    }
+    return () => {
+      document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
+    };
+  }, [visible]);
 
   // Track target element position
   useEffect(() => {
@@ -60,6 +80,7 @@ export default function OnboardingTour() {
       if (step + 1 >= STEPS.length) {
         setVisible(false);
         setStep(-1);
+        sessionStorage.setItem(TOUR_DONE_KEY, '1');
       } else {
         setStep(s => s + 1);
       }
@@ -70,44 +91,59 @@ export default function OnboardingTour() {
   if (!visible || step < 0 || !targetRect) return null;
 
   const current = STEPS[step];
+  const mobile = isMobile();
+
+  // For mobile step 1, target just the bot card (not parent container)
   const cx = targetRect.left + targetRect.width / 2;
   const cy = targetRect.top + targetRect.height / 2;
-  const radius = Math.max(targetRect.width, targetRect.height) / 2 + 24;
+
+  // Mobile: tighter radius for bot card, larger padding for bottom nav
+  const extraRadius = mobile ? (current.mobileRadiusExtra || 0) : 0;
+  let radius: number;
+  if (step === 1 && mobile) {
+    // For bottom nav on mobile, extend circle to fully encompass the bar
+    radius = Math.max(targetRect.width, targetRect.height) / 2 + 16 + extraRadius;
+  } else {
+    radius = Math.max(targetRect.width, targetRect.height) / 2 + 24 + extraRadius;
+  }
 
   // Tooltip positioning
   const tooltipWidth = 300;
   const arrowLen = 60;
   const isUp = current.arrowDirection === 'up';
 
-  // Place tooltip above or below the circle
   let tooltipTop: number;
   let arrowStartY: number;
   let arrowEndY: number;
 
   if (isUp) {
-    // Arrow points up toward target, tooltip above circle
-    tooltipTop = cy - radius - arrowLen - 160;
+    tooltipTop = cy - radius - arrowLen - 180;
     arrowStartY = cy - radius - arrowLen;
     arrowEndY = cy - radius + 4;
   } else {
-    // Arrow points down toward target, tooltip above arrow
-    tooltipTop = cy - radius - 160;
+    tooltipTop = cy - radius - arrowLen - 180;
     arrowStartY = cy + radius + arrowLen;
     arrowEndY = cy + radius - 4;
   }
 
   // Clamp tooltip so it stays in viewport
-  tooltipTop = Math.max(16, Math.min(tooltipTop, window.innerHeight - 180));
+  tooltipTop = Math.max(16, Math.min(tooltipTop, window.innerHeight - 200));
   const tooltipLeft = Math.max(16, Math.min(cx - tooltipWidth / 2, window.innerWidth - tooltipWidth - 16));
 
   return (
     <div
       className="fixed inset-0 z-[9999]"
+      onClick={(e) => e.stopPropagation()}
+      onTouchMove={(e) => e.preventDefault()}
       style={{
         opacity: fading ? 0 : 1,
         transition: 'opacity 0.3s ease',
+        touchAction: 'none',
       }}
     >
+      {/* Full-screen click blocker */}
+      <div className="absolute inset-0" style={{ pointerEvents: 'all' }} />
+
       {/* Overlay with cutout */}
       <svg className="absolute inset-0 w-full h-full" style={{ pointerEvents: 'none' }}>
         <defs>
@@ -152,7 +188,6 @@ export default function OnboardingTour() {
           x1={cx} y1={arrowStartY} x2={cx} y2={arrowEndY}
           stroke="white" strokeWidth="2" strokeDasharray="6 4"
         />
-        {/* Arrow head */}
         <polygon
           points={isUp
             ? `${cx},${arrowEndY} ${cx - 6},${arrowEndY - 10} ${cx + 6},${arrowEndY - 10}`
