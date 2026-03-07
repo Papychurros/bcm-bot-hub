@@ -39,9 +39,14 @@ export default function OnboardingTour() {
   useEffect(() => {
     if (step < 0 || step >= STEPS.length) return;
     const update = () => {
-      const el = document.querySelector(STEPS[step].targetSelector);
+      const els = document.querySelectorAll(STEPS[step].targetSelector);
+      let el: Element | null = null;
+      els.forEach(e => {
+        const r = e.getBoundingClientRect();
+        if (r.width > 0 && r.height > 0) el = e;
+      });
       if (el) {
-        setTargetRect(el.getBoundingClientRect());
+        setTargetRect((el as Element).getBoundingClientRect());
       }
       rafRef.current = requestAnimationFrame(update);
     };
