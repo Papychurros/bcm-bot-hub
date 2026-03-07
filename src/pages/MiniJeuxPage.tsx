@@ -47,7 +47,8 @@ const GAMES: GameDef[] = [
   { id: 'invaders', num: '14 / 17', icon: '👾', title: 'B.O.B Space Invaders', desc: 'Élimine les vagues d\'envahisseurs ! Protège tes boucliers et survie.', tag: 'Arcade', color: '#ef4444' },
   { id: 'whack', num: '15 / 17', icon: '🔨', title: 'B.O.B Tape Taupe', desc: 'Tape les taupes le plus vite possible ! Les combos multiplient les points.', tag: 'Réflexe', color: '#ef4444' },
   { id: 'platformer', num: '16 / 17', icon: '🤖', title: 'B.O.B Platformer', desc: 'Saute sur les plateformes, collecte les étoiles, écrase les ennemis !', tag: 'Arcade', color: '#a855f7' },
-  { id: 'dino', num: '17 / 17', icon: '🦕', title: 'B.O.B Dino Runner', desc: 'Cours, saute et esquive les obstacles. Le classique du runner revisité !', tag: 'Arcade', color: '#22c55e' },
+  { id: 'dino', num: '17 / 18', icon: '🦕', title: 'B.O.B Dino Runner', desc: 'Cours, saute et esquive les obstacles. Le classique du runner revisité !', tag: 'Arcade', color: '#22c55e' },
+  { id: 'rps', num: '18 / 18', icon: '✊', title: 'B.O.B Pierre Feuille Ciseaux', desc: 'Affronte B.O.B dans le classique ! Premier à 3 victoires remporte la partie.', tag: 'Réflexion', color: '#06b6d4' },
 ];
 
 function GameCard({ game, onClick }: { game: GameDef; onClick: () => void }) {
