@@ -18,9 +18,9 @@ interface Difficulty {
 }
 
 const DIFFICULTIES: Difficulty[] = [
-  { label: 'Facile', emoji: '😊', botSpeed: 1.2, botPadH: 60, ballInit: 2.5, ballMax: 6 },
-  { label: 'Moyen', emoji: '😐', botSpeed: 1.8, botPadH: 100, ballInit: 2.8, ballMax: 8 },
-  { label: 'Difficile', emoji: '😤', botSpeed: 3.2, botPadH: 140, ballInit: 3.2, ballMax: 9 },
+  { label: 'Facile', emoji: '😊', botSpeed: 1.5, botPadH: 60, ballInit: 2.5, ballMax: 6 },
+  { label: 'Moyen', emoji: '😐', botSpeed: 3.5, botPadH: 100, ballInit: 2.8, ballMax: 8 },
+  { label: 'Difficile', emoji: '😤', botSpeed: 6.5, botPadH: 140, ballInit: 3.2, ballMax: 9 },
   { label: 'MDR', emoji: '💀', botSpeed: 999, botPadH: -1, ballInit: 3.5, ballMax: 10 },
 ];
 
@@ -85,13 +85,13 @@ export default function PongGame() {
     const botPadH = diff.botPadH === -1 ? Math.min(W * 0.9, W - 20) : Math.min(diff.botPadH, W - 20);
     const playerPadH = s.playerPadH;
 
-    // Bot AI
+    // Bot AI — follows ball.x (horizontal paddles)
     const botCenter = s.botY + botPadH / 2;
-    const bdiff = s.ball.y - botCenter;
+    const targetDiff = s.ball.x - botCenter;
     if (diff.botSpeed >= 999) {
-      s.botY = clamp(s.ball.y - botPadH / 2, 0, W - botPadH);
-    } else {
-      s.botY += clamp(bdiff * 0.06, -diff.botSpeed, diff.botSpeed);
+      s.botY = clamp(s.ball.x - botPadH / 2, 0, W - botPadH);
+    } else if (Math.abs(targetDiff) > 2) {
+      s.botY += Math.sign(targetDiff) * Math.min(Math.abs(targetDiff), diff.botSpeed);
       s.botY = clamp(s.botY, 0, W - botPadH);
     }
 
