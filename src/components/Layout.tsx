@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Outlet, useLocation, useNavigate, Link } from 'react-router-dom';
-import { Menu, X, Home, BookOpen, FlaskConical, ChevronRight, Sun, Moon, Gamepad2, Youtube } from 'lucide-react';
+import { Menu, X, Home, BookOpen, FlaskConical, ChevronRight, Sun, Moon, Gamepad2, Youtube, MessageCircle } from 'lucide-react';
+import ChatModal from '@/components/ChatModal';
 import { bots, botList, getBotGradient, getBotColor, type BotId } from '@/data/bots';
 import { useApp } from '@/contexts/AppContext';
 import { useThemeToggle } from '@/contexts/ThemeContext';
@@ -43,6 +44,7 @@ export default function Layout() {
   const [aboutBobOpen, setAboutBobOpen] = useState(false);
   const [aboutCashOpen, setAboutCashOpen] = useState(false);
   const [aboutMagOpen, setAboutMagOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
 
   const isQA = location.pathname.startsWith('/qa');
   const pathParts = location.pathname.split('/').filter(Boolean);
@@ -99,6 +101,9 @@ export default function Layout() {
             <span className="text-bob">B</span>.<span className="text-cash">C</span>.<span className="text-mag-2">M</span>
           </span>
 
+          <button onClick={() => setChatOpen(!chatOpen)} className="p-1.5 rounded-lg hover:bg-secondary transition-colors">
+            <MessageCircle className="w-4 h-4" style={{ color: '#a855f7' }} />
+          </button>
           <button onClick={toggleTheme} className="p-1.5 rounded-lg hover:bg-secondary transition-colors">
             {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
@@ -270,6 +275,7 @@ export default function Layout() {
       <AboutBobModal open={aboutBobOpen} onOpenChange={setAboutBobOpen} />
       <AboutCashModal open={aboutCashOpen} onOpenChange={setAboutCashOpen} />
       <AboutMagModal open={aboutMagOpen} onOpenChange={setAboutMagOpen} />
+      <ChatModal open={chatOpen} onClose={() => setChatOpen(false)} />
     </>
   );
 }
