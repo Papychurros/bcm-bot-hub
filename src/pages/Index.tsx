@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { bots, botList, getBotGradient } from '@/data/bots';
 import BotLogo from '@/components/BotLogo';
+import OnboardingTour from '@/components/OnboardingTour';
 import { cn } from '@/lib/utils';
 
 function Particles() {
@@ -107,6 +108,7 @@ export default function GuideHome() {
           };
           return (
             <button key={id} onClick={() => handleBotClick(id)}
+              {...(id === 'bob' ? { 'data-tour': 'bot-bob' } : {})}
               className="flex flex-col items-center gap-3 cursor-pointer group transition-transform duration-300 hover:scale-105">
               <div className={cn("w-28 h-28 md:w-32 md:h-32 rounded-[22px] flex items-center justify-center transition-shadow duration-300", styleMap[id])}>
                 <BotLogo botId={id} size="xl" className="transition-transform duration-300 group-hover:scale-110" />
@@ -129,6 +131,8 @@ export default function GuideHome() {
       <footer className="mt-8 text-xs text-muted-foreground/50 animate-fade-in-up opacity-0 stagger-6 relative z-10">
         Fait par Alexandre Bertoneche
       </footer>
+
+      <OnboardingTour />
     </div>
   );
 }

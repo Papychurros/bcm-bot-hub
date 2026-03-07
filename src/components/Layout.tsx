@@ -135,7 +135,7 @@ export default function Layout() {
           {/* MAIN CONTENT */}
           <main className="flex-1 overflow-y-auto">
             {/* Mobile bottom nav */}
-            <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-sidebar border-t border-sidebar-border flex items-center justify-around py-1.5">
+            <div data-tour="bottom-nav" className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-sidebar border-t border-sidebar-border flex items-center justify-around py-1.5">
               {mainNavItems.map(item => (
                 <button
                   key={item.id}
