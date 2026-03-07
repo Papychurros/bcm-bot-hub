@@ -18,9 +18,9 @@ interface Difficulty {
 }
 
 const DIFFICULTIES: Difficulty[] = [
-  { label: 'Facile', emoji: '😊', botSpeed: 1.2, botPadH: 140, ballInit: 2.5, ballMax: 6 },
+  { label: 'Facile', emoji: '😊', botSpeed: 1.2, botPadH: 60, ballInit: 2.5, ballMax: 6 },
   { label: 'Moyen', emoji: '😐', botSpeed: 1.8, botPadH: 100, ballInit: 2.8, ballMax: 8 },
-  { label: 'Difficile', emoji: '😤', botSpeed: 3.2, botPadH: 60, ballInit: 3.2, ballMax: 9 },
+  { label: 'Difficile', emoji: '😤', botSpeed: 3.2, botPadH: 140, ballInit: 3.2, ballMax: 9 },
   { label: 'MDR', emoji: '💀', botSpeed: 999, botPadH: -1, ballInit: 3.5, ballMax: 10 },
 ];
 
@@ -63,9 +63,9 @@ export default function PongGame() {
   const resetPositions = useCallback(() => {
     const s = stateRef.current;
     const diff = getDiff();
-    const padH = diff.botPadH === -1 ? s.H : diff.botPadH;
-    s.playerY = s.H / 2 - s.playerPadH / 2;
-    s.botY = s.H / 2 - padH / 2;
+    const botPadH = diff.botPadH === -1 ? Math.min(s.W * 0.9, s.W - 20) : Math.min(diff.botPadH, s.W - 20);
+    s.playerY = s.W / 2 - s.playerPadH / 2;
+    s.botY = s.W / 2 - botPadH / 2;
   }, [getDiff]);
 
   const start = useCallback(() => {
@@ -82,17 +82,17 @@ export default function PongGame() {
     if (s.state !== 'playing') return;
     const { W, H } = s;
     const diff = getDiff();
-    const botPadH = diff.botPadH === -1 ? H : diff.botPadH;
+    const botPadH = diff.botPadH === -1 ? Math.min(W * 0.9, W - 20) : Math.min(diff.botPadH, W - 20);
     const playerPadH = s.playerPadH;
 
     // Bot AI
     const botCenter = s.botY + botPadH / 2;
     const bdiff = s.ball.y - botCenter;
     if (diff.botSpeed >= 999) {
-      s.botY = clamp(s.ball.y - botPadH / 2, 0, H - botPadH);
+      s.botY = clamp(s.ball.y - botPadH / 2, 0, W - botPadH);
     } else {
       s.botY += clamp(bdiff * 0.06, -diff.botSpeed, diff.botSpeed);
-      s.botY = clamp(s.botY, 0, H - botPadH);
+      s.botY = clamp(s.botY, 0, W - botPadH);
     }
 
     // Ball movement
@@ -153,7 +153,7 @@ export default function PongGame() {
     if (!ctx) return;
     const { W, H } = s;
     const diff = getDiff();
-    const botPadH = diff.botPadH === -1 ? H : diff.botPadH;
+    const botPadH = diff.botPadH === -1 ? Math.min(W * 0.9, W - 20) : Math.min(diff.botPadH, W - 20);
     const playerPadH = s.playerPadH;
 
     update();
@@ -339,7 +339,7 @@ export default function PongGame() {
 
   return (
     <div className="flex flex-col items-center gap-3 w-full h-full">
-      <div ref={containerRef} className="relative w-full flex-1 min-h-0 bg-black rounded-lg overflow-hidden">
+      <div ref={containerRef} className="relative w-full flex-1 min-h-0 bg-black rounded-lg overflow-hidden" style={{ maxHeight: '70vh', aspectRatio: '4/3' }}>
         <canvas
           ref={canvasRef}
           width={dims.w}
