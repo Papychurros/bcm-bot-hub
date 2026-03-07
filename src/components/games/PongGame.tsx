@@ -63,9 +63,9 @@ export default function PongGame() {
   const resetPositions = useCallback(() => {
     const s = stateRef.current;
     const diff = getDiff();
-    const padH = diff.botPadH === -1 ? s.H : diff.botPadH;
-    s.playerY = s.H / 2 - s.playerPadH / 2;
-    s.botY = s.H / 2 - padH / 2;
+    const botPadH = diff.botPadH === -1 ? Math.min(s.W * 0.9, s.W - 20) : Math.min(diff.botPadH, s.W - 20);
+    s.playerY = s.W / 2 - s.playerPadH / 2;
+    s.botY = s.W / 2 - botPadH / 2;
   }, [getDiff]);
 
   const start = useCallback(() => {
