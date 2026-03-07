@@ -112,7 +112,7 @@ export default function Layout() {
         <div className="flex flex-1 overflow-hidden">
           {/* MAIN SIDEBAR (LEFT) - always visible on desktop */}
           <div className="hidden lg:block w-16 shrink-0" />
-          <aside className="hidden lg:flex fixed top-[3.5rem] left-0 bottom-0 w-16 bg-sidebar border-r border-sidebar-border flex-col items-center py-4 gap-1 z-30">
+          <aside data-tour="bottom-nav" className="hidden lg:flex fixed top-[3.5rem] left-0 bottom-0 w-16 bg-sidebar border-r border-sidebar-border flex-col items-center py-4 gap-1 z-30">
             {mainNavItems.map(item => (
               <button
                 key={item.id}
@@ -135,7 +135,7 @@ export default function Layout() {
           {/* MAIN CONTENT */}
           <main className="flex-1 overflow-y-auto">
             {/* Mobile bottom nav */}
-            <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-sidebar border-t border-sidebar-border flex items-center justify-around py-1.5">
+            <div data-tour="bottom-nav" className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-sidebar border-t border-sidebar-border flex items-center justify-around py-1.5">
               {mainNavItems.map(item => (
                 <button
                   key={item.id}
