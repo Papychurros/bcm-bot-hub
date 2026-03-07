@@ -108,9 +108,8 @@ export default function GuideHome() {
           };
           return (
             <button key={id} onClick={() => handleBotClick(id)}
-              {...(id === 'bob' ? { 'data-tour': 'bot-bob' } : {})}
               className="flex flex-col items-center gap-3 cursor-pointer group transition-transform duration-300 hover:scale-105">
-              <div className={cn("w-28 h-28 md:w-32 md:h-32 rounded-[22px] flex items-center justify-center transition-shadow duration-300", styleMap[id])}>
+              <div {...(id === 'bob' ? { 'data-tour': 'bot-bob' } : {})} className={cn("w-28 h-28 md:w-32 md:h-32 rounded-[22px] flex items-center justify-center transition-shadow duration-300", styleMap[id])}>
                 <BotLogo botId={id} size="xl" className="transition-transform duration-300 group-hover:scale-110" />
               </div>
               <h2 className={cn("text-base font-display font-bold bg-gradient-to-r bg-clip-text text-transparent", getBotGradient(id))}>

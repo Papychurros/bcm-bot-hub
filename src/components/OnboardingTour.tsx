@@ -4,7 +4,7 @@ interface TourStep {
   targetSelector: string;
   text: string;
   arrowDirection: 'up' | 'down';
-  mobileRadiusExtra?: number;
+  useRect?: boolean; // use rounded rectangle instead of circle
 }
 
 const isMobile = () => window.innerWidth < 1024;
@@ -14,17 +14,18 @@ const STEPS: TourStep[] = [
     targetSelector: '[data-tour="bot-bob"]',
     text: 'Cliquez sur un logo de bot\npour en apprendre plus\nou descendez pour voir la vidéo\nde présentation !',
     arrowDirection: 'up',
-    mobileRadiusExtra: 10,
   },
   {
     targetSelector: '[data-tour="bottom-nav"]',
     text: 'Sélectionnez un menu pour\nvous déplacer dans le site.',
     arrowDirection: 'down',
-    mobileRadiusExtra: 8,
+    useRect: true,
   },
 ];
 
 const TOUR_DONE_KEY = '__bcm_tour_done';
+const PAD = 10;
+const RECT_RX = 16;
 
 export default function OnboardingTour() {
   const [step, setStep] = useState(-1);
@@ -33,7 +34,6 @@ export default function OnboardingTour() {
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const rafRef = useRef(0);
 
-  // Check sessionStorage so tour only runs once per session (survives tab switches)
   useEffect(() => {
     if (sessionStorage.getItem(TOUR_DONE_KEY)) return;
     const t = setTimeout(() => {
@@ -43,7 +43,7 @@ export default function OnboardingTour() {
     return () => clearTimeout(t);
   }, []);
 
-  // Block scrolling while tour is active
+  // Block scrolling
   useEffect(() => {
     if (visible) {
       document.body.style.overflow = 'hidden';
@@ -55,7 +55,7 @@ export default function OnboardingTour() {
     };
   }, [visible]);
 
-  // Track target element position
+  // Track target
   useEffect(() => {
     if (step < 0 || step >= STEPS.length) return;
     const update = () => {
@@ -65,9 +65,7 @@ export default function OnboardingTour() {
         const r = e.getBoundingClientRect();
         if (r.width > 0 && r.height > 0) el = e;
       });
-      if (el) {
-        setTargetRect((el as Element).getBoundingClientRect());
-      }
+      if (el) setTargetRect((el as Element).getBoundingClientRect());
       rafRef.current = requestAnimationFrame(update);
     };
     update();
@@ -91,57 +89,51 @@ export default function OnboardingTour() {
   if (!visible || step < 0 || !targetRect) return null;
 
   const current = STEPS[step];
-  const mobile = isMobile();
+  const useRect = current.useRect && isMobile();
 
-  // For mobile step 1, target just the bot card (not parent container)
   const cx = targetRect.left + targetRect.width / 2;
   const cy = targetRect.top + targetRect.height / 2;
+  const radius = Math.max(targetRect.width, targetRect.height) / 2 + 24;
 
-  // Mobile: tighter radius for bot card, larger padding for bottom nav
-  const extraRadius = mobile ? (current.mobileRadiusExtra || 0) : 0;
-  let radius: number;
-  if (step === 1 && mobile) {
-    // For bottom nav on mobile, extend circle to fully encompass the bar
-    radius = Math.max(targetRect.width, targetRect.height) / 2 + 16 + extraRadius;
-  } else {
-    radius = Math.max(targetRect.width, targetRect.height) / 2 + 24 + extraRadius;
-  }
+  // Rect cutout dimensions (for navbar)
+  const rx = targetRect.left - PAD;
+  const ry = targetRect.top - PAD;
+  const rw = targetRect.width + PAD * 2;
+  const rh = targetRect.height + PAD * 2;
 
-  // Tooltip positioning
+  // Arrow & tooltip
   const tooltipWidth = 300;
   const arrowLen = 60;
   const isUp = current.arrowDirection === 'up';
 
-  let tooltipTop: number;
-  let arrowStartY: number;
-  let arrowEndY: number;
-
-  if (isUp) {
-    tooltipTop = cy - radius - arrowLen - 180;
-    arrowStartY = cy - radius - arrowLen;
-    arrowEndY = cy - radius + 4;
+  let arrowTipY: number;
+  let arrowBaseY: number;
+  if (useRect) {
+    arrowTipY = ry - 4;
+    arrowBaseY = ry - arrowLen;
+  } else if (isUp) {
+    arrowTipY = cy - radius + 4;
+    arrowBaseY = cy - radius - arrowLen;
   } else {
-    tooltipTop = cy - radius - arrowLen - 180;
-    arrowStartY = cy + radius + arrowLen;
-    arrowEndY = cy + radius - 4;
+    arrowTipY = cy + radius - 4;
+    arrowBaseY = cy + radius + arrowLen;
   }
 
-  // Clamp tooltip so it stays in viewport
-  tooltipTop = Math.max(16, Math.min(tooltipTop, window.innerHeight - 200));
+  // Tooltip always above arrow
+  const tooltipTop = Math.max(16, Math.min(
+    (useRect ? arrowBaseY : isUp ? arrowBaseY : arrowBaseY) - 160,
+    window.innerHeight - 200
+  ));
   const tooltipLeft = Math.max(16, Math.min(cx - tooltipWidth / 2, window.innerWidth - tooltipWidth - 16));
 
   return (
     <div
       className="fixed inset-0 z-[9999]"
-      onClick={(e) => e.stopPropagation()}
-      onTouchMove={(e) => e.preventDefault()}
-      style={{
-        opacity: fading ? 0 : 1,
-        transition: 'opacity 0.3s ease',
-        touchAction: 'none',
-      }}
+      onClick={e => e.stopPropagation()}
+      onTouchMove={e => e.preventDefault()}
+      style={{ opacity: fading ? 0 : 1, transition: 'opacity 0.3s ease', touchAction: 'none' }}
     >
-      {/* Full-screen click blocker */}
+      {/* Click blocker */}
       <div className="absolute inset-0" style={{ pointerEvents: 'all' }} />
 
       {/* Overlay with cutout */}
@@ -149,49 +141,54 @@ export default function OnboardingTour() {
         <defs>
           <mask id="tour-mask">
             <rect width="100%" height="100%" fill="white" />
-            <circle cx={cx} cy={cy} r={radius + 8} fill="black" />
+            {useRect ? (
+              <rect x={rx - 4} y={ry - 4} width={rw + 8} height={rh + 8} rx={RECT_RX} fill="black" />
+            ) : (
+              <circle cx={cx} cy={cy} r={radius + 8} fill="black" />
+            )}
           </mask>
         </defs>
         <rect width="100%" height="100%" fill="rgba(0,0,0,0.72)" mask="url(#tour-mask)" />
       </svg>
 
-      {/* Animated dashed circle */}
+      {/* Animated border */}
       <svg className="absolute inset-0 w-full h-full" style={{ pointerEvents: 'none' }}>
-        <circle
-          cx={cx} cy={cy} r={radius}
-          fill="none"
-          stroke="white"
-          strokeWidth="2"
-          strokeDasharray="10 6"
-          style={{
-            animation: 'tour-rotate 12s linear infinite',
-            transformOrigin: `${cx}px ${cy}px`,
-          }}
-        />
-        <circle
-          cx={cx} cy={cy} r={radius + 6}
-          fill="none"
-          stroke="hsl(262, 83%, 58%)"
-          strokeWidth="3"
-          opacity="0.35"
-          style={{
-            animation: 'tour-glow 2s ease-in-out infinite',
-            filter: 'blur(4px)',
-            transformOrigin: `${cx}px ${cy}px`,
-          }}
-        />
+        {useRect ? (
+          <>
+            <rect
+              x={rx} y={ry} width={rw} height={rh} rx={RECT_RX}
+              fill="none" stroke="white" strokeWidth="2" strokeDasharray="10 6"
+            />
+            <rect
+              x={rx - 3} y={ry - 3} width={rw + 6} height={rh + 6} rx={RECT_RX + 2}
+              fill="none" stroke="hsl(262, 83%, 58%)" strokeWidth="3" opacity="0.35"
+              style={{ animation: 'tour-glow 2s ease-in-out infinite', filter: 'blur(4px)' }}
+            />
+          </>
+        ) : (
+          <>
+            <circle
+              cx={cx} cy={cy} r={radius}
+              fill="none" stroke="white" strokeWidth="2" strokeDasharray="10 6"
+              style={{ animation: 'tour-rotate 12s linear infinite', transformOrigin: `${cx}px ${cy}px` }}
+            />
+            <circle
+              cx={cx} cy={cy} r={radius + 6}
+              fill="none" stroke="hsl(262, 83%, 58%)" strokeWidth="3" opacity="0.35"
+              style={{ animation: 'tour-glow 2s ease-in-out infinite', filter: 'blur(4px)', transformOrigin: `${cx}px ${cy}px` }}
+            />
+          </>
+        )}
       </svg>
 
       {/* Arrow */}
       <svg className="absolute inset-0 w-full h-full" style={{ pointerEvents: 'none' }}>
-        <line
-          x1={cx} y1={arrowStartY} x2={cx} y2={arrowEndY}
-          stroke="white" strokeWidth="2" strokeDasharray="6 4"
-        />
+        <line x1={cx} y1={arrowBaseY} x2={cx} y2={arrowTipY} stroke="white" strokeWidth="2" strokeDasharray="6 4" />
         <polygon
-          points={isUp
-            ? `${cx},${arrowEndY} ${cx - 6},${arrowEndY - 10} ${cx + 6},${arrowEndY - 10}`
-            : `${cx},${arrowEndY} ${cx - 6},${arrowEndY + 10} ${cx + 6},${arrowEndY + 10}`
+          points={
+            isUp || useRect
+              ? `${cx},${arrowTipY} ${cx - 6},${arrowTipY - 10} ${cx + 6},${arrowTipY - 10}`
+              : `${cx},${arrowTipY} ${cx - 6},${arrowTipY + 10} ${cx + 6},${arrowTipY + 10}`
           }
           fill="white"
         />
@@ -200,13 +197,7 @@ export default function OnboardingTour() {
       {/* Tooltip */}
       <div
         className="absolute flex flex-col items-center gap-3"
-        style={{
-          top: tooltipTop,
-          left: tooltipLeft,
-          width: tooltipWidth,
-          pointerEvents: 'all',
-          zIndex: 10000,
-        }}
+        style={{ top: tooltipTop, left: tooltipLeft, width: tooltipWidth, pointerEvents: 'all', zIndex: 10000 }}
       >
         <div
           className="rounded-xl px-6 py-4 text-center text-sm font-medium text-white whitespace-pre-line leading-relaxed"
@@ -228,7 +219,6 @@ export default function OnboardingTour() {
         </button>
       </div>
 
-      {/* Inline keyframes */}
       <style>{`
         @keyframes tour-rotate {
           from { transform: rotate(0deg); }
