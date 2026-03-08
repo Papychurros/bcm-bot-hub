@@ -244,13 +244,20 @@ export default function DoodleJumpGame() {
     s.platforms = s.platforms.filter(p => !p.broken || (p.y - s.cameraY < H + 100 && p.type === 'breakable'));
     s.platforms = s.platforms.filter(p => p.y - s.cameraY < H + 100);
 
-    // Enemy spawning
+    // Enemy spawning — progressive max cap & off-screen spawn
+    const maxEnemies = s.score < 5000 ? 2 : s.score < 10000 ? 3 : 4;
+    const visibleEnemies = s.enemies.filter(e => {
+      const ey = e.y - s.cameraY;
+      return ey > -50 && ey < H + 50;
+    }).length;
     const rates = getEnemySpawnRate(s.score);
+    const spawnMargin = 80;
     const spawnEnemy = (type: EnemyType) => {
-      const ey = s.cameraY - 20;
+      const ey = s.cameraY - spawnMargin;
       if (type === 'ground') {
-        // Attach to a platform near camera top
-        const candidates = s.platforms.filter(p => p.y - s.cameraY < H * 0.3 && p.y - s.cameraY > -50 && p.type === 'normal');
+        const candidates = s.platforms.filter(p =>
+          p.y - s.cameraY < -10 && p.y - s.cameraY > -spawnMargin && p.type === 'normal'
+        );
         if (candidates.length > 0) {
           const cp = candidates[Math.floor(Math.random() * candidates.length)];
           s.enemies.push({ x: cp.x + cp.w / 2 - 12, y: cp.y - 24, w: 24, h: 24, type, dir: 1, speed: 0.8, hp: 1 });
@@ -260,11 +267,11 @@ export default function DoodleJumpGame() {
       } else if (type === 'ufo') {
         s.enemies.push({ x: W / 2 - 18, y: ey, w: 36, h: 24, type, dir: 0, speed: 0.5, hp: 3 });
       } else if (type === 'blackhole') {
-        s.enemies.push({ x: Math.random() * (W - 40) + 20, y: ey + 50, w: 32, h: 32, type, dir: 0, speed: 0, hp: 999 });
+        s.enemies.push({ x: Math.random() * (W - 40) + 20, y: ey, w: 32, h: 32, type, dir: 0, speed: 0, hp: 999 });
       }
     };
     for (const [type, rate] of Object.entries(rates)) {
-      if (rate > 0 && Math.random() < rate && s.enemies.length < 5) {
+      if (rate > 0 && Math.random() < rate && visibleEnemies < maxEnemies) {
         spawnEnemy(type as EnemyType);
       }
     }
