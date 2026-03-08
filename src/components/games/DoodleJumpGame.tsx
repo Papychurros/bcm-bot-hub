@@ -236,43 +236,28 @@ export default function DoodleJumpGame() {
     while (s.platforms.length === 0 || s.platforms[s.platforms.length - 1].y > topY - 60) {
       const lastY = s.platforms.length > 0 ? s.platforms[s.platforms.length - 1].y : H;
       const gap = minS + Math.random() * (maxS - minS);
-      // Ensure reachable: max jump height ~178px (JUMP=-8, GRAVITY=0.18 → peak = 8²/(2*0.18) ≈ 178)
       const maxGap = 178 * 0.85;
       const clampedGap = Math.min(gap, maxGap);
-      s.platforms.push(genPlatform(lastY - clampedGap, s.score));
-    }
-    s.platforms = s.platforms.filter(p => !p.broken || (p.y - s.cameraY < H + 100 && p.type === 'breakable'));
-    s.platforms = s.platforms.filter(p => p.y - s.cameraY < H + 100);
+      const newPlat = genPlatform(lastY - clampedGap, s.score);
+      s.platforms.push(newPlat);
 
-    // Enemy spawning — progressive max cap & off-screen spawn
-    const maxEnemies = s.score < 5000 ? 2 : s.score < 10000 ? 3 : 4;
-    const visibleEnemies = s.enemies.filter(e => {
-      const ey = e.y - s.cameraY;
-      return ey > -50 && ey < H + 50;
-    }).length;
-    const rates = getEnemySpawnRate(s.score);
-    const spawnMargin = 80;
-    const spawnEnemy = (type: EnemyType) => {
-      const ey = s.cameraY - spawnMargin;
-      if (type === 'ground') {
-        const candidates = s.platforms.filter(p =>
-          p.y - s.cameraY < -10 && p.y - s.cameraY > -spawnMargin && p.type === 'normal'
-        );
-        if (candidates.length > 0) {
-          const cp = candidates[Math.floor(Math.random() * candidates.length)];
-          s.enemies.push({ x: cp.x + cp.w / 2 - 12, y: cp.y - 24, w: 24, h: 24, type, dir: 1, speed: 0.8, hp: 1 });
+      // Platform-linked enemy spawning (Doodle Jump style)
+      const { chance, types } = getEnemyChance(s.score);
+      if (chance > 0 && types.length > 0
+        && (newPlat.type === 'normal' || newPlat.type === 'moving')
+        && Math.abs(newPlat.y - s.lastEnemySpawnY) > 400
+        && Math.random() < chance) {
+        const eType = types[Math.floor(Math.random() * types.length)];
+        if (eType === 'ground') {
+          s.enemies.push({ x: newPlat.x + newPlat.w / 2 - 12, y: newPlat.y - 24, w: 24, h: 24, type: eType, dir: 1, speed: 0.8, hp: 1 });
+        } else if (eType === 'flying') {
+          s.enemies.push({ x: newPlat.x + newPlat.w / 2 - 14, y: newPlat.y - 40 - Math.random() * 20, w: 28, h: 20, type: eType, dir: Math.random() < 0.5 ? 1 : -1, speed: 1.2, hp: 1 });
+        } else if (eType === 'ufo') {
+          s.enemies.push({ x: newPlat.x + newPlat.w / 2 - 18, y: newPlat.y - 50, w: 36, h: 24, type: eType, dir: Math.random() < 0.5 ? 1 : -1, speed: 0.5, hp: 3 });
+        } else if (eType === 'blackhole') {
+          s.enemies.push({ x: newPlat.x + newPlat.w / 2 - 16, y: newPlat.y - 50, w: 32, h: 32, type: eType, dir: 0, speed: 0, hp: 999 });
         }
-      } else if (type === 'flying') {
-        s.enemies.push({ x: Math.random() * (W - 30), y: ey, w: 28, h: 20, type, dir: Math.random() < 0.5 ? 1 : -1, speed: 1.2, hp: 1 });
-      } else if (type === 'ufo') {
-        s.enemies.push({ x: W / 2 - 18, y: ey, w: 36, h: 24, type, dir: 0, speed: 0.5, hp: 3 });
-      } else if (type === 'blackhole') {
-        s.enemies.push({ x: Math.random() * (W - 40) + 20, y: ey, w: 32, h: 32, type, dir: 0, speed: 0, hp: 999 });
-      }
-    };
-    for (const [type, rate] of Object.entries(rates)) {
-      if (rate > 0 && Math.random() < rate && visibleEnemies < maxEnemies) {
-        spawnEnemy(type as EnemyType);
+        s.lastEnemySpawnY = newPlat.y;
       }
     }
 
@@ -280,10 +265,7 @@ export default function DoodleJumpGame() {
     for (const e of s.enemies) {
       if (e.type === 'ground') { e.x += e.dir * e.speed; if (e.x <= 0 || e.x + e.w >= W) e.dir *= -1; }
       if (e.type === 'flying') { e.x += e.dir * e.speed; if (e.x <= 0 || e.x + e.w >= W) e.dir *= -1; }
-      if (e.type === 'ufo') {
-        const dy = (s.player.y - e.y);
-        e.y += Math.sign(dy) * e.speed;
-      }
+      if (e.type === 'ufo') { e.x += e.dir * e.speed; if (e.x <= 0 || e.x + e.w >= W) e.dir *= -1; }
     }
 
     // Projectiles
