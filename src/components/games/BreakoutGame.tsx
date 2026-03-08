@@ -103,7 +103,7 @@ export default function BreakoutGame() {
     for (let r = 0; r < cfg.rows; r++) {
       for (let c = 0; c < cfg.cols; c++) {
         const type = pickBrickType(cfg);
-        const li = (r * cfg.cols + c) % LABELS.length;
+        const li = Math.floor(Math.random() * LABELS.length);
         let color = LABEL_COLORS[li];
         let label = LABELS[li];
         let hits = 1;
@@ -111,8 +111,15 @@ export default function BreakoutGame() {
         else if (type === 'bonus') { color = '#fbbf24'; label = '⭐'; }
         else if (type === 'explosive') { color = '#ef4444'; label = '💥'; }
         else if (type === 'indestructible') { color = '#374151'; label = ''; hits = 9999; }
-        bricks.push({ x: offX + c * (bw + BRICK_GAP), y: 28 + r * (bh + BRICK_GAP), alive: true, color, label, type, hits, col: c, row: r });
+      bricks.push({ x: offX + c * (bw + BRICK_GAP), y: 10 + r * (bh + BRICK_GAP), alive: true, color, label, type, hits, col: c, row: r });
       }
+    }
+    // Fisher-Yates shuffle: swap positions to mix colors and types
+    for (let i = bricks.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmpX = bricks[i].x, tmpY = bricks[i].y, tmpC = bricks[i].col, tmpR = bricks[i].row;
+      bricks[i].x = bricks[j].x; bricks[i].y = bricks[j].y; bricks[i].col = bricks[j].col; bricks[i].row = bricks[j].row;
+      bricks[j].x = tmpX; bricks[j].y = tmpY; bricks[j].col = tmpC; bricks[j].row = tmpR;
     }
     return bricks;
   }, []);
@@ -526,21 +533,12 @@ export default function BreakoutGame() {
       const cw = wrap.clientWidth;
       const ch = wrap.clientHeight;
       if (cw <= 0 || ch <= 0) return;
-      // Keep aspect ratio of BASE_W/BASE_H, fit inside container
-      const aspect = BASE_W / BASE_H;
-      let w: number, h: number;
-      if (cw / ch > aspect) {
-        h = ch; w = h * aspect;
-      } else {
-        w = cw; h = w / aspect;
-      }
-      const logW = Math.round(w);
-      const logH = Math.round(h);
-      canvas.width = logW;
-      canvas.height = logH;
-      canvas.style.width = `${logW}px`;
-      canvas.style.height = `${logH}px`;
-      sizeRef.current = { W: logW, H: logH, scale: logW / BASE_W };
+      // Fill entire container — no aspect ratio constraint
+      canvas.width = cw;
+      canvas.height = ch;
+      canvas.style.width = '100%';
+      canvas.style.height = '100%';
+      sizeRef.current = { W: cw, H: ch, scale: cw / BASE_W };
     };
 
     const ro = new ResizeObserver(resize);
@@ -598,7 +596,7 @@ export default function BreakoutGame() {
   return (
     <div ref={containerRef} className="flex flex-col flex-1 w-full h-full select-none" style={{ touchAction: 'none' }}>
       {/* Fix 3 — canvas fills available space */}
-      <div ref={canvasWrapRef} className="flex-1 relative w-full flex items-center justify-center overflow-hidden bg-black rounded-lg">
+      <div ref={canvasWrapRef} className="flex-1 relative w-full overflow-hidden">
         <canvas ref={canvasRef} className="block rounded-lg" onClick={handleCanvasClick} />
 
         {gameState === 'idle' && (
