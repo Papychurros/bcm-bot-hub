@@ -17,6 +17,7 @@ interface Platform {
   broken?: boolean;
   vanishTimer?: number; vanishing?: boolean;
   powerUp?: PowerUpType;
+  bounceCount?: number;
 }
 
 interface Projectile { x: number; y: number; }
@@ -44,9 +45,9 @@ function getEnemyChance(score: number): { chance: number; types: EnemyType[] } {
 }
 
 function getPlatSpacing(score: number): [number, number] {
-  if (score < 3000) return [60, 90];
-  if (score < 8000) return [80, 120];
-  return [100, 150];
+  if (score < 3000) return [50, 75];
+  if (score < 8000) return [65, 100];
+  return [80, 125];
 }
 
 function pickPlatType(score: number): PlatType {
@@ -148,8 +149,8 @@ export default function DoodleJumpGame() {
     if (s.state !== 'playing') return;
 
     // Movement
-    if (s.keys['ArrowLeft'] || s.keys['a'] || s.keys['left']) s.player.vx = -3;
-    else if (s.keys['ArrowRight'] || s.keys['d'] || s.keys['right']) s.player.vx = 3;
+    if (s.keys['ArrowLeft'] || s.keys['a'] || s.keys['left']) s.player.vx = -4;
+    else if (s.keys['ArrowRight'] || s.keys['d'] || s.keys['right']) s.player.vx = 4;
     else if (s.gyroEnabled && Math.abs(s.gyroX) > 3) s.player.vx = s.gyroX * 0.15;
     else s.player.vx *= 0.85;
 
@@ -190,8 +191,11 @@ export default function DoodleJumpGame() {
         if (s.player.x + s.player.w > p.x && s.player.x < p.x + p.w &&
             py + s.player.h > ppy && py + s.player.h < ppy + PLAT_H + 12) {
           
-          // Breakable
-          if (p.type === 'breakable') { p.broken = true; continue; }
+          // Breakable — first bounce OK, breaks on second
+          if (p.type === 'breakable') {
+            p.bounceCount = (p.bounceCount || 0) + 1;
+            if (p.bounceCount >= 2) { p.broken = true; continue; }
+          }
           // Vanishing
           if (p.type === 'vanishing' && !p.vanishing) {
             p.vanishing = true; p.vanishTimer = 30; // ~0.5s at 60fps
@@ -236,7 +240,7 @@ export default function DoodleJumpGame() {
     while (s.platforms.length === 0 || s.platforms[s.platforms.length - 1].y > topY - 60) {
       const lastY = s.platforms.length > 0 ? s.platforms[s.platforms.length - 1].y : H;
       const gap = minS + Math.random() * (maxS - minS);
-      const maxGap = 178 * 0.85;
+      const maxGap = 178 * 0.72;
       const clampedGap = Math.min(gap, maxGap);
       const newPlat = genPlatform(lastY - clampedGap, s.score);
       s.platforms.push(newPlat);
@@ -269,7 +273,7 @@ export default function DoodleJumpGame() {
     }
 
     // Projectiles
-    s.projectiles = s.projectiles.map(p => ({ ...p, y: p.y - 6 })).filter(p => p.y > -20);
+    s.projectiles = s.projectiles.map(p => ({ ...p, y: p.y - 9 })).filter(p => p.y > -20);
 
     // Projectile-enemy collisions
     for (let i = s.projectiles.length - 1; i >= 0; i--) {
