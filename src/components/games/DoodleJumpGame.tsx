@@ -495,6 +495,10 @@ export default function DoodleJumpGame() {
         ctx.globalAlpha = p.vanishTimer % 6 < 3 ? 0.3 : 0.8;
       }
 
+      // Breakable platform after first bounce: flicker to warn
+      if (p.type === 'breakable' && (p.bounceCount || 0) >= 1 && !p.broken) {
+        ctx.globalAlpha = Math.random() > 0.5 ? 0.5 : 1;
+      }
       ctx.fillStyle = PLAT_COLORS[p.type];
       ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 8;
       ctx.beginPath(); ctx.roundRect(p.x, py, p.w, p.h, 4); ctx.fill();
