@@ -102,6 +102,8 @@ export default function DoodleJumpGame() {
     lastEnemySpawnY: 0,
     gyroX: 0,
     gyroEnabled: false,
+    lastTime: 0,
+    accumulator: 0,
   });
 
   const spawnParticles = useCallback((x: number, y: number) => {
@@ -160,6 +162,8 @@ export default function DoodleJumpGame() {
       const gap = minS + Math.random() * (maxS - minS);
       s.platforms.push(genPlatform(H - 80 - i * gap, 0, i < 3));
     }
+    s.lastTime = 0;
+    s.accumulator = 0;
     s.state = 'playing'; setGameState('playing');
   }, [genPlatform]);
 
@@ -491,7 +495,20 @@ export default function DoodleJumpGame() {
     const ctx = canvasRef.current?.getContext('2d');
     const s = stateRef.current;
     if (!ctx) return;
-    update();
+
+    // Fixed timestep accumulator – run physics at 60fps regardless of monitor refresh rate
+    const STEP = 1000 / 60; // 16.67ms
+    const now = performance.now();
+    if (s.lastTime === 0) s.lastTime = now;
+    const delta = Math.min(now - s.lastTime, 50); // cap at 50ms
+    s.lastTime = now;
+    s.accumulator += delta;
+    let steps = 0;
+    while (s.accumulator >= STEP && steps < 3) {
+      update();
+      s.accumulator -= STEP;
+      steps++;
+    }
 
     ctx.fillStyle = '#0f0f1a'; ctx.fillRect(0, 0, W, H);
 
