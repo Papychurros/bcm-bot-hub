@@ -1,15 +1,17 @@
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { Hpad, ActionButton } from './TouchControls';
 
-const W = 480, H = 400;
-const PAD_H = 10, PAD_Y = H - 30;
+/* ── Design dimensions (logical coords, scaled to canvas) ── */
+const BASE_W = 480, BASE_H = 400;
+const PAD_H = 10;
 const BALL_R = 7;
 const BRICK_GAP = 4;
 const COLOR = '#f97316';
 const BG = '#0f0f1a';
 
-const LABELS = ['Travail', 'Pub', 'Moi', 'Perso', 'Budget', 'Agenda', 'Mail', 'Réunion', 'Projet', 'Deadline'];
-const LABEL_COLORS = ['#E53935', '#9E9E9E', '#1E88E5', '#43A047', '#F9A825', '#AB47BC', '#26C6DA', '#546E7A', '#FF7043', '#EF5350'];
+/* Fix 1 — exactly 6 labels */
+const LABELS = ['Travail', 'Pub', 'Moi', 'Perso', 'Budget', 'Agenda'];
+const LABEL_COLORS = ['#E53935', '#9E9E9E', '#1E88E5', '#43A047', '#F9A825', '#AB47BC'];
 
 interface LevelConfig {
   cols: number; rows: number; ballSpeed: number; paddleWidth: number;
@@ -42,10 +44,14 @@ type GameState = 'idle' | 'playing' | 'paused' | 'dead' | 'won' | 'levelclear';
 export default function BreakoutGame() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const canvasWrapRef = useRef<HTMLDivElement>(null);
   const [gameState, setGameState] = useState<GameState>('idle');
   const [currentLevel, setCurrentLevel] = useState(0);
   const scoreRef = useRef(0);
   const hiScoreRef = useRef(0);
+
+  /* Fix 3 — dynamic canvas size */
+  const sizeRef = useRef({ W: BASE_W, H: BASE_H, scale: 1 });
 
   const stateRef = useRef<{
     pad: { x: number; y: number; w: number };
@@ -61,14 +67,19 @@ export default function BreakoutGame() {
     baseBallSpeed: number; basePadW: number;
     levelCols: number; levelRows: number;
   }>({
-    pad: { x: 0, y: PAD_Y, w: 90 }, balls: [], bricks: [], items: [], particles: [], buffs: [],
+    pad: { x: 0, y: BASE_H - 30, w: 90 }, balls: [], bricks: [], items: [], particles: [], buffs: [],
     score: 0, hiScore: 0, lives: 3, level: 0,
     running: false, paused: false, dead: false, won: false,
     loop: null, keys: {}, lastTime: 0, accumulator: 0,
     baseBallSpeed: 3.5, basePadW: 90, levelCols: 6, levelRows: 5,
   });
 
+  const getLogicalW = () => sizeRef.current.W;
+  const getLogicalH = () => sizeRef.current.H;
+  const getPadY = () => getLogicalH() - 30;
+
   const getBrickDims = (cols: number) => {
+    const W = getLogicalW();
     const bw = Math.floor((W - BRICK_GAP * (cols + 1)) / cols);
     const offX = (W - (cols * bw + (cols - 1) * BRICK_GAP)) / 2;
     return { bw, offX };
@@ -83,6 +94,7 @@ export default function BreakoutGame() {
     return 'indestructible';
   };
 
+  /* Fix 2 — resist bricks keep their random label */
   const makeBricks = useCallback((lvl: number) => {
     const cfg = LEVELS[lvl];
     const { bw, offX } = getBrickDims(cfg.cols);
@@ -95,10 +107,10 @@ export default function BreakoutGame() {
         let color = LABEL_COLORS[li];
         let label = LABELS[li];
         let hits = 1;
-        if (type === 'resist') { color = '#c2410c'; hits = cfg.resistHits; label = `×${hits}`; }
-        else if (type === 'bonus') { color = '#fbbf24'; label = '★'; }
+        if (type === 'resist') { color = '#c2410c'; hits = cfg.resistHits; /* keep random label */ }
+        else if (type === 'bonus') { color = '#fbbf24'; label = '⭐'; }
         else if (type === 'explosive') { color = '#ef4444'; label = '💥'; }
-        else if (type === 'indestructible') { color = '#374151'; label = '▬'; hits = 9999; }
+        else if (type === 'indestructible') { color = '#374151'; label = ''; hits = 9999; }
         bricks.push({ x: offX + c * (bw + BRICK_GAP), y: 28 + r * (bh + BRICK_GAP), alive: true, color, label, type, hits, col: c, row: r });
       }
     }
@@ -133,13 +145,11 @@ export default function BreakoutGame() {
     const cfg = LEVELS[s.level];
     const { bw } = getBrickDims(cfg.cols);
     const bh = 18;
-    // particles
     for (let i = 0; i < 12; i++) {
       const angle = Math.random() * Math.PI * 2;
       const spd = 1 + Math.random() * 3;
       s.particles.push({ x: brick.x + bw / 2, y: brick.y + bh / 2, vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd, life: 30, color: '#ef4444' });
     }
-    // destroy neighbors
     for (const b of s.bricks) {
       if (!b.alive || b === brick || b.type === 'indestructible') continue;
       if (Math.abs(b.col - brick.col) <= 1 && Math.abs(b.row - brick.row) <= 1) {
@@ -148,10 +158,14 @@ export default function BreakoutGame() {
     }
   };
 
+  /* Fix 2 — draw special bricks with icons */
   const draw = useCallback(() => {
     const ctx = canvasRef.current?.getContext('2d');
     const s = stateRef.current;
     if (!ctx) return;
+    const W = getLogicalW();
+    const H = getLogicalH();
+    const padY = getPadY();
     const cfg = LEVELS[s.level];
     const { bw } = getBrickDims(cfg.cols);
     const bh = 18;
@@ -185,15 +199,43 @@ export default function BreakoutGame() {
       }
       ctx.fillStyle = b.color;
       brickRR(ctx, b.x + 1, b.y + 1, bw - 2, bh - 2, 3); ctx.fill();
+
+      // Indestructible: hatching only, no text
       if (b.type === 'indestructible') {
         ctx.strokeStyle = 'rgba(255,255,255,0.15)'; ctx.lineWidth = 1;
         for (let i = 0; i < bw; i += 6) { ctx.beginPath(); ctx.moveTo(b.x + i, b.y); ctx.lineTo(b.x + i + bh, b.y + bh); ctx.stroke(); }
       }
+
+      // highlight
       ctx.globalAlpha = .15; ctx.fillStyle = '#fff'; ctx.fillRect(b.x + 3, b.y + 2, bw - 6, 3);
       ctx.globalAlpha = 1; ctx.shadowBlur = 0;
-      ctx.fillStyle = b.type === 'indestructible' ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.55)';
-      ctx.font = `bold ${bw < 35 ? 6 : 8}px 'DM Mono',monospace`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-      ctx.fillText(b.label, b.x + bw / 2, b.y + bh / 2 + 1);
+
+      // Fix 2 — Render brick content based on type
+      if (b.type === 'bonus') {
+        // Star emoji centered
+        ctx.font = `${bw < 35 ? 10 : 13}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('⭐', b.x + bw / 2, b.y + bh / 2);
+      } else if (b.type === 'explosive') {
+        // Explosion emoji centered
+        ctx.font = `${bw < 35 ? 10 : 13}px sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('💥', b.x + bw / 2, b.y + bh / 2);
+      } else if (b.type === 'indestructible') {
+        // No text — just hatching (already drawn above)
+      } else if (b.type === 'resist') {
+        // Label + hit counter bottom-right
+        ctx.fillStyle = 'rgba(0,0,0,0.55)';
+        ctx.font = `bold ${bw < 35 ? 6 : 8}px 'DM Mono',monospace`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(b.label, b.x + bw / 2, b.y + bh / 2);
+        // Small hit counter
+        ctx.fillStyle = 'rgba(255,255,255,0.7)';
+        ctx.font = `bold ${bw < 35 ? 5 : 7}px 'DM Mono',monospace`; ctx.textAlign = 'right'; ctx.textBaseline = 'bottom';
+        ctx.fillText(`×${b.hits}`, b.x + bw - 3, b.y + bh - 2);
+      } else {
+        // Normal brick — label text
+        ctx.fillStyle = 'rgba(0,0,0,0.55)';
+        ctx.font = `bold ${bw < 35 ? 6 : 8}px 'DM Mono',monospace`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(b.label, b.x + bw / 2, b.y + bh / 2 + 1);
+      }
       ctx.restore();
     }
 
@@ -257,6 +299,9 @@ export default function BreakoutGame() {
 
   const update = useCallback(() => {
     const s = stateRef.current;
+    const W = getLogicalW();
+    const H = getLogicalH();
+    const padY = getPadY();
     const cfg = LEVELS[s.level];
     const { bw } = getBrickDims(cfg.cols);
     const bh = 18;
@@ -283,7 +328,6 @@ export default function BreakoutGame() {
 
       if (ball.y + BALL_R >= H) {
         if (bi === 0) {
-          // Main ball lost
           s.lives--;
           if (s.lives <= 0) {
             s.running = false; s.dead = true;
@@ -292,12 +336,10 @@ export default function BreakoutGame() {
             setTimeout(() => setGameState('dead'), 400);
             return;
           }
-          // Reset main ball
-          ball.x = s.pad.x + effPadW / 2; ball.y = PAD_Y - BALL_R - 2;
+          ball.x = s.pad.x + effPadW / 2; ball.y = padY - BALL_R - 2;
           ball.vx = (Math.random() > 0.5 ? 1 : -1) * cfg.ballSpeed * 0.5;
           ball.vy = -cfg.ballSpeed * 0.85;
           ball.fireball = false;
-          // Remove all extra balls
           s.balls.length = 1;
           break;
         } else {
@@ -321,7 +363,6 @@ export default function BreakoutGame() {
         if (!b.alive) continue;
         if (ball.x + BALL_R > b.x && ball.x - BALL_R < b.x + bw && ball.y + BALL_R > b.y && ball.y - BALL_R < b.y + bh) {
           if (b.type === 'indestructible') {
-            // Just bounce
             const overlapL = ball.x + BALL_R - b.x; const overlapR = b.x + bw - (ball.x - BALL_R);
             const overlapT = ball.y + BALL_R - b.y; const overlapB = b.y + bh - (ball.y - BALL_R);
             if (Math.min(overlapL, overlapR) < Math.min(overlapT, overlapB)) ball.vx *= -1; else ball.vy *= -1;
@@ -329,11 +370,10 @@ export default function BreakoutGame() {
           }
 
           if (ball.fireball) {
-            // Fireball pierces through
             b.alive = false; s.score += 10;
             if (b.type === 'explosive') explodeBrick(b);
             if (b.type === 'bonus') spawnItem(b.x + bw / 2, b.y + bh / 2);
-            continue; // don't bounce
+            continue;
           }
 
           b.hits--;
@@ -341,9 +381,8 @@ export default function BreakoutGame() {
             b.alive = false; s.score += (b.type === 'resist' ? 25 : 10);
             if (b.type === 'explosive') explodeBrick(b);
             if (b.type === 'bonus') spawnItem(b.x + bw / 2, b.y + bh / 2);
-          } else {
-            b.label = `×${b.hits}`;
           }
+          /* Fix 2 — do NOT overwrite b.label on hit; the draw function reads b.hits directly */
           if (s.score > s.hiScore) s.hiScore = s.score;
 
           if (!ball.fireball) {
@@ -351,7 +390,6 @@ export default function BreakoutGame() {
             const overlapT = ball.y + BALL_R - b.y; const overlapB = b.y + bh - (ball.y - BALL_R);
             if (Math.min(overlapL, overlapR) < Math.min(overlapT, overlapB)) ball.vx *= -1; else ball.vy *= -1;
           }
-          // Normalize speed
           const bspd = Math.sqrt(ball.vx ** 2 + ball.vy ** 2);
           ball.vx = ball.vx / bspd * cfg.ballSpeed;
           ball.vy = ball.vy / bspd * cfg.ballSpeed;
@@ -359,20 +397,18 @@ export default function BreakoutGame() {
         }
       }
     }
-    // Remove dead extra balls
     for (let i = ballsToRemove.length - 1; i >= 0; i--) s.balls.splice(ballsToRemove[i], 1);
 
     // Items
+    const effPadW2 = s.buffs.some(b => b.kind === 'shrink') ? s.pad.w * 0.7 : s.pad.w;
     for (let i = s.items.length - 1; i >= 0; i--) {
       const item = s.items[i];
       item.y += 2;
       if (item.y > H) { s.items.splice(i, 1); continue; }
-      // Catch with pad
-      const pw = effPadW;
+      const pw = effPadW2;
       if (item.y + 8 >= s.pad.y && item.y - 8 < s.pad.y + PAD_H && item.x > s.pad.x && item.x < s.pad.x + pw) {
         s.items.splice(i, 1);
         if (item.kind === 'multiball') {
-          // Add 2 extra balls
           const main = s.balls[0];
           if (main) {
             s.balls.push({ x: main.x, y: main.y, vx: cfg.ballSpeed * 0.7, vy: -cfg.ballSpeed * 0.7, fireball: main.fireball });
@@ -410,7 +446,7 @@ export default function BreakoutGame() {
       }
     }
 
-    // Check win (all destructible bricks gone)
+    // Check win
     const alive = s.bricks.filter(b => b.alive && b.type !== 'indestructible').length;
     if (alive === 0) {
       if (s.score > s.hiScore) s.hiScore = s.score;
@@ -443,12 +479,14 @@ export default function BreakoutGame() {
     const s = stateRef.current;
     if (s.loop) cancelAnimationFrame(s.loop);
     const cfg = LEVELS[lvl];
+    const W = getLogicalW();
+    const padY = getPadY();
     s.level = lvl;
-    s.pad = { x: W / 2 - cfg.paddleWidth / 2, y: PAD_Y, w: cfg.paddleWidth };
+    s.pad = { x: W / 2 - cfg.paddleWidth / 2, y: padY, w: cfg.paddleWidth };
     s.basePadW = cfg.paddleWidth;
     s.baseBallSpeed = cfg.ballSpeed;
     s.levelCols = cfg.cols; s.levelRows = cfg.rows;
-    s.balls = [{ x: W / 2, y: PAD_Y - BALL_R - 2, vx: cfg.ballSpeed * 0.5, vy: -cfg.ballSpeed * 0.85, fireball: false }];
+    s.balls = [{ x: W / 2, y: padY - BALL_R - 2, vx: cfg.ballSpeed * 0.5, vy: -cfg.ballSpeed * 0.85, fireball: false }];
     if (!keepScore) { s.score = 0; s.lives = 3; }
     s.bricks = makeBricks(lvl);
     s.items = []; s.particles = []; s.buffs = [];
@@ -478,8 +516,43 @@ export default function BreakoutGame() {
     }
   }, []);
 
+  /* Fix 3 — ResizeObserver for dynamic canvas sizing */
+  useEffect(() => {
+    const wrap = canvasWrapRef.current;
+    const canvas = canvasRef.current;
+    if (!wrap || !canvas) return;
+
+    const resize = () => {
+      const cw = wrap.clientWidth;
+      const ch = wrap.clientHeight;
+      if (cw <= 0 || ch <= 0) return;
+      // Keep aspect ratio of BASE_W/BASE_H, fit inside container
+      const aspect = BASE_W / BASE_H;
+      let w: number, h: number;
+      if (cw / ch > aspect) {
+        h = ch; w = h * aspect;
+      } else {
+        w = cw; h = w / aspect;
+      }
+      const logW = Math.round(w);
+      const logH = Math.round(h);
+      canvas.width = logW;
+      canvas.height = logH;
+      canvas.style.width = `${logW}px`;
+      canvas.style.height = `${logH}px`;
+      sizeRef.current = { W: logW, H: logH, scale: logW / BASE_W };
+    };
+
+    const ro = new ResizeObserver(resize);
+    ro.observe(wrap);
+    resize();
+    return () => ro.disconnect();
+  }, []);
+
   useEffect(() => {
     const ctx = canvasRef.current?.getContext('2d');
+    const W = getLogicalW();
+    const H = getLogicalH();
     if (ctx) { ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H); }
 
     const onKey = (e: KeyboardEvent) => {
@@ -491,7 +564,6 @@ export default function BreakoutGame() {
     window.addEventListener('keydown', onKey);
     window.addEventListener('keyup', onKeyUp);
 
-    // Prevent scroll on touch
     const container = containerRef.current;
     const preventTouch = (e: TouchEvent) => { e.preventDefault(); };
     container?.addEventListener('touchmove', preventTouch, { passive: false });
@@ -506,15 +578,14 @@ export default function BreakoutGame() {
     };
   }, [togglePause]);
 
-  // Handle canvas click for pause button
   const handleCanvasClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
+    const W = getLogicalW();
     const scaleX = W / rect.width;
-    const scaleY = H / rect.height;
+    const scaleY = getLogicalH() / rect.height;
     const x = (e.clientX - rect.left) * scaleX;
     const y = (e.clientY - rect.top) * scaleY;
-    // Pause button area
     if (x > W - 35 && y < 28 && stateRef.current.running) {
       togglePause();
     }
@@ -525,9 +596,10 @@ export default function BreakoutGame() {
   }, []);
 
   return (
-    <div ref={containerRef} className="flex flex-col items-center gap-4 w-full select-none" style={{ touchAction: 'none' }}>
-      <div className="relative w-full max-w-[480px] bg-black rounded-lg overflow-hidden" style={{ aspectRatio: `${W}/${H}` }}>
-        <canvas ref={canvasRef} width={W} height={H} className="block w-full h-full rounded-lg" onClick={handleCanvasClick} />
+    <div ref={containerRef} className="flex flex-col flex-1 w-full h-full select-none" style={{ touchAction: 'none' }}>
+      {/* Fix 3 — canvas fills available space */}
+      <div ref={canvasWrapRef} className="flex-1 relative w-full flex items-center justify-center overflow-hidden bg-black rounded-lg">
+        <canvas ref={canvasRef} className="block rounded-lg" onClick={handleCanvasClick} />
 
         {gameState === 'idle' && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 rounded-lg font-mono text-foreground gap-3">
@@ -599,7 +671,7 @@ export default function BreakoutGame() {
         )}
       </div>
 
-      <div className="flex flex-col items-center gap-4 flex-shrink-0">
+      <div className="flex flex-col items-center gap-4 flex-shrink-0 py-3">
         <Hpad color={COLOR} onDirection={handleDirection} />
         <div className="flex gap-2 flex-wrap justify-center">
           <ActionButton label="▶ Jouer" primary color={COLOR} onClick={() => startLevel(0)} />
