@@ -43,18 +43,18 @@ function getPlatformWeights(score: number) {
 
 function getEnemyChance(score: number): { chance: number; types: EnemyType[] } {
   if (score < 2000) return { chance: 0, types: [] };
-  if (score < 5000) return { chance: 0.03, types: ['ground'] };
-  if (score < 8000) return { chance: 0.05, types: ['ground', 'flying'] };
-  if (score < 12000) return { chance: 0.07, types: ['ground', 'flying', 'ufo'] };
-  if (score < 15000) return { chance: 0.08, types: ['ground', 'flying', 'ufo', 'blackhole'] };
-  if (score < 20000) return { chance: 0.10, types: ['ground', 'flying', 'ufo', 'blackhole'] };
-  if (score < 30000) return { chance: 0.12, types: ['ground', 'flying', 'ufo', 'blackhole'] };
-  return { chance: 0.15, types: ['ground', 'flying', 'ufo', 'blackhole'] };
+  if (score < 5000) return { chance: 0.04, types: ['ground'] };
+  if (score < 8000) return { chance: 0.07, types: ['ground', 'flying'] };
+  if (score < 12000) return { chance: 0.10, types: ['ground', 'flying', 'ufo'] };
+  if (score < 15000) return { chance: 0.12, types: ['ground', 'flying', 'ufo', 'blackhole'] };
+  if (score < 20000) return { chance: 0.14, types: ['ground', 'flying', 'ufo', 'blackhole'] };
+  if (score < 30000) return { chance: 0.16, types: ['ground', 'flying', 'ufo', 'blackhole'] };
+  return { chance: 0.18, types: ['ground', 'flying', 'ufo', 'blackhole'] };
 }
 
 function getMinEnemyGap(score: number): number {
-  if (score < 15000) return 400;
-  if (score < 25000) return 350;
+  if (score < 10000) return 400;
+  if (score < 20000) return 350;
   return 300;
 }
 
