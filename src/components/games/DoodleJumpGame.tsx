@@ -17,7 +17,7 @@ interface Platform {
   broken?: boolean;
   vanishTimer?: number; vanishing?: boolean;
   powerUp?: PowerUpType;
-  bounceCount?: number;
+  breakTimer?: number;
 }
 
 interface Projectile { x: number; y: number; }
@@ -26,6 +26,11 @@ interface Enemy {
   x: number; y: number; w: number; h: number;
   type: EnemyType; dir: number; speed: number;
   hp: number;
+}
+
+interface Particle {
+  x: number; y: number; vx: number; vy: number;
+  life: number; color: string; size: number;
 }
 
 function getPlatformWeights(score: number) {
@@ -41,7 +46,16 @@ function getEnemyChance(score: number): { chance: number; types: EnemyType[] } {
   if (score < 5000) return { chance: 0.03, types: ['ground'] };
   if (score < 8000) return { chance: 0.05, types: ['ground', 'flying'] };
   if (score < 12000) return { chance: 0.07, types: ['ground', 'flying', 'ufo'] };
-  return { chance: 0.08, types: ['ground', 'flying', 'ufo', 'blackhole'] };
+  if (score < 15000) return { chance: 0.08, types: ['ground', 'flying', 'ufo', 'blackhole'] };
+  if (score < 20000) return { chance: 0.10, types: ['ground', 'flying', 'ufo', 'blackhole'] };
+  if (score < 30000) return { chance: 0.12, types: ['ground', 'flying', 'ufo', 'blackhole'] };
+  return { chance: 0.15, types: ['ground', 'flying', 'ufo', 'blackhole'] };
+}
+
+function getMinEnemyGap(score: number): number {
+  if (score < 15000) return 400;
+  if (score < 25000) return 350;
+  return 300;
 }
 
 function getPlatSpacing(score: number): [number, number] {
@@ -79,18 +93,32 @@ export default function DoodleJumpGame() {
     platforms: [] as Platform[],
     projectiles: [] as Projectile[],
     enemies: [] as Enemy[],
+    particles: [] as Particle[],
     score: 0, best: 0, cameraY: 0, maxHeight: 0,
     state: 'idle' as GameState,
     keys: {} as Record<string, boolean>,
-    // Power-up states
     jetpackTimer: 0,
     hasShield: false,
-    // Enemy spawn cooldown
     lastEnemySpawnY: 0,
-    // Gyro
     gyroX: 0,
     gyroEnabled: false,
   });
+
+  const spawnParticles = useCallback((x: number, y: number) => {
+    const s = stateRef.current;
+    const colors = ['#ef4444', '#f97316', '#fbbf24', '#ff6b6b'];
+    for (let i = 0; i < 12; i++) {
+      s.particles.push({
+        x: x + Math.random() * PLAT_W,
+        y,
+        vx: (Math.random() - 0.5) * 6,
+        vy: (Math.random() - 0.5) * 5 - 2,
+        life: 20 + Math.random() * 10,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        size: 2 + Math.random() * 3,
+      });
+    }
+  }, []);
 
   const genPlatform = useCallback((y: number, score: number, forceNormal = false): Platform => {
     const type = forceNormal ? 'normal' : pickPlatType(score);
@@ -98,7 +126,6 @@ export default function DoodleJumpGame() {
       x: Math.random() * (W - PLAT_W - 20) + 10, y, w: PLAT_W, h: PLAT_H,
       type, dir: Math.random() < 0.5 ? 1 : -1, speed: 0.7 + Math.random() * 0.5,
     };
-    // Power-ups only on normal platforms
     if (type === 'normal') {
       if (score >= 0 && Math.random() < (score < 5000 ? 1 / 8 : 1 / 12)) {
         p.powerUp = 'spring';
@@ -124,6 +151,7 @@ export default function DoodleJumpGame() {
     s.platforms = [{ x: W / 2 - 40, y: H - 60, w: 80, h: PLAT_H, type: 'normal', dir: 1, speed: 0 }];
     s.projectiles = [];
     s.enemies = [];
+    s.particles = [];
     s.jetpackTimer = 0;
     s.hasShield = false;
     s.lastEnemySpawnY = 0;
@@ -191,21 +219,22 @@ export default function DoodleJumpGame() {
         if (s.player.x + s.player.w > p.x && s.player.x < p.x + p.w &&
             py + s.player.h > ppy && py + s.player.h < ppy + PLAT_H + 12) {
           
-          // Breakable — first bounce OK, breaks on second
+          // Breakable — start 1s timer on first bounce
           if (p.type === 'breakable') {
-            p.bounceCount = (p.bounceCount || 0) + 1;
-            if (p.bounceCount >= 2) { p.broken = true; continue; }
+            if (p.breakTimer === undefined) {
+              p.breakTimer = 60; // 1 second at 60fps
+            }
           }
           // Vanishing
           if (p.type === 'vanishing' && !p.vanishing) {
-            p.vanishing = true; p.vanishTimer = 30; // ~0.5s at 60fps
+            p.vanishing = true; p.vanishTimer = 30;
           }
 
           // Power-up pickup
           if (p.powerUp) {
             s.score += 25;
             if (p.powerUp === 'spring') s.player.vy = JUMP * 2;
-            else if (p.powerUp === 'jetpack') s.jetpackTimer = 180; // 3s
+            else if (p.powerUp === 'jetpack') s.jetpackTimer = 180;
             else if (p.powerUp === 'shield') s.hasShield = true;
             p.powerUp = undefined;
             if (p.powerUp !== undefined) { /* already handled */ }
@@ -226,6 +255,26 @@ export default function DoodleJumpGame() {
       }
     }
 
+    // Update breakable platform timers
+    for (const p of s.platforms) {
+      if (p.type === 'breakable' && p.breakTimer !== undefined && !p.broken) {
+        p.breakTimer--;
+        if (p.breakTimer <= 0) {
+          p.broken = true;
+          spawnParticles(p.x, p.y);
+        }
+      }
+    }
+
+    // Update particles
+    s.particles = s.particles.filter(pt => {
+      pt.x += pt.vx;
+      pt.y += pt.vy;
+      pt.vy += 0.15;
+      pt.life--;
+      return pt.life > 0;
+    });
+
     // Moving platforms
     for (const p of s.platforms) {
       if (p.type === 'moving' && !p.broken) {
@@ -245,11 +294,12 @@ export default function DoodleJumpGame() {
       const newPlat = genPlatform(lastY - clampedGap, s.score);
       s.platforms.push(newPlat);
 
-      // Platform-linked enemy spawning (Doodle Jump style)
+      // Platform-linked enemy spawning
       const { chance, types } = getEnemyChance(s.score);
+      const minGap = getMinEnemyGap(s.score);
       if (chance > 0 && types.length > 0
         && (newPlat.type === 'normal' || newPlat.type === 'moving')
-        && Math.abs(newPlat.y - s.lastEnemySpawnY) > 400
+        && Math.abs(newPlat.y - s.lastEnemySpawnY) > minGap
         && Math.random() < chance) {
         const eType = types[Math.floor(Math.random() * types.length)];
         if (eType === 'ground') {
@@ -278,7 +328,6 @@ export default function DoodleJumpGame() {
     // Projectile-enemy collisions
     for (let i = s.projectiles.length - 1; i >= 0; i--) {
       const proj = s.projectiles[i];
-      const projWorldY = proj.y + s.cameraY;
       for (let j = s.enemies.length - 1; j >= 0; j--) {
         const e = s.enemies[j];
         if (e.type === 'blackhole') continue;
@@ -299,23 +348,18 @@ export default function DoodleJumpGame() {
       const ey = e.y - s.cameraY;
       if (px + pw > e.x && px < e.x + e.w && py + ph > ey && py < ey + e.h) {
         if (e.type === 'blackhole') {
-          // Instant death
           if (s.score > s.best) s.best = s.score;
           s.state = 'dead'; setGameState('dead'); return;
         }
-        // Can stomp ground enemies from above
         if (e.type === 'ground' && s.player.vy > 0 && py + ph < ey + e.h / 2) {
           s.enemies.splice(j, 1); s.score += 100; s.player.vy = JUMP;
           continue;
         }
-        // Shield absorbs
         if (s.hasShield && s.jetpackTimer <= 0) {
           s.hasShield = false; s.enemies.splice(j, 1);
           continue;
         }
-        // Jetpack = invulnerable
         if (s.jetpackTimer > 0) continue;
-        // Death
         if (s.score > s.best) s.best = s.score;
         s.state = 'dead'; setGameState('dead'); return;
       }
@@ -329,13 +373,12 @@ export default function DoodleJumpGame() {
       if (s.score > s.best) s.best = s.score;
       s.state = 'dead'; setGameState('dead');
     }
-  }, [genPlatform]);
+  }, [genPlatform, spawnParticles]);
 
   const drawRobot = useCallback((ctx: CanvasRenderingContext2D, px: number, py: number, hasShield: boolean, hasJetpack: boolean) => {
     ctx.save();
     ctx.shadowColor = '#a855f7'; ctx.shadowBlur = 14;
 
-    // Shield aura
     if (hasShield) {
       ctx.strokeStyle = 'rgba(168,85,247,0.5)';
       ctx.lineWidth = 2;
@@ -344,7 +387,6 @@ export default function DoodleJumpGame() {
       ctx.shadowBlur = 14;
     }
 
-    // Jetpack flames
     if (hasJetpack) {
       ctx.fillStyle = '#f59e0b';
       ctx.shadowColor = '#f59e0b'; ctx.shadowBlur = 12;
@@ -353,7 +395,6 @@ export default function DoodleJumpGame() {
       ctx.shadowBlur = 14; ctx.shadowColor = '#a855f7';
     }
 
-    // Legs
     ctx.fillStyle = '#6d28d9';
     ctx.fillRect(px + 8, py + 32, 7, 9);
     ctx.fillRect(px + 21, py + 32, 7, 9);
@@ -361,7 +402,6 @@ export default function DoodleJumpGame() {
     ctx.fillRect(px + 6, py + 39, 10, 4);
     ctx.fillRect(px + 20, py + 39, 10, 4);
 
-    // Body
     ctx.fillStyle = '#7c3aed';
     ctx.beginPath(); ctx.roundRect(px + 5, py + 18, 26, 16, 4); ctx.fill();
     ctx.fillStyle = '#a855f7';
@@ -370,17 +410,14 @@ export default function DoodleJumpGame() {
     ctx.beginPath(); ctx.arc(px + 18, py + 25, 2.5, 0, Math.PI * 2); ctx.fill();
     ctx.shadowBlur = 14; ctx.shadowColor = '#a855f7';
 
-    // Arms
     ctx.fillStyle = '#6d28d9';
     ctx.fillRect(px - 2, py + 20, 7, 5);
     ctx.fillStyle = '#4c1d95'; ctx.fillRect(px - 4, py + 20, 4, 4);
     ctx.fillStyle = '#6d28d9'; ctx.fillRect(px + 31, py + 20, 7, 5);
     ctx.fillStyle = '#4c1d95'; ctx.fillRect(px + 36, py + 20, 4, 4);
 
-    // Neck
     ctx.fillStyle = '#6d28d9'; ctx.fillRect(px + 14, py + 14, 8, 6);
 
-    // Head bulb
     ctx.fillStyle = '#5b21b6';
     ctx.beginPath(); ctx.roundRect(px + 11, py + 10, 14, 6, 2); ctx.fill();
     const bcx = px + 18, bcy = py + 4;
@@ -390,7 +427,6 @@ export default function DoodleJumpGame() {
     ctx.beginPath(); ctx.ellipse(bcx, bcy, 11, 13, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
     ctx.shadowBlur = 14; ctx.shadowColor = '#a855f7';
 
-    // Filament
     ctx.strokeStyle = '#fde68a'; ctx.shadowColor = '#fde68a'; ctx.shadowBlur = 8; ctx.lineWidth = 1.2;
     ctx.beginPath();
     ctx.moveTo(bcx - 3, bcy + 5); ctx.lineTo(bcx - 1, bcy + 2); ctx.lineTo(bcx - 3, bcy - 1);
@@ -399,7 +435,6 @@ export default function DoodleJumpGame() {
     ctx.stroke();
     ctx.shadowBlur = 0;
 
-    // Eyes
     ctx.fillStyle = '#0f0f1a';
     ctx.beginPath(); ctx.arc(bcx - 4, bcy + 3, 2.2, 0, Math.PI * 2); ctx.fill();
     ctx.beginPath(); ctx.arc(bcx + 4, bcy + 3, 2.2, 0, Math.PI * 2); ctx.fill();
@@ -418,7 +453,6 @@ export default function DoodleJumpGame() {
     if (e.type === 'ground') {
       ctx.fillStyle = '#ef4444'; ctx.shadowColor = '#ef4444'; ctx.shadowBlur = 8;
       ctx.beginPath(); ctx.roundRect(e.x, ey, e.w, e.h, 6); ctx.fill();
-      // Eyes
       ctx.fillStyle = '#fff';
       ctx.beginPath(); ctx.arc(e.x + 7, ey + 8, 3, 0, Math.PI * 2); ctx.fill();
       ctx.beginPath(); ctx.arc(e.x + 17, ey + 8, 3, 0, Math.PI * 2); ctx.fill();
@@ -427,10 +461,8 @@ export default function DoodleJumpGame() {
       ctx.beginPath(); ctx.arc(e.x + 17, ey + 9, 1.5, 0, Math.PI * 2); ctx.fill();
     } else if (e.type === 'flying') {
       ctx.fillStyle = '#f59e0b'; ctx.shadowColor = '#f59e0b'; ctx.shadowBlur = 8;
-      // Wings
       ctx.beginPath(); ctx.ellipse(e.x + 4, ey + 8, 8, 5, -0.3, 0, Math.PI * 2); ctx.fill();
       ctx.beginPath(); ctx.ellipse(e.x + e.w - 4, ey + 8, 8, 5, 0.3, 0, Math.PI * 2); ctx.fill();
-      // Body
       ctx.fillStyle = '#dc2626';
       ctx.beginPath(); ctx.ellipse(e.x + e.w / 2, ey + e.h / 2, 10, 8, 0, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = '#fff';
@@ -441,7 +473,6 @@ export default function DoodleJumpGame() {
       ctx.beginPath(); ctx.ellipse(e.x + e.w / 2, ey + e.h / 2, e.w / 2, e.h / 3, 0, 0, Math.PI * 2); ctx.fill();
       ctx.fillStyle = '#a5f3fc';
       ctx.beginPath(); ctx.ellipse(e.x + e.w / 2, ey + e.h / 3, 8, 10, 0, Math.PI, Math.PI * 2); ctx.fill();
-      // HP indicator
       ctx.fillStyle = '#fff'; ctx.font = '8px monospace'; ctx.textAlign = 'center';
       ctx.fillText(`${e.hp}`, e.x + e.w / 2, ey - 3);
     } else if (e.type === 'blackhole') {
@@ -478,15 +509,8 @@ export default function DoodleJumpGame() {
       const py = p.y - s.cameraY;
       if (py > H + 20 || py < -20) continue;
 
-      // Breakable animation
+      // Breakable broken — don't draw (explosion particles handle the visual)
       if (p.broken && p.type === 'breakable') {
-        ctx.globalAlpha = 0.4;
-        ctx.fillStyle = PLAT_COLORS.breakable;
-        // Draw broken pieces
-        ctx.fillRect(p.x, py, p.w / 3 - 2, p.h);
-        ctx.fillRect(p.x + p.w / 3 + 2, py + 4, p.w / 3 - 2, p.h);
-        ctx.fillRect(p.x + 2 * p.w / 3, py + 8, p.w / 3, p.h);
-        ctx.globalAlpha = 1;
         continue;
       }
 
@@ -495,9 +519,9 @@ export default function DoodleJumpGame() {
         ctx.globalAlpha = p.vanishTimer % 6 < 3 ? 0.3 : 0.8;
       }
 
-      // Breakable platform after first bounce: flicker to warn
-      if (p.type === 'breakable' && (p.bounceCount || 0) >= 1 && !p.broken) {
-        ctx.globalAlpha = Math.random() > 0.5 ? 0.5 : 1;
+      // Breakable platform with active timer: flicker to warn
+      if (p.type === 'breakable' && p.breakTimer !== undefined && !p.broken) {
+        ctx.globalAlpha = p.breakTimer % 8 < 4 ? 0.4 : 1;
       }
       ctx.fillStyle = PLAT_COLORS[p.type];
       ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 8;
@@ -530,6 +554,17 @@ export default function DoodleJumpGame() {
         }
       }
     }
+
+    // Particles
+    for (const pt of s.particles) {
+      const ptY = pt.y - s.cameraY;
+      ctx.globalAlpha = pt.life / 30;
+      ctx.fillStyle = pt.color;
+      ctx.shadowColor = pt.color; ctx.shadowBlur = 4;
+      ctx.fillRect(pt.x, ptY, pt.size, pt.size);
+    }
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
 
     // Enemies
     for (const e of s.enemies) {
@@ -583,6 +618,10 @@ export default function DoodleJumpGame() {
     window.addEventListener('keydown', onKey);
     window.addEventListener('keyup', onKeyUp);
 
+    // Prevent document-level touch scrolling/selection during game
+    const preventTouchMove = (e: TouchEvent) => { e.preventDefault(); };
+    document.addEventListener('touchmove', preventTouchMove, { passive: false });
+
     // Touch controls on canvas
     const canvas = canvasRef.current;
     const onTouchStart = (e: TouchEvent) => {
@@ -602,7 +641,6 @@ export default function DoodleJumpGame() {
       e.preventDefault();
     };
     const onTouchEnd = (e: TouchEvent) => {
-      // Tap = shoot (no significant movement)
       if (touchStartRef.current) {
         const moved = e.changedTouches[0];
         if (moved && Math.abs(moved.clientX - touchStartRef.current.x) < 15) {
@@ -621,6 +659,7 @@ export default function DoodleJumpGame() {
       cancelAnimationFrame(rafRef.current);
       window.removeEventListener('keydown', onKey);
       window.removeEventListener('keyup', onKeyUp);
+      document.removeEventListener('touchmove', preventTouchMove);
       canvas?.removeEventListener('touchstart', onTouchStart);
       canvas?.removeEventListener('touchmove', onTouchMove);
       canvas?.removeEventListener('touchend', onTouchEnd);
@@ -632,8 +671,8 @@ export default function DoodleJumpGame() {
   }, []);
 
   return (
-    <div className="flex flex-col items-center gap-4 w-full">
-      <div className="relative w-full max-w-[360px] bg-black rounded-lg overflow-hidden" style={{ aspectRatio: `${W}/${H}` }}>
+    <div className="flex flex-col items-center gap-4 w-full" style={{ userSelect: 'none', WebkitUserSelect: 'none', touchAction: 'none' }}>
+      <div className="relative w-full max-w-[360px] bg-black rounded-lg overflow-hidden" style={{ aspectRatio: `${W}/${H}`, userSelect: 'none', touchAction: 'none' }}>
         <canvas ref={canvasRef} width={W} height={H} className="block w-full h-full rounded-lg" style={{ touchAction: 'none' }} />
         {gameState === 'idle' && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/78 rounded-lg font-mono text-foreground gap-3">
