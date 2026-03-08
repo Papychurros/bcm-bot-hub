@@ -78,7 +78,7 @@ export default function DoodleJumpGame() {
     platforms: [] as Platform[],
     projectiles: [] as Projectile[],
     enemies: [] as Enemy[],
-    score: 0, best: 0, cameraY: 0,
+    score: 0, best: 0, cameraY: 0, maxHeight: 0,
     state: 'idle' as GameState,
     keys: {} as Record<string, boolean>,
     // Power-up states
@@ -118,7 +118,7 @@ export default function DoodleJumpGame() {
 
   const start = useCallback(() => {
     const s = stateRef.current;
-    s.score = 0; s.cameraY = 0;
+    s.score = 0; s.cameraY = 0; s.maxHeight = 0;
     s.player = { x: W / 2 - 18, y: H - 120, w: 36, h: 36, vy: JUMP, vx: 0 };
     s.platforms = [{ x: W / 2 - 40, y: H - 60, w: 80, h: PLAT_H, type: 'normal', dir: 1, speed: 0 }];
     s.projectiles = [];
@@ -173,7 +173,12 @@ export default function DoodleJumpGame() {
     if (s.player.y - s.cameraY < threshold) {
       const diff = threshold - (s.player.y - s.cameraY);
       s.cameraY -= diff;
-      s.score += Math.floor(diff * 0.1);
+    }
+    // Height-based scoring
+    const currentHeight = -s.player.y;
+    if (currentHeight > s.maxHeight) {
+      s.score += Math.round(currentHeight - s.maxHeight);
+      s.maxHeight = currentHeight;
     }
 
     // Platform collision (only when falling)
