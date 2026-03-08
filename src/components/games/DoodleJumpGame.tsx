@@ -35,12 +35,12 @@ function getPlatformWeights(score: number) {
   return { normal: 20, moving: 30, breakable: 30, vanishing: 20 };
 }
 
-function getEnemySpawnRate(score: number) {
-  if (score < 2000) return { ground: 0, flying: 0, ufo: 0, blackhole: 0 };
-  if (score < 5000) return { ground: 0.015, flying: 0, ufo: 0, blackhole: 0 };
-  if (score < 8000) return { ground: 0.02, flying: 0.01, ufo: 0, blackhole: 0 };
-  if (score < 12000) return { ground: 0.02, flying: 0.015, ufo: 0.008, blackhole: 0 };
-  return { ground: 0.02, flying: 0.02, ufo: 0.01, blackhole: 0.008 };
+function getEnemyChance(score: number): { chance: number; types: EnemyType[] } {
+  if (score < 2000) return { chance: 0, types: [] };
+  if (score < 5000) return { chance: 0.03, types: ['ground'] };
+  if (score < 8000) return { chance: 0.05, types: ['ground', 'flying'] };
+  if (score < 12000) return { chance: 0.07, types: ['ground', 'flying', 'ufo'] };
+  return { chance: 0.08, types: ['ground', 'flying', 'ufo', 'blackhole'] };
 }
 
 function getPlatSpacing(score: number): [number, number] {
