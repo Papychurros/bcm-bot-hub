@@ -37,7 +37,7 @@ const GAMES: GameDef[] = [
   { id: 'memory', num: '04 / 17', icon: '🃏', title: 'BCM Mémory', desc: 'Retrouve les paires de logos BOB, CASH et MAG. Bats ton meilleur temps.', tag: 'Réflexion', color: '#00e5ff' },
   { id: 'pong', num: '05 / 17', icon: '🏓', title: 'Tennis de Bot', desc: 'Affronte le bot dans un duel de raquettes néon. Premier à 7 points gagne.', tag: 'Arcade', color: '#00e5ff' },
   { id: 'flappy', num: '06 / 17', icon: '🧠', title: 'Flappy Brain', desc: 'Guide le cerveau entre les tuyaux neuronaux. Un tap, un battement, zéro erreur.', tag: 'Arcade', color: '#a855f7' },
-  { id: 'doodle', num: '07 / 17', icon: '🚀', title: 'B.O.B Doodle Jump', desc: 'Saute de plateforme en plateforme avec le robot B.O.B. Ne tombe pas !', tag: 'Arcade', color: '#a855f7' },
+  { id: 'doodle', num: '07 / 17', icon: '🚀', title: 'B.O.B Jump', desc: 'Saute, tire et survis ! Plateformes spéciales, power-ups, ennemis et boss.', tag: 'Arcade', color: '#a855f7' },
   { id: 'connect4', num: '08 / 17', icon: '🔴', title: 'B.O.B Puissance 4', desc: 'Aligne 4 jetons contre l\'IA ou un ami. Stratégie et anticipation requises.', tag: 'Réflexion', color: '#a855f7' },
   { id: 'pacman', num: '09 / 17', icon: '👾', title: 'B.O.B Pac-Man', desc: 'Mange les points, évite les fantômes, dévore les super-points !', tag: 'Arcade', color: '#a855f7' },
   { id: 'puzzle', num: '10 / 17', icon: '🧩', title: 'B.O.B Puzzle', desc: 'Reconstitue l\'image en échangeant les pièces. Mémoire visuelle requise.', tag: 'Réflexion', color: '#06b6d4' },
