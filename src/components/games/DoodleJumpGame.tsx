@@ -1,60 +1,174 @@
 import React, { useRef, useEffect, useCallback, useState } from 'react';
-import { Hpad, ActionButton } from './TouchControls';
+import { ActionButton } from './TouchControls';
 
 const W = 360, H = 560;
 const PLAT_W = 70, PLAT_H = 14;
 const GRAVITY = 0.18, JUMP = -8;
 const COLOR = '#a855f7';
 
-type GameState = 'idle' | 'playing' | 'dead';
+type GameState = 'idle' | 'playing' | 'dead' | 'paused';
+type PlatType = 'normal' | 'moving' | 'breakable' | 'vanishing';
+type PowerUpType = 'spring' | 'jetpack' | 'shield';
+type EnemyType = 'ground' | 'flying' | 'ufo' | 'blackhole';
 
 interface Platform {
   x: number; y: number; w: number; h: number;
-  type: 'normal' | 'moving'; dir: number; speed: number;
+  type: PlatType; dir: number; speed: number;
+  broken?: boolean;
+  vanishTimer?: number; vanishing?: boolean;
+  powerUp?: PowerUpType;
 }
+
+interface Projectile { x: number; y: number; }
+
+interface Enemy {
+  x: number; y: number; w: number; h: number;
+  type: EnemyType; dir: number; speed: number;
+  hp: number;
+}
+
+function getPlatformWeights(score: number) {
+  if (score < 1000) return { normal: 100, moving: 0, breakable: 0, vanishing: 0 };
+  if (score < 3000) return { normal: 70, moving: 30, breakable: 0, vanishing: 0 };
+  if (score < 6000) return { normal: 50, moving: 30, breakable: 20, vanishing: 0 };
+  if (score < 10000) return { normal: 35, moving: 30, breakable: 20, vanishing: 15 };
+  return { normal: 20, moving: 30, breakable: 30, vanishing: 20 };
+}
+
+function getEnemySpawnRate(score: number) {
+  if (score < 2000) return { ground: 0, flying: 0, ufo: 0, blackhole: 0 };
+  if (score < 5000) return { ground: 0.015, flying: 0, ufo: 0, blackhole: 0 };
+  if (score < 8000) return { ground: 0.02, flying: 0.01, ufo: 0, blackhole: 0 };
+  if (score < 12000) return { ground: 0.02, flying: 0.015, ufo: 0.008, blackhole: 0 };
+  return { ground: 0.02, flying: 0.02, ufo: 0.01, blackhole: 0.008 };
+}
+
+function getPlatSpacing(score: number): [number, number] {
+  if (score < 3000) return [60, 90];
+  if (score < 8000) return [80, 120];
+  return [100, 150];
+}
+
+function pickPlatType(score: number): PlatType {
+  const w = getPlatformWeights(score);
+  const total = w.normal + w.moving + w.breakable + w.vanishing;
+  let r = Math.random() * total;
+  if ((r -= w.normal) < 0) return 'normal';
+  if ((r -= w.moving) < 0) return 'moving';
+  if ((r -= w.breakable) < 0) return 'breakable';
+  return 'vanishing';
+}
+
+const PLAT_COLORS: Record<PlatType, string> = {
+  normal: '#a855f7',
+  moving: '#06b6d4',
+  breakable: '#ef4444',
+  vanishing: '#888888',
+};
 
 export default function DoodleJumpGame() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const rafRef = useRef<number>(0);
   const [gameState, setGameState] = useState<GameState>('idle');
+  const [gyroEnabled, setGyroEnabled] = useState(() => localStorage.getItem('bob-jump-gyro') === 'true');
+  const touchStartRef = useRef<{ x: number; id: number } | null>(null);
+
   const stateRef = useRef({
     player: { x: W / 2 - 18, y: H - 120, w: 36, h: 36, vy: JUMP, vx: 0 },
     platforms: [] as Platform[],
+    projectiles: [] as Projectile[],
+    enemies: [] as Enemy[],
     score: 0, best: 0, cameraY: 0,
     state: 'idle' as GameState,
     keys: {} as Record<string, boolean>,
+    // Power-up states
+    jetpackTimer: 0,
+    hasShield: false,
+    // Enemy spawn cooldown
+    lastEnemySpawnY: 0,
+    // Gyro
+    gyroX: 0,
+    gyroEnabled: false,
   });
 
-  const genPlatform = useCallback((y: number): Platform => ({
-    x: Math.random() * (W - PLAT_W - 20) + 10, y, w: PLAT_W, h: PLAT_H,
-    type: Math.random() < 0.15 ? 'moving' : 'normal',
-    dir: Math.random() < 0.5 ? 1 : -1, speed: 0.7,
-  }), []);
+  const genPlatform = useCallback((y: number, score: number, forceNormal = false): Platform => {
+    const type = forceNormal ? 'normal' : pickPlatType(score);
+    const p: Platform = {
+      x: Math.random() * (W - PLAT_W - 20) + 10, y, w: PLAT_W, h: PLAT_H,
+      type, dir: Math.random() < 0.5 ? 1 : -1, speed: 0.7 + Math.random() * 0.5,
+    };
+    // Power-ups only on normal platforms
+    if (type === 'normal') {
+      if (score >= 0 && Math.random() < (score < 5000 ? 1 / 8 : 1 / 12)) {
+        p.powerUp = 'spring';
+      } else if (score >= 1000 && Math.random() < 1 / 40) {
+        p.powerUp = 'jetpack';
+      } else if (score >= 5000 && Math.random() < 1 / 50) {
+        p.powerUp = 'shield';
+      }
+    }
+    return p;
+  }, []);
+
+  const shoot = useCallback(() => {
+    const s = stateRef.current;
+    if (s.state !== 'playing') return;
+    s.projectiles.push({ x: s.player.x + s.player.w / 2, y: s.player.y - s.cameraY });
+  }, []);
 
   const start = useCallback(() => {
     const s = stateRef.current;
     s.score = 0; s.cameraY = 0;
     s.player = { x: W / 2 - 18, y: H - 120, w: 36, h: 36, vy: JUMP, vx: 0 };
     s.platforms = [{ x: W / 2 - 40, y: H - 60, w: 80, h: PLAT_H, type: 'normal', dir: 1, speed: 0 }];
-    for (let i = 0; i < 12; i++) s.platforms.push(genPlatform(H - 80 - i * 60));
+    s.projectiles = [];
+    s.enemies = [];
+    s.jetpackTimer = 0;
+    s.hasShield = false;
+    s.lastEnemySpawnY = 0;
+    const [minS, maxS] = getPlatSpacing(0);
+    for (let i = 0; i < 12; i++) {
+      const gap = minS + Math.random() * (maxS - minS);
+      s.platforms.push(genPlatform(H - 80 - i * gap, 0, i < 3));
+    }
     s.state = 'playing'; setGameState('playing');
   }, [genPlatform]);
+
+  const togglePause = useCallback(() => {
+    const s = stateRef.current;
+    if (s.state === 'playing') {
+      s.state = 'paused'; setGameState('paused');
+    } else if (s.state === 'paused') {
+      s.state = 'playing'; setGameState('playing');
+    }
+  }, []);
 
   const update = useCallback(() => {
     const s = stateRef.current;
     if (s.state !== 'playing') return;
 
+    // Movement
     if (s.keys['ArrowLeft'] || s.keys['a'] || s.keys['left']) s.player.vx = -3;
     else if (s.keys['ArrowRight'] || s.keys['d'] || s.keys['right']) s.player.vx = 3;
+    else if (s.gyroEnabled && Math.abs(s.gyroX) > 3) s.player.vx = s.gyroX * 0.15;
     else s.player.vx *= 0.85;
 
-    s.player.vy += GRAVITY;
+    // Jetpack
+    if (s.jetpackTimer > 0) {
+      s.jetpackTimer--;
+      s.player.vy = -5;
+    } else {
+      s.player.vy += GRAVITY;
+    }
+
     s.player.x += s.player.vx;
     s.player.y += s.player.vy;
 
+    // Wrap
     if (s.player.x + s.player.w < 0) s.player.x = W;
     if (s.player.x > W) s.player.x = -s.player.w;
 
+    // Camera
     const threshold = H * 0.4;
     if (s.player.y - s.cameraY < threshold) {
       const diff = threshold - (s.player.y - s.cameraY);
@@ -62,39 +176,184 @@ export default function DoodleJumpGame() {
       s.score += Math.floor(diff * 0.1);
     }
 
-    if (s.player.vy > 0) {
+    // Platform collision (only when falling)
+    if (s.player.vy > 0 && s.jetpackTimer <= 0) {
       for (const p of s.platforms) {
+        if (p.broken) continue;
         const py = s.player.y - s.cameraY;
         const ppy = p.y - s.cameraY;
         if (s.player.x + s.player.w > p.x && s.player.x < p.x + p.w &&
             py + s.player.h > ppy && py + s.player.h < ppy + PLAT_H + 12) {
-          s.player.vy = JUMP;
+          
+          // Breakable
+          if (p.type === 'breakable') { p.broken = true; continue; }
+          // Vanishing
+          if (p.type === 'vanishing' && !p.vanishing) {
+            p.vanishing = true; p.vanishTimer = 30; // ~0.5s at 60fps
+          }
+
+          // Power-up pickup
+          if (p.powerUp) {
+            s.score += 25;
+            if (p.powerUp === 'spring') s.player.vy = JUMP * 3;
+            else if (p.powerUp === 'jetpack') s.jetpackTimer = 180; // 3s
+            else if (p.powerUp === 'shield') s.hasShield = true;
+            p.powerUp = undefined;
+            if (p.powerUp !== undefined) { /* already handled */ }
+          }
+
+          if (p.powerUp === undefined || !p.powerUp) {
+            if (s.player.vy > 0) s.player.vy = JUMP;
+          }
         }
       }
     }
 
+    // Update vanishing platforms
     for (const p of s.platforms) {
-      if (p.type === 'moving') {
+      if (p.vanishing && p.vanishTimer !== undefined) {
+        p.vanishTimer--;
+        if (p.vanishTimer <= 0) p.broken = true;
+      }
+    }
+
+    // Moving platforms
+    for (const p of s.platforms) {
+      if (p.type === 'moving' && !p.broken) {
         p.x += p.dir * p.speed;
         if (p.x <= 0 || p.x + p.w >= W) p.dir *= -1;
       }
     }
 
+    // Generate new platforms
     const topY = s.cameraY;
-    while (s.platforms[s.platforms.length - 1].y > topY + 60) {
-      s.platforms.push(genPlatform(s.platforms[s.platforms.length - 1].y - 55 - Math.random() * 30));
+    const [minS, maxS] = getPlatSpacing(s.score);
+    while (s.platforms.length === 0 || s.platforms[s.platforms.length - 1].y > topY - 60) {
+      const lastY = s.platforms.length > 0 ? s.platforms[s.platforms.length - 1].y : H;
+      const gap = minS + Math.random() * (maxS - minS);
+      // Ensure reachable: max jump height ~178px (JUMP=-8, GRAVITY=0.18 → peak = 8²/(2*0.18) ≈ 178)
+      const maxGap = 178 * 0.85;
+      const clampedGap = Math.min(gap, maxGap);
+      s.platforms.push(genPlatform(lastY - clampedGap, s.score));
     }
+    s.platforms = s.platforms.filter(p => !p.broken || (p.y - s.cameraY < H + 100 && p.type === 'breakable'));
     s.platforms = s.platforms.filter(p => p.y - s.cameraY < H + 100);
 
+    // Enemy spawning
+    const rates = getEnemySpawnRate(s.score);
+    const spawnEnemy = (type: EnemyType) => {
+      const ey = s.cameraY - 20;
+      if (type === 'ground') {
+        // Attach to a platform near camera top
+        const candidates = s.platforms.filter(p => p.y - s.cameraY < H * 0.3 && p.y - s.cameraY > -50 && p.type === 'normal');
+        if (candidates.length > 0) {
+          const cp = candidates[Math.floor(Math.random() * candidates.length)];
+          s.enemies.push({ x: cp.x + cp.w / 2 - 12, y: cp.y - 24, w: 24, h: 24, type, dir: 1, speed: 0.8, hp: 1 });
+        }
+      } else if (type === 'flying') {
+        s.enemies.push({ x: Math.random() * (W - 30), y: ey, w: 28, h: 20, type, dir: Math.random() < 0.5 ? 1 : -1, speed: 1.2, hp: 1 });
+      } else if (type === 'ufo') {
+        s.enemies.push({ x: W / 2 - 18, y: ey, w: 36, h: 24, type, dir: 0, speed: 0.5, hp: 3 });
+      } else if (type === 'blackhole') {
+        s.enemies.push({ x: Math.random() * (W - 40) + 20, y: ey + 50, w: 32, h: 32, type, dir: 0, speed: 0, hp: 999 });
+      }
+    };
+    for (const [type, rate] of Object.entries(rates)) {
+      if (rate > 0 && Math.random() < rate && s.enemies.length < 5) {
+        spawnEnemy(type as EnemyType);
+      }
+    }
+
+    // Update enemies
+    for (const e of s.enemies) {
+      if (e.type === 'ground') { e.x += e.dir * e.speed; if (e.x <= 0 || e.x + e.w >= W) e.dir *= -1; }
+      if (e.type === 'flying') { e.x += e.dir * e.speed; if (e.x <= 0 || e.x + e.w >= W) e.dir *= -1; }
+      if (e.type === 'ufo') {
+        const dy = (s.player.y - e.y);
+        e.y += Math.sign(dy) * e.speed;
+      }
+    }
+
+    // Projectiles
+    s.projectiles = s.projectiles.map(p => ({ ...p, y: p.y - 6 })).filter(p => p.y > -20);
+
+    // Projectile-enemy collisions
+    for (let i = s.projectiles.length - 1; i >= 0; i--) {
+      const proj = s.projectiles[i];
+      const projWorldY = proj.y + s.cameraY;
+      for (let j = s.enemies.length - 1; j >= 0; j--) {
+        const e = s.enemies[j];
+        if (e.type === 'blackhole') continue;
+        const ey = e.y - s.cameraY;
+        if (proj.x > e.x && proj.x < e.x + e.w && proj.y > ey && proj.y < ey + e.h) {
+          e.hp--;
+          s.projectiles.splice(i, 1);
+          if (e.hp <= 0) { s.enemies.splice(j, 1); s.score += 50; }
+          break;
+        }
+      }
+    }
+
+    // Player-enemy collision
+    const px = s.player.x, py = s.player.y - s.cameraY, pw = s.player.w, ph = s.player.h;
+    for (let j = s.enemies.length - 1; j >= 0; j--) {
+      const e = s.enemies[j];
+      const ey = e.y - s.cameraY;
+      if (px + pw > e.x && px < e.x + e.w && py + ph > ey && py < ey + e.h) {
+        if (e.type === 'blackhole') {
+          // Instant death
+          if (s.score > s.best) s.best = s.score;
+          s.state = 'dead'; setGameState('dead'); return;
+        }
+        // Can stomp ground enemies from above
+        if (e.type === 'ground' && s.player.vy > 0 && py + ph < ey + e.h / 2) {
+          s.enemies.splice(j, 1); s.score += 100; s.player.vy = JUMP;
+          continue;
+        }
+        // Shield absorbs
+        if (s.hasShield && s.jetpackTimer <= 0) {
+          s.hasShield = false; s.enemies.splice(j, 1);
+          continue;
+        }
+        // Jetpack = invulnerable
+        if (s.jetpackTimer > 0) continue;
+        // Death
+        if (s.score > s.best) s.best = s.score;
+        s.state = 'dead'; setGameState('dead'); return;
+      }
+    }
+
+    // Clean up enemies off screen
+    s.enemies = s.enemies.filter(e => e.y - s.cameraY < H + 100 && e.y - s.cameraY > -200);
+
+    // Fall death
     if (s.player.y - s.cameraY > H + 50) {
       if (s.score > s.best) s.best = s.score;
       s.state = 'dead'; setGameState('dead');
     }
   }, [genPlatform]);
 
-  const drawRobot = useCallback((ctx: CanvasRenderingContext2D, px: number, py: number) => {
+  const drawRobot = useCallback((ctx: CanvasRenderingContext2D, px: number, py: number, hasShield: boolean, hasJetpack: boolean) => {
     ctx.save();
     ctx.shadowColor = '#a855f7'; ctx.shadowBlur = 14;
+
+    // Shield aura
+    if (hasShield) {
+      ctx.strokeStyle = 'rgba(168,85,247,0.5)';
+      ctx.lineWidth = 2;
+      ctx.shadowColor = '#a855f7'; ctx.shadowBlur = 20;
+      ctx.beginPath(); ctx.arc(px + 18, py + 20, 28, 0, Math.PI * 2); ctx.stroke();
+      ctx.shadowBlur = 14;
+    }
+
+    // Jetpack flames
+    if (hasJetpack) {
+      ctx.fillStyle = '#f59e0b';
+      ctx.shadowColor = '#f59e0b'; ctx.shadowBlur = 12;
+      ctx.beginPath(); ctx.moveTo(px + 6, py + 42); ctx.lineTo(px + 12, py + 55 + Math.random() * 6); ctx.lineTo(px + 18, py + 42); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(px + 18, py + 42); ctx.lineTo(px + 24, py + 55 + Math.random() * 6); ctx.lineTo(px + 30, py + 42); ctx.fill();
+      ctx.shadowBlur = 14; ctx.shadowColor = '#a855f7';
+    }
 
     // Legs
     ctx.fillStyle = '#6d28d9';
@@ -156,6 +415,49 @@ export default function DoodleJumpGame() {
     ctx.restore();
   }, []);
 
+  const drawEnemy = useCallback((ctx: CanvasRenderingContext2D, e: Enemy, ey: number) => {
+    ctx.save();
+    if (e.type === 'ground') {
+      ctx.fillStyle = '#ef4444'; ctx.shadowColor = '#ef4444'; ctx.shadowBlur = 8;
+      ctx.beginPath(); ctx.roundRect(e.x, ey, e.w, e.h, 6); ctx.fill();
+      // Eyes
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(e.x + 7, ey + 8, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(e.x + 17, ey + 8, 3, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#000';
+      ctx.beginPath(); ctx.arc(e.x + 7, ey + 9, 1.5, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(e.x + 17, ey + 9, 1.5, 0, Math.PI * 2); ctx.fill();
+    } else if (e.type === 'flying') {
+      ctx.fillStyle = '#f59e0b'; ctx.shadowColor = '#f59e0b'; ctx.shadowBlur = 8;
+      // Wings
+      ctx.beginPath(); ctx.ellipse(e.x + 4, ey + 8, 8, 5, -0.3, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(e.x + e.w - 4, ey + 8, 8, 5, 0.3, 0, Math.PI * 2); ctx.fill();
+      // Body
+      ctx.fillStyle = '#dc2626';
+      ctx.beginPath(); ctx.ellipse(e.x + e.w / 2, ey + e.h / 2, 10, 8, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.beginPath(); ctx.arc(e.x + e.w / 2 - 3, ey + 8, 2, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(e.x + e.w / 2 + 3, ey + 8, 2, 0, Math.PI * 2); ctx.fill();
+    } else if (e.type === 'ufo') {
+      ctx.fillStyle = '#64748b'; ctx.shadowColor = '#94a3b8'; ctx.shadowBlur = 12;
+      ctx.beginPath(); ctx.ellipse(e.x + e.w / 2, ey + e.h / 2, e.w / 2, e.h / 3, 0, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#a5f3fc';
+      ctx.beginPath(); ctx.ellipse(e.x + e.w / 2, ey + e.h / 3, 8, 10, 0, Math.PI, Math.PI * 2); ctx.fill();
+      // HP indicator
+      ctx.fillStyle = '#fff'; ctx.font = '8px monospace'; ctx.textAlign = 'center';
+      ctx.fillText(`${e.hp}`, e.x + e.w / 2, ey - 3);
+    } else if (e.type === 'blackhole') {
+      ctx.fillStyle = '#1a1a2e'; ctx.shadowColor = '#6366f1'; ctx.shadowBlur = 20;
+      ctx.beginPath(); ctx.arc(e.x + e.w / 2, ey + e.h / 2, e.w / 2, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#6366f1'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(e.x + e.w / 2, ey + e.h / 2, e.w / 2 + 4, 0, Math.PI * 2); ctx.stroke();
+      ctx.strokeStyle = 'rgba(99,102,241,0.3)';
+      ctx.beginPath(); ctx.arc(e.x + e.w / 2, ey + e.h / 2, e.w / 2 + 8, 0, Math.PI * 2); ctx.stroke();
+    }
+    ctx.shadowBlur = 0;
+    ctx.restore();
+  }, []);
+
   const render = useCallback(() => {
     const ctx = canvasRef.current?.getContext('2d');
     const s = stateRef.current;
@@ -174,16 +476,75 @@ export default function DoodleJumpGame() {
 
     // Platforms
     for (const p of s.platforms) {
+      if (p.broken && p.type !== 'breakable') continue;
       const py = p.y - s.cameraY;
       if (py > H + 20 || py < -20) continue;
-      ctx.fillStyle = p.type === 'moving' ? '#f59e0b' : '#a855f7';
+
+      // Breakable animation
+      if (p.broken && p.type === 'breakable') {
+        ctx.globalAlpha = 0.4;
+        ctx.fillStyle = PLAT_COLORS.breakable;
+        // Draw broken pieces
+        ctx.fillRect(p.x, py, p.w / 3 - 2, p.h);
+        ctx.fillRect(p.x + p.w / 3 + 2, py + 4, p.w / 3 - 2, p.h);
+        ctx.fillRect(p.x + 2 * p.w / 3, py + 8, p.w / 3, p.h);
+        ctx.globalAlpha = 1;
+        continue;
+      }
+
+      // Vanishing blink
+      if (p.vanishing && p.vanishTimer !== undefined) {
+        ctx.globalAlpha = p.vanishTimer % 6 < 3 ? 0.3 : 0.8;
+      }
+
+      ctx.fillStyle = PLAT_COLORS[p.type];
       ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 8;
       ctx.beginPath(); ctx.roundRect(p.x, py, p.w, p.h, 4); ctx.fill();
       ctx.shadowBlur = 0;
+      ctx.globalAlpha = 1;
+
+      // Draw power-up
+      if (p.powerUp) {
+        const cx = p.x + p.w / 2, cy = py - 10;
+        if (p.powerUp === 'spring') {
+          ctx.strokeStyle = '#a855f7'; ctx.lineWidth = 2; ctx.shadowColor = '#a855f7'; ctx.shadowBlur = 6;
+          ctx.beginPath();
+          for (let i = 0; i < 4; i++) {
+            ctx.lineTo(cx - 5 + (i % 2) * 10, cy + i * 3);
+          }
+          ctx.stroke(); ctx.shadowBlur = 0;
+        } else if (p.powerUp === 'jetpack') {
+          ctx.fillStyle = '#f59e0b'; ctx.shadowColor = '#f59e0b'; ctx.shadowBlur = 8;
+          ctx.beginPath(); ctx.roundRect(cx - 5, cy - 2, 10, 14, 3); ctx.fill();
+          ctx.fillStyle = '#ef4444';
+          ctx.beginPath(); ctx.moveTo(cx - 3, cy + 12); ctx.lineTo(cx, cy + 18); ctx.lineTo(cx + 3, cy + 12); ctx.fill();
+          ctx.shadowBlur = 0;
+        } else if (p.powerUp === 'shield') {
+          ctx.fillStyle = '#a855f7'; ctx.shadowColor = '#a855f7'; ctx.shadowBlur = 8;
+          ctx.beginPath();
+          ctx.moveTo(cx, cy - 6); ctx.lineTo(cx + 7, cy - 2); ctx.lineTo(cx + 6, cy + 5);
+          ctx.lineTo(cx, cy + 8); ctx.lineTo(cx - 6, cy + 5); ctx.lineTo(cx - 7, cy - 2);
+          ctx.closePath(); ctx.fill(); ctx.shadowBlur = 0;
+        }
+      }
     }
 
+    // Enemies
+    for (const e of s.enemies) {
+      const ey = e.y - s.cameraY;
+      if (ey > H + 20 || ey < -40) continue;
+      drawEnemy(ctx, e, ey);
+    }
+
+    // Projectiles
+    ctx.fillStyle = '#fde68a'; ctx.shadowColor = '#fde68a'; ctx.shadowBlur = 8;
+    for (const p of s.projectiles) {
+      ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.shadowBlur = 0;
+
     // Player
-    drawRobot(ctx, s.player.x, s.player.y - s.cameraY);
+    drawRobot(ctx, s.player.x, s.player.y - s.cameraY, s.hasShield, s.jetpackTimer > 0);
 
     // HUD
     ctx.font = "bold 13px monospace"; ctx.shadowBlur = 0;
@@ -193,24 +554,76 @@ export default function DoodleJumpGame() {
     ctx.fillText(`BEST  ${String(s.best).padStart(4, '0')}`, W - 10, 18);
 
     rafRef.current = requestAnimationFrame(render);
-  }, [update, drawRobot]);
+  }, [update, drawRobot, drawEnemy]);
+
+  // Gyroscope
+  useEffect(() => {
+    stateRef.current.gyroEnabled = gyroEnabled;
+    localStorage.setItem('bob-jump-gyro', String(gyroEnabled));
+    if (!gyroEnabled) { stateRef.current.gyroX = 0; return; }
+    const handler = (e: DeviceOrientationEvent) => {
+      stateRef.current.gyroX = e.gamma || 0;
+    };
+    window.addEventListener('deviceorientation', handler);
+    return () => window.removeEventListener('deviceorientation', handler);
+  }, [gyroEnabled]);
 
   useEffect(() => {
     const ctx = canvasRef.current?.getContext('2d');
     if (ctx) { ctx.fillStyle = '#0f0f1a'; ctx.fillRect(0, 0, W, H); }
     rafRef.current = requestAnimationFrame(render);
 
-    const onKey = (e: KeyboardEvent) => { stateRef.current.keys[e.key] = true; e.preventDefault(); };
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === ' ') { shoot(); e.preventDefault(); return; }
+      stateRef.current.keys[e.key] = true; e.preventDefault();
+    };
     const onKeyUp = (e: KeyboardEvent) => { stateRef.current.keys[e.key] = false; };
     window.addEventListener('keydown', onKey);
     window.addEventListener('keyup', onKeyUp);
+
+    // Touch controls on canvas
+    const canvas = canvasRef.current;
+    const onTouchStart = (e: TouchEvent) => {
+      const t = e.touches[0];
+      touchStartRef.current = { x: t.clientX, id: t.identifier };
+      e.preventDefault();
+    };
+    const onTouchMove = (e: TouchEvent) => {
+      if (!touchStartRef.current) return;
+      const t = Array.from(e.touches).find(t => t.identifier === touchStartRef.current?.id);
+      if (!t) return;
+      const dx = t.clientX - touchStartRef.current.x;
+      if (Math.abs(dx) > 10) {
+        stateRef.current.keys['left'] = dx < -10;
+        stateRef.current.keys['right'] = dx > 10;
+      }
+      e.preventDefault();
+    };
+    const onTouchEnd = (e: TouchEvent) => {
+      // Tap = shoot (no significant movement)
+      if (touchStartRef.current) {
+        const moved = e.changedTouches[0];
+        if (moved && Math.abs(moved.clientX - touchStartRef.current.x) < 15) {
+          shoot();
+        }
+      }
+      stateRef.current.keys['left'] = false;
+      stateRef.current.keys['right'] = false;
+      touchStartRef.current = null;
+    };
+    canvas?.addEventListener('touchstart', onTouchStart, { passive: false });
+    canvas?.addEventListener('touchmove', onTouchMove, { passive: false });
+    canvas?.addEventListener('touchend', onTouchEnd);
 
     return () => {
       cancelAnimationFrame(rafRef.current);
       window.removeEventListener('keydown', onKey);
       window.removeEventListener('keyup', onKeyUp);
+      canvas?.removeEventListener('touchstart', onTouchStart);
+      canvas?.removeEventListener('touchmove', onTouchMove);
+      canvas?.removeEventListener('touchend', onTouchEnd);
     };
-  }, [render]);
+  }, [render, shoot]);
 
   const handleDirection = useCallback((dir: string, active: boolean) => {
     stateRef.current.keys[dir] = active;
@@ -219,12 +632,12 @@ export default function DoodleJumpGame() {
   return (
     <div className="flex flex-col items-center gap-4 w-full">
       <div className="relative w-full max-w-[360px] bg-black rounded-lg overflow-hidden" style={{ aspectRatio: `${W}/${H}` }}>
-        <canvas ref={canvasRef} width={W} height={H} className="block w-full h-full rounded-lg" />
+        <canvas ref={canvasRef} width={W} height={H} className="block w-full h-full rounded-lg" style={{ touchAction: 'none' }} />
         {gameState === 'idle' && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/78 rounded-lg font-mono text-foreground gap-3">
             <div className="text-[34px]">🚀</div>
-            <div className="text-lg font-bold" style={{ color: COLOR }}>DOODLE JUMP</div>
-            <div className="text-[11px] text-muted-foreground">← → pour bouger</div>
+            <div className="text-lg font-bold" style={{ color: COLOR }}>B.O.B Jump</div>
+            <div className="text-[11px] text-muted-foreground">← → pour bouger · ESPACE pour tirer</div>
           </div>
         )}
         {gameState === 'dead' && (
@@ -234,12 +647,59 @@ export default function DoodleJumpGame() {
             <div className="text-[11px] text-muted-foreground">MEILLEUR : {stateRef.current.best}</div>
           </div>
         )}
+        {gameState === 'paused' && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/85 rounded-lg font-mono text-foreground gap-4 z-10">
+            <div className="text-xl font-bold" style={{ color: COLOR }}>PAUSE</div>
+            <button
+              onClick={togglePause}
+              className="px-6 py-2 rounded-full border font-mono text-xs"
+              style={{ borderColor: COLOR, color: COLOR, background: 'rgba(168,85,247,0.1)' }}
+            >▶ Reprendre</button>
+            <button
+              onClick={start}
+              className="px-6 py-2 rounded-full border font-mono text-xs"
+              style={{ borderColor: '#666', color: '#aaa', background: 'rgba(255,255,255,0.05)' }}
+            >↺ Restart</button>
+            <div className="flex items-center gap-2 mt-2">
+              <span className="text-[11px] text-muted-foreground">🌀 Gyroscope :</span>
+              <button
+                onClick={() => setGyroEnabled(!gyroEnabled)}
+                className="px-3 py-1 rounded-full text-[10px] font-bold border"
+                style={{
+                  borderColor: gyroEnabled ? '#a855f7' : '#555',
+                  color: gyroEnabled ? '#a855f7' : '#888',
+                  background: gyroEnabled ? 'rgba(168,85,247,0.15)' : 'transparent',
+                }}
+              >{gyroEnabled ? 'ON' : 'OFF'}</button>
+            </div>
+          </div>
+        )}
       </div>
       <div className="flex flex-col items-center gap-4 flex-shrink-0">
-        <Hpad color={COLOR} onDirection={handleDirection} />
+        <div className="flex gap-3">
+          <button
+            className="w-[70px] h-14 rounded-xl bg-secondary border border-border text-foreground text-xl flex items-center justify-center cursor-pointer select-none transition-all active:scale-[0.88]"
+            onPointerDown={() => handleDirection('left', true)}
+            onPointerUp={() => handleDirection('left', false)}
+            onPointerLeave={() => handleDirection('left', false)}
+          >◀</button>
+          <button
+            className="w-14 h-14 rounded-xl border text-lg flex items-center justify-center cursor-pointer select-none transition-all active:scale-[0.88]"
+            style={{ borderColor: COLOR, color: COLOR, background: 'rgba(168,85,247,0.1)' }}
+            onClick={shoot}
+          >🔫</button>
+          <button
+            className="w-[70px] h-14 rounded-xl bg-secondary border border-border text-foreground text-xl flex items-center justify-center cursor-pointer select-none transition-all active:scale-[0.88]"
+            onPointerDown={() => handleDirection('right', true)}
+            onPointerUp={() => handleDirection('right', false)}
+            onPointerLeave={() => handleDirection('right', false)}
+          >▶</button>
+        </div>
         <div className="flex gap-2 flex-wrap justify-center">
           <ActionButton label="▶ Jouer" primary color={COLOR} onClick={start} />
-          <ActionButton label="⟳ Restart" color={COLOR} onClick={start} />
+          {gameState === 'playing' || gameState === 'paused' ? (
+            <ActionButton label="⏸ Pause" color={COLOR} onClick={togglePause} />
+          ) : null}
         </div>
       </div>
     </div>
