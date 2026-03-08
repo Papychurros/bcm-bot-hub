@@ -33,7 +33,7 @@ interface GameDef {
 const GAMES: GameDef[] = [
   { id: 'tetris', num: '01 / 17', icon: '🟪', title: 'B.O.B Tetris', desc: 'Les pièces classiques revisitées aux couleurs BCM. Empile, efface, domine.', tag: 'Arcade', color: '#a855f7' },
   { id: 'snake', num: '02 / 17', icon: '🐍', title: 'C.A.S.H Snake', desc: 'Le serpent néon sur fond noir absolu. Collecte les €, grandis, survie.', tag: 'Arcade', color: '#39ff14' },
-  { id: 'breakout', num: '03 / 17', icon: '🎯', title: 'M.A.G Casse-Briques', desc: 'Détruis les briques aux couleurs des libellés MAG. Réflexes requis.', tag: 'Arcade', color: '#ff6a00' },
+  { id: 'breakout', num: '03 / 17', icon: '🤖', title: 'M.A.G Casse-Labels', desc: '10 niveaux, 5 types de briques, power-ups & malus. Détruis les labels MAG !', tag: 'Arcade', color: '#f97316' },
   { id: 'memory', num: '04 / 17', icon: '🃏', title: 'BCM Mémory', desc: 'Retrouve les paires de logos BOB, CASH et MAG. Bats ton meilleur temps.', tag: 'Réflexion', color: '#00e5ff' },
   { id: 'pong', num: '05 / 17', icon: '🏓', title: 'Tennis de Bot', desc: 'Affronte le bot dans un duel de raquettes néon. Premier à 7 points gagne.', tag: 'Arcade', color: '#00e5ff' },
   { id: 'flappy', num: '06 / 17', icon: '🧠', title: 'Flappy Brain', desc: 'Guide le cerveau entre les tuyaux neuronaux. Un tap, un battement, zéro erreur.', tag: 'Arcade', color: '#a855f7' },
