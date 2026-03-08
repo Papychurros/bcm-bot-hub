@@ -204,7 +204,7 @@ export default function DoodleJumpGame() {
           // Power-up pickup
           if (p.powerUp) {
             s.score += 25;
-            if (p.powerUp === 'spring') s.player.vy = JUMP * 3;
+            if (p.powerUp === 'spring') s.player.vy = JUMP * 2;
             else if (p.powerUp === 'jetpack') s.jetpackTimer = 180; // 3s
             else if (p.powerUp === 'shield') s.hasShield = true;
             p.powerUp = undefined;
