@@ -20,6 +20,7 @@ export default function QABotPage() {
   const [showNotes, setShowNotes] = useState<Set<string>>(new Set());
   const [summaryOpen, setSummaryOpen] = useState<Set<string>>(new Set());
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [emojiOpen, setEmojiOpen] = useState(false);
 
   if (!bot) return <div className="p-8 text-center text-muted-foreground">Bot introuvable</div>;
 
