@@ -78,10 +78,15 @@ export default function QABotPage() {
           <span className="text-xs font-mono text-muted-foreground">{bot.version}</span>
         </div>
         <div className="flex-1" />
-        <button onClick={saveNotes} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-bob-end text-primary-foreground text-xs font-medium hover:opacity-90 transition-opacity">
-          <Save className="w-3.5 h-3.5" /> Sauvegarder
-        </button>
-      </div>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setEmojiOpen(true)} className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[#f0c040]/40 text-[#f0c040] text-xs font-medium hover:bg-[#f0c040]/10 transition-colors">
+            <Keyboard className="w-3.5 h-3.5" /> Code GIF
+          </button>
+          <button onClick={saveNotes} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-bob-end text-primary-foreground text-xs font-medium hover:opacity-90 transition-opacity">
+            <Save className="w-3.5 h-3.5" /> Sauvegarder
+          </button>
+        </div>
+        <EmojiCodesModal open={emojiOpen} onOpenChange={setEmojiOpen} />
 
       {/* Tech tags */}
       <div className="flex flex-wrap gap-2 mb-6">

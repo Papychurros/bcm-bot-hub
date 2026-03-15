@@ -46,10 +46,15 @@ export default function QAHome() {
       <div className="flex items-center justify-between mb-6">
         {lastSave && <span className="text-[10px] text-muted-foreground">💾 Dernière sauvegarde : {lastSave}</span>}
         <div className="flex-1" />
-        <button onClick={handleSave} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-bob-end text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity">
-          <Save className="w-4 h-4" /> Sauvegarder
-        </button>
-      </div>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setEmojiOpen(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#f0c040]/40 text-[#f0c040] text-sm font-medium hover:bg-[#f0c040]/10 transition-colors">
+            <Keyboard className="w-4 h-4" /> Code GIF
+          </button>
+          <button onClick={handleSave} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-bob-end text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity">
+            <Save className="w-4 h-4" /> Sauvegarder
+          </button>
+        </div>
+        <EmojiCodesModal open={emojiOpen} onOpenChange={setEmojiOpen} />
 
       {/* Global progress */}
       <div className="glass p-6 mb-8">
