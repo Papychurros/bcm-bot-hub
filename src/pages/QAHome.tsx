@@ -13,6 +13,7 @@ export default function QAHome() {
   const global = getGlobalStats();
   const completed = global.ok + global.partial + global.fail;
   const [lastSave, setLastSave] = useState<string | null>(() => localStorage.getItem('bcm-last-save'));
+  const [emojiOpen, setEmojiOpen] = useState(false);
 
   const handleSave = () => {
     saveResults();
