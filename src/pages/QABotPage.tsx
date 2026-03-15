@@ -5,8 +5,9 @@ import { qaTests } from '@/data/qa-tests';
 import { useApp } from '@/contexts/AppContext';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
-import { ChevronDown, ChevronRight, Save, Copy } from 'lucide-react';
+import { ChevronDown, ChevronRight, Save, Copy, Keyboard } from 'lucide-react';
 import { toast } from 'sonner';
+import EmojiCodesModal from '@/components/EmojiCodesModal';
 
 export default function QABotPage() {
   const { botId } = useParams<{ botId: string }>();
@@ -19,6 +20,7 @@ export default function QABotPage() {
   const [showNotes, setShowNotes] = useState<Set<string>>(new Set());
   const [summaryOpen, setSummaryOpen] = useState<Set<string>>(new Set());
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [emojiOpen, setEmojiOpen] = useState(false);
 
   if (!bot) return <div className="p-8 text-center text-muted-foreground">Bot introuvable</div>;
 
@@ -76,9 +78,15 @@ export default function QABotPage() {
           <span className="text-xs font-mono text-muted-foreground">{bot.version}</span>
         </div>
         <div className="flex-1" />
-        <button onClick={saveNotes} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-bob-end text-primary-foreground text-xs font-medium hover:opacity-90 transition-opacity">
-          <Save className="w-3.5 h-3.5" /> Sauvegarder
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setEmojiOpen(true)} className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-[#f0c040]/40 text-[#f0c040] text-xs font-medium hover:bg-[#f0c040]/10 transition-colors">
+            <Keyboard className="w-3.5 h-3.5" /> Code GIF
+          </button>
+          <button onClick={saveNotes} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-bob-end text-primary-foreground text-xs font-medium hover:opacity-90 transition-opacity">
+            <Save className="w-3.5 h-3.5" /> Sauvegarder
+          </button>
+        </div>
+        <EmojiCodesModal open={emojiOpen} onOpenChange={setEmojiOpen} />
       </div>
 
       {/* Tech tags */}

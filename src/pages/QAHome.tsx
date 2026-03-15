@@ -3,15 +3,17 @@ import { bots, botList, getBotGradient } from '@/data/bots';
 import { useApp } from '@/contexts/AppContext';
 import BotLogo from '@/components/BotLogo';
 import { cn } from '@/lib/utils';
-import { Save } from 'lucide-react';
+import { Save, Keyboard } from 'lucide-react';
 import { toast } from 'sonner';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import EmojiCodesModal from '@/components/EmojiCodesModal';
 
 export default function QAHome() {
   const { getGlobalStats, getBotStats, saveResults } = useApp();
   const global = getGlobalStats();
   const completed = global.ok + global.partial + global.fail;
   const [lastSave, setLastSave] = useState<string | null>(() => localStorage.getItem('bcm-last-save'));
+  const [emojiOpen, setEmojiOpen] = useState(false);
 
   const handleSave = () => {
     saveResults();
@@ -44,9 +46,15 @@ export default function QAHome() {
       <div className="flex items-center justify-between mb-6">
         {lastSave && <span className="text-[10px] text-muted-foreground">💾 Dernière sauvegarde : {lastSave}</span>}
         <div className="flex-1" />
-        <button onClick={handleSave} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-bob-end text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity">
-          <Save className="w-4 h-4" /> Sauvegarder
-        </button>
+        <div className="flex items-center gap-2">
+          <button onClick={() => setEmojiOpen(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg border border-[#f0c040]/40 text-[#f0c040] text-sm font-medium hover:bg-[#f0c040]/10 transition-colors">
+            <Keyboard className="w-4 h-4" /> Code GIF
+          </button>
+          <button onClick={handleSave} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-bob-end text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity">
+            <Save className="w-4 h-4" /> Sauvegarder
+          </button>
+        </div>
+        <EmojiCodesModal open={emojiOpen} onOpenChange={setEmojiOpen} />
       </div>
 
       {/* Global progress */}
