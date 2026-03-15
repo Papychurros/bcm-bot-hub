@@ -5,8 +5,9 @@ import { qaTests } from '@/data/qa-tests';
 import { useApp } from '@/contexts/AppContext';
 import { cn } from '@/lib/utils';
 import { useState } from 'react';
-import { ChevronDown, ChevronRight, Save, Copy } from 'lucide-react';
+import { ChevronDown, ChevronRight, Save, Copy, Keyboard } from 'lucide-react';
 import { toast } from 'sonner';
+import EmojiCodesModal from '@/components/EmojiCodesModal';
 
 export default function QABotPage() {
   const { botId } = useParams<{ botId: string }>();

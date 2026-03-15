@@ -3,9 +3,10 @@ import { bots, botList, getBotGradient } from '@/data/bots';
 import { useApp } from '@/contexts/AppContext';
 import BotLogo from '@/components/BotLogo';
 import { cn } from '@/lib/utils';
-import { Save } from 'lucide-react';
+import { Save, Keyboard } from 'lucide-react';
 import { toast } from 'sonner';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import EmojiCodesModal from '@/components/EmojiCodesModal';
 
 export default function QAHome() {
   const { getGlobalStats, getBotStats, saveResults } = useApp();
