@@ -55,6 +55,7 @@ export default function QAHome() {
           </button>
         </div>
         <EmojiCodesModal open={emojiOpen} onOpenChange={setEmojiOpen} />
+      </div>
 
       {/* Global progress */}
       <div className="glass p-6 mb-8">

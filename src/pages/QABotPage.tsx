@@ -87,6 +87,7 @@ export default function QABotPage() {
           </button>
         </div>
         <EmojiCodesModal open={emojiOpen} onOpenChange={setEmojiOpen} />
+      </div>
 
       {/* Tech tags */}
       <div className="flex flex-wrap gap-2 mb-6">
